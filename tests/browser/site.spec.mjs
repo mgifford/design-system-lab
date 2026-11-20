@@ -282,47 +282,47 @@ test('community ideas search and status filters preserve upstream context', asyn
   await expect(page.locator('#ideas .card:visible')).toContainText('Reduced-motion transitions');
 });
 
-test('landing demo: same content, same interaction, different visual system', async ({page}) => {
+test('landing demo: USWDS and OGDS hybrid share content', async ({page}) => {
   await goto(page, 'demo.html');
-  await expect(page.locator('#demo-uswds')).toHaveCount(1);
-  await expect(page.locator('#demo-concept')).toHaveCount(1);
   const left = page.frameLocator('#demo-uswds');
-  const right = page.frameLocator('#demo-concept');
+  const right = page.frameLocator('#demo-ogds');
   await expect(left.locator('h1')).toHaveText('Get the support you need');
   await expect(right.locator('h1')).toHaveText('Get the support you need');
-  expect(await right.locator('main').innerText()).toBe(await left.locator('main').innerText());
 
-  const leftHeader = await left.locator('.usa-header').evaluate(element => getComputedStyle(element).backgroundColor);
-  const rightHeader = await right.locator('.usa-header').evaluate(element => getComputedStyle(element).backgroundColor);
-  expect(rightHeader).not.toBe(leftHeader);
+  const content = async frame => (await frame.locator('main').textContent()).replace(/\s+/g, '');
+  expect(await content(right)).toBe(await content(left));
+
+  for (const tag of ['ogds-banner', 'ogds-header', 'ogds-primary-nav', 'ogds-accordion']) {
+    await expect(right.locator(tag)).toHaveCount(1);
+    await expect(left.locator(tag)).toHaveCount(0);
+  }
+  expect(await right.locator('ogds-banner').evaluate(element => Boolean(element.shadowRoot))).toBe(true);
+  expect(await right.locator('ogds-header').evaluate(element => Boolean(element.shadowRoot))).toBe(true);
+  await expect(right.locator('script[src*="ogds-elements.js"]')).toHaveCount(1);
+  await expect(left.locator('script[src*="ogds-elements.js"]')).toHaveCount(0);
 
   const leftSheets = await left.locator('html').evaluate(() => [...document.styleSheets].map(sheet => sheet.href).filter(Boolean));
   const rightSheets = await right.locator('html').evaluate(() => [...document.styleSheets].map(sheet => sheet.href).filter(Boolean));
-  expect(leftSheets.some(href => href.includes('concept.css'))).toBe(false);
-  expect(rightSheets.some(href => href.includes('concept.css'))).toBe(true);
-  expect(rightSheets.some(href => href.includes('uswds.min.css'))).toBe(true);
-
-  const nav = await right.locator('.usa-nav__link').first().evaluate(element => ({
-    color: getComputedStyle(element).color,
-    background: getComputedStyle(element.closest('.usa-header')).backgroundColor
-  }));
-  expect(contrastRatio(nav.color, nav.background), 'concept nav contrast').toBeGreaterThanOrEqual(4.5);
-
-  const hero = await right.locator('.usa-hero__callout').evaluate(element => ({
-    color: getComputedStyle(element).color,
-    background: getComputedStyle(element).backgroundColor
-  }));
-  expect(contrastRatio(hero.color, hero.background), 'concept hero contrast').toBeGreaterThanOrEqual(4.5);
+  expect(leftSheets.some(href => href.includes('colors.css'))).toBe(false);
+  expect(rightSheets.some(href => href.includes('colors.css'))).toBe(true);
 });
 
-test('landing demo: disclosure is keyboard operable in both panes', async ({page}) => {
+test('landing demo: disclosure is keyboard operable in both systems', async ({page}) => {
   await goto(page, 'demo.html');
-  for (const id of ['demo-uswds', 'demo-concept']) {
-    const button = page.frameLocator(`#${id}`).getByRole('button', {name: 'How do I apply?'});
-    await button.focus();
-    await button.press('Enter');
-    await expect(button).toHaveAttribute('aria-expanded', 'true');
-    await button.press('Space');
-    await expect(button).toHaveAttribute('aria-expanded', 'false');
-  }
+
+  const leftButton = page.frameLocator('#demo-uswds').getByRole('button', {name: 'How do I apply?'});
+  await leftButton.focus();
+  await leftButton.press('Enter');
+  await expect(leftButton).toHaveAttribute('aria-expanded', 'true');
+  await leftButton.press('Space');
+  await expect(leftButton).toHaveAttribute('aria-expanded', 'false');
+
+  const right = page.frameLocator('#demo-ogds');
+  const details = right.locator('details').first();
+  const summary = details.locator('summary');
+  await summary.focus();
+  await summary.press('Enter');
+  await expect(details).toHaveAttribute('open', '');
+  await summary.press('Space');
+  expect(await details.getAttribute('open')).toBeNull();
 });

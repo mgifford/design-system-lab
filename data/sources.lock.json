@@ -11,7 +11,7 @@
     "releaseDate": "2026-08-18T20:08:42Z",
     "packageLock": {
       "path": "package-lock.json",
-      "sha256": "5d2a19124eb150a809118c2daca15806b1d565f83ecb8d863b0f616d01ff42b6"
+      "sha256": "fb1b4c3fbe6c4cf9182a988a5d3c2ccfa711322fc96e35d1ad402aae520b1b89"
     },
     "assets": {
       "css": {
@@ -25,9 +25,37 @@
     }
   },
   "experiments": [
-    {"id": "dark-mode", "path": "experiments/dark-mode", "revision": null},
-    {"id": "preferences-panel", "path": "experiments/preferences-panel", "revision": null},
-    {"id": "rtl-logical-properties", "path": "experiments/rtl-logical-properties", "revision": null},
-    {"id": "radio-validation", "path": "experiments/radio-validation", "revision": null}
+    {
+      "id": "dark-mode",
+      "path": "experiments/dark-mode",
+      "revision": null
+    },
+    {
+      "id": "preferences-panel",
+      "path": "experiments/preferences-panel",
+      "revision": null
+    },
+    {
+      "id": "rtl-logical-properties",
+      "path": "experiments/rtl-logical-properties",
+      "revision": null
+    },
+    {
+      "id": "radio-validation",
+      "path": "experiments/radio-validation",
+      "revision": null
+    }
+  ],
+  "external": [
+    {
+      "id": "ogds-elements",
+      "package": "@ogds/elements",
+      "version": "1.0.0-beta.2",
+      "release": "v1.0.0-beta.2",
+      "commit": "59b05f1",
+      "tarballIntegrity": "sha512-yqyqrJDFuQ0ZrFvqamkOjBLJhhnOOZ+D0ArQ5V8kU3VdmmbMf0433CwdhPrGZ4tY9J6sjIii4wQ8Glwuboyyaw==",
+      "license": "public-domain (permission confirmed 2026-11-20)",
+      "permissionRecord": "docs/OGDS-PERMISSION.md"
+    }
   ]
 }

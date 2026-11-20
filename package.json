@@ -32,6 +32,7 @@
     "mcp:check": "node scripts/sync-mcp.mjs --check"
   },
   "dependencies": {
+    "@ogds/elements": "1.0.0-beta.2",
     "@uswds/uswds": "3.14.0"
   },
   "devDependencies": {
@@ -39,6 +40,7 @@
     "@guidepup/virtual-screen-reader": "0.32.1",
     "@playwright/mcp": "0.0.86",
     "@playwright/test": "1.64.1",
+    "esbuild": "0.28.2",
     "jsdom": "26.1.0",
     "marked": "18.2.1"
   }

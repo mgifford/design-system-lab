@@ -69,6 +69,8 @@ If `npm install` is unavailable, `npm run build` still produces a clearly labell
 
 `npm run sources:verify` fails if the installed package, lockfile, or asset hashes differ. `npm run sources:latest` queries GitHub for a newer non-prerelease release and prints a proposal workflow; it never changes the baseline. A newer release becomes the baseline only through a reviewed change and a maintainer decision.
 
+OGDS Elements `1.0.0-beta.2` (tag `v1.0.0-beta.2`, commit `59b05f1`) is pinned for the hybrid landing demo. Public-domain permission was confirmed on 2026-11-20; the permission record, tarball integrity, and component boundary are in [docs/OGDS-PERMISSION.md](docs/OGDS-PERMISSION.md).
+
 ## Pages
 
 - **Overview** — what the lab contains, featured experiments, and current evidence counts.
@@ -77,7 +79,7 @@ If `npm install` is unavailable, `npm run build` still produces a clearly labell
 - **Community ideas** — a curated issue catalogue that distinguishes open, closed-not-planned, completed, and consolidated work.
 - **Evidence** — the current run, per-route reports, state transcripts, screenshots, axe observations, and coverage gaps.
 - **Methodology and governance** — provenance, experiment lifecycle, AI disclosure, and scope boundaries.
-- **Landing demo** — a full-page USWDS vs concept comparison with independent iframes.
+- **Landing demo** — a full-page USWDS vs OGDS hybrid comparison with independent iframes.
 - **Compare** — side-by-side and onion views with independent iframe links and explicit state controls.
 - **User preferences panel** — the new-component proposal, with persistence, reset, and a live preview.
 
@@ -101,9 +103,9 @@ Selected physical alert borders are replaced with `border-inline-start`; accordi
 
 A required radio group with native constraint validation, no redundant `aria-required` or custom radiogroup role, and a recorded focus result after an invalid submit. Voice Control and real screen-reader testing remain outstanding.
 
-### Landing-page comparison (concept stand-in)
+### Landing-page comparison (OGDS hybrid)
 
-[the landing demo](https://mgifford.github.io/design-system-lab/demo.html) shows the same service landing page twice: straight USWDS 3.14.0 on the left, and a clearly labelled concept style on the right. The right pane is **not OGDS Elements**; it is a visual stand-in used to validate the comparison workflow until the OGDS licence and permission are resolved. When they are, the right renderer is replaced without changing the left pane or the content model.
+[the landing demo](https://mgifford.github.io/design-system-lab/demo.html) shows the same service landing page twice: straight USWDS 3.14.0 on the left, and a USWDS 3.14.0 + **OGDS Elements 1.0.0-beta.2** hybrid on the right. OGDS is used for the banner, header/primary navigation, and accordion; the alert remains USWDS because beta.2 does not export a built alert module; hero, cards, search, and footer remain USWDS. Public-domain permission is recorded in [docs/OGDS-PERMISSION.md](docs/OGDS-PERMISSION.md); this is an experimental contribution, not a full replacement or endorsement.
 
 Human decisions are recorded in one table, [`docs/EXPERIMENT-DECISIONS.md`](docs/EXPERIMENT-DECISIONS.md), not in a form per experiment. Dark mode is recorded as accepted as a lab experiment; the other three are undecided. Acceptance does not mean upstream adoption or assistive-technology validation.
 
@@ -136,7 +138,7 @@ CI uses `npm ci` with the committed lockfile. The workflow has not been executed
 ### Local verification
 
 - `npm run test:unit` — 14 passing.
-- `npm run build:strict` — 30 lab routes, 27 documentation pages, 10 fixtures.
+- `npm run build:strict` — 30 lab routes, 28 documentation pages, 10 fixtures.
 - `LAB_BROWSER_CHANNEL=chrome npx playwright test --project=chromium` — **65 passing**.
 - `npm run evidence` (Chrome channel) — **30/30 routes, 82 state transcripts, 0 failed**.
 - `npm run validate` — 5 components, 4 experiments, 14 issues, 5 scenarios, 30 routes, 30 MCP scenarios, evidence run complete.

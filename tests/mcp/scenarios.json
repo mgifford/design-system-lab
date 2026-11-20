@@ -103,8 +103,8 @@
     ]
   },
   {
-    "route": "demo/concept-landing.html",
-    "goal": "Review demo/concept-landing.html for scope, evidence status, and navigation integrity",
+    "route": "demo/ogds-landing.html",
+    "goal": "Review demo/ogds-landing.html for scope, evidence status, and navigation integrity",
     "steps": [
       "Capture the accessibility snapshot and heading outline",
       "Use the primary navigation to reach the page and confirm the current-page state",

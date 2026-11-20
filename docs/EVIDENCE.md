@@ -64,3 +64,4 @@ Automated evidence is an observation. The decision log (`docs/EXPERIMENT-DECISIO
 - A real Windows High Contrast session.
 - Every browser/OS/zoom/text-spacing combination.
 - Adoption, maintenance cost, or upstream compatibility beyond the recorded release.
+- OGDS custom-element shadow DOM is not traversed by Guidepup over jsdom; those transcripts cover slotted light-DOM text only. Browser tests, axe, and screenshots are the primary evidence for OGDS routes.

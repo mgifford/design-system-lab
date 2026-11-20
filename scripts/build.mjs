@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
+import {buildSync} from 'esbuild';
 import {fileURLToPath} from 'node:url';
 import {fixtureHtml} from './components.mjs';
 import {landingHtml} from './landing.mjs';
@@ -18,7 +19,6 @@ const lockFile = path.join(root, 'data', 'sources.lock.json');
 const packageLock = path.join(root, 'package-lock.json');
 const cssPath = path.join(vendor, 'css', 'uswds.min.css');
 const jsPath = path.join(vendor, 'js', 'uswds.min.js');
-
 const readJson = file => JSON.parse(fs.readFileSync(file, 'utf8'));
 const exists = file => fs.existsSync(file);
 const sha256 = file => exists(file) ? createHash('sha256').update(fs.readFileSync(file)).digest('hex') : null;
@@ -27,6 +27,13 @@ const write = (relative, content) => {
   fs.mkdirSync(path.dirname(target), {recursive: true});
   fs.writeFileSync(target, content);
 };
+
+const ogdsRoot = path.join(root, 'node_modules', '@ogds', 'elements');
+const ogdsPackageFile = path.join(ogdsRoot, 'package.json');
+const ogdsEntry = path.join(ogdsRoot, 'dist', 'components', 'index.js');
+const ogdsCssDir = path.join(ogdsRoot, 'build', 'css');
+const ogdsVersion = exists(ogdsPackageFile) ? readJson(ogdsPackageFile).version : null;
+const ogdsReady = ogdsVersion === '1.0.0-beta.2' && exists(ogdsEntry) && exists(path.join(ogdsCssDir, 'colors.css'));
 
 const pkg = readJson(packageFile);
 const registry = readJson(path.join(root, 'data', 'registry.json'));
@@ -61,6 +68,9 @@ if (realAssets && lock.baseline.assets) {
 if (requireUswds && !realAssets) {
   throw new Error(`Strict build requires @uswds/uswds ${lock.baseline.version} with dist CSS and JS. Installed: ${installedVersion || 'none'}. Run npm ci first.`);
 }
+if (requireUswds && !ogdsReady) {
+  throw new Error(`Strict build requires @ogds/elements 1.0.0-beta.2 with dist components and token CSS. Installed: ${ogdsVersion || 'none'}. Run npm ci first.`);
+}
 
 fs.rmSync(dist, {recursive: true, force: true});
 fs.mkdirSync(dist, {recursive: true});
@@ -85,6 +95,29 @@ if (realAssets) {
   }
 }
 
+if (ogdsReady) {
+  const ogdsVendor = path.join(dist, 'vendor', 'ogds');
+  fs.mkdirSync(ogdsVendor, {recursive: true});
+  buildSync({
+    entryPoints: [ogdsEntry],
+    bundle: true,
+    format: 'esm',
+    minify: true,
+    platform: 'browser',
+    target: ['es2022'],
+    legalComments: 'eof',
+    outfile: path.join(ogdsVendor, 'ogds-elements.js'),
+    logLevel: 'warning'
+  });
+  const ogdsCssVendor = path.join(ogdsVendor, 'css');
+  fs.mkdirSync(ogdsCssVendor, {recursive: true});
+  for (const file of ['colors.css', 'spacing.css', 'breakpoints.css']) {
+    fs.copyFileSync(path.join(ogdsCssDir, file), path.join(ogdsCssVendor, file));
+  }
+  const permission = path.join(root, 'docs', 'OGDS-PERMISSION.md');
+  if (exists(permission)) fs.copyFileSync(permission, path.join(ogdsVendor, 'NOTICE.md'));
+}
+
 // Fixtures are generated for every registered component. A new-component
 // experiment (no stable equivalent) is a page, not a fabricated baseline pair.
 for (const component of registry.components) {
@@ -97,8 +130,8 @@ for (const component of registry.components) {
   }
 }
 
-for (const variant of ['uswds', 'concept']) {
-  write(`demo/${variant}-landing.html`, landingHtml({variant, realAssets}));
+for (const variant of ['uswds', 'ogds']) {
+  write(`demo/${variant}-landing.html`, landingHtml({variant, realAssets, ogdsReady}));
 }
 
 const manifestPath = path.join(root, 'reports', 'latest', 'MANIFEST.json');
@@ -113,7 +146,10 @@ const buildInfo = {
   experiments: registry.experiments.map(experiment => experiment.id),
   source: '@uswds/uswds ' + lock.baseline.version + ' (npm)',
   assetSha256: realAssets ? {css: sha256(cssPath), js: sha256(jsPath)} : null,
-  lockSha256: sha256(path.join(root, 'package-lock.json'))
+  lockSha256: sha256(path.join(root, 'package-lock.json')),
+  ogdsVersion: ogdsReady ? ogdsVersion : null,
+  ogdsCommit: '59b05f1',
+  ogdsLicense: 'public-domain (permission confirmed 2026-11-20)'
 };
 
 // Evidence is published only from the current reports/latest run. Nothing from
@@ -194,7 +230,7 @@ const routes = [
   'preferences.html',
   'demo.html',
   'demo/uswds-landing.html',
-  'demo/concept-landing.html',
+  'demo/ogds-landing.html',
   ...registry.components.flatMap(component => ['baseline', 'experiment'].map(variant => `fixture/${component.slug}-${variant}.html`)),
   ...registry.components.map(component => `component/${component.slug}.html`),
   ...registry.experiments.map(experiment => `experiment/${experiment.id}.html`)

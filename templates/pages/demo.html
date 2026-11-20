@@ -1,10 +1,10 @@
 <p class="eyebrow">Landing-page comparison</p>
-<h1>One service page, two design-system treatments</h1>
-<p class="lead">Same content, same viewport, same interactions. The left pane is the pinned USWDS 3.14.0 distribution. The right pane is an illustrative concept standing in for the future OGDS hybrid.</p>
+<h1>One service page, USWDS vs the OGDS hybrid</h1>
+<p class="lead">Same content, same viewport, same interactions. The left pane is pinned USWDS 3.14.0. The right pane uses USWDS 3.14.0 plus OGDS Elements beta.2 for the components OGDS covers.</p>
 
 <div class="callout warning">
-  <strong>The right pane is a concept stand-in, not OGDS Elements.</strong>
-  It exists to validate the comparison workflow and give stakeholders something concrete to review. The content and markup are identical; only the stylesheet changes. When OGDS permission and licensing are resolved, the right renderer is replaced by the licensed OGDS hybrid. This is an experimental contribution, not an endorsement.
+  <strong>This is a hybrid, not a full OGDS replacement.</strong>
+  OGDS is used for the banner, header/primary navigation, and accordion. The alert remains USWDS because OGDS beta.2 does not export a built alert module. Hero, cards, search, footer, and every other component remain USWDS. This is an experimental contribution; no endorsement by OGDS, USWDS, GSA, or any agency is implied, and no WCAG conformance is claimed.
 </div>
 
 <div class="demo-compare">
@@ -13,32 +13,49 @@
     <iframe id="demo-uswds" title="Landing page using USWDS 3.14.0" src="demo/uswds-landing.html"></iframe>
   </div>
   <div class="demo-pane">
-    <div class="pane-label"><span>Concept stand-in — not OGDS</span><a href="demo/concept-landing.html" target="_blank" rel="noopener">Open independently</a></div>
-    <iframe id="demo-concept" title="Landing page using an illustrative concept treatment, not OGDS" src="demo/concept-landing.html"></iframe>
+    <div class="pane-label"><span>USWDS + OGDS hybrid — beta.2</span><a href="demo/ogds-landing.html" target="_blank" rel="noopener">Open independently</a></div>
+    <iframe id="demo-ogds" title="Landing page using USWDS 3.14.0 with OGDS Elements beta.2 for covered components" src="demo/ogds-landing.html"></iframe>
   </div>
 </div>
 
-<p class="small">The iframes are independent documents. The comparison shell does not mirror keyboard input; open either page separately for keyboard and assistive-technology testing. At this side-by-side width the USWDS header collapses to a mobile menu; open independently to inspect the full-width header and search. The right pane is a visual stand-in only.</p>
+<p class="small">The iframes are independent documents. The comparison shell does not mirror keyboard input; open either page separately for keyboard and assistive-technology testing. At this side-by-side width the USWDS header collapses to a mobile menu; open independently to inspect the full-width header and search.</p>
 
 <section aria-labelledby="look-for">
   <h2 class="section-title" id="look-for">What to compare</h2>
   <ul class="clean">
-    <li>Header and primary navigation: weight, hierarchy, and search placement.</li>
-    <li>Banner prominence and the amount of vertical space it takes.</li>
-    <li>Hero treatment, heading typography, and the primary call to action.</li>
-    <li>Card shape, borders, and heading style.</li>
-    <li>Accordion controls and panel boundaries.</li>
-    <li>Alert emphasis and footer density.</li>
+    <li>Banner prominence and how much explanatory content it reveals.</li>
+    <li>Header hierarchy, menu behavior, and search placement.</li>
+    <li>Alert treatment remains USWDS on both sides; the table records the missing OGDS beta.2 alert module.</li>
+    <li>Accordion control, panel boundary, and keyboard behavior.</li>
+    <li>Which parts of the page are unchanged because OGDS has no equivalent.</li>
   </ul>
+</section>
+
+<section aria-labelledby="coverage">
+  <h2 class="section-title" id="coverage">What OGDS covers on this page</h2>
+  <div class="table-wrap" tabindex="0">
+    <table>
+      <caption>Hybrid composition on the landing page</caption>
+      <thead><tr><th scope="col">Area</th><th scope="col">Right pane</th><th scope="col">Status</th></tr></thead>
+      <tbody>
+        <tr><td>Banner</td><td><code>ogds-banner</code></td><td>OGDS beta.2</td></tr>
+        <tr><td>Header and primary navigation</td><td><code>ogds-header</code> + <code>ogds-primary-nav</code></td><td>OGDS beta.2</td></tr>
+        <tr><td>Alert</td><td>USWDS <code>usa-alert</code></td><td>Unchanged: OGDS alert source exists but is not in the beta.2 package build</td></tr>
+        <tr><td>Common questions</td><td><code>ogds-accordion</code></td><td>OGDS beta.2</td></tr>
+        <tr><td>Hero, cards, search, footer</td><td>USWDS 3.14.0</td><td>Unchanged: no OGDS equivalent used</td></tr>
+      </tbody>
+    </table>
+  </div>
 </section>
 
 <section aria-labelledby="not-claimed">
   <h2 class="section-title" id="not-claimed">What is not being claimed</h2>
-  <p>The right pane is not OGDS Elements and does not predict its exact appearance. It is a controlled visual alternative built from the same content so a department can evaluate the comparison experience before the licensed OGDS integration exists.</p>
-  <p>Automated screenshots, axe results, and Guidepup transcripts support inspection. They are not a WCAG conformance statement or a design verdict.</p>
+  <p>This is not a complete OGDS page, not a prediction of every OGDS state, and not a WCAG conformance statement. The right pane is a hybrid. Components with no OGDS equivalent remain USWDS and are listed as unchanged.</p>
+  <p>OGDS components use shadow DOM. The Guidepup transcript covers the slotted light-DOM text, not the shadow-tree roles or internal states; browser tests, axe observations, and screenshots are the primary evidence for this page.</p>
 </section>
 
-<section aria-labelledby="swap">
-  <h2 class="section-title" id="swap">How this becomes the OGDS comparison</h2>
-  <p>The left pane stays pinned to USWDS 3.14.0. The right pane is generated from the same content model and can be swapped to a licensed OGDS hybrid renderer without changing the comparison shell. Components with no OGDS equivalent remain USWDS and are labelled as unchanged.</p>
+<section aria-labelledby="reuse">
+  <h2 class="section-title" id="reuse">How the hybrid is composed</h2>
+  <p>The left and right pages share content and state. The right page adds the OGDS token CSS and bundled web components, then replaces only the covered components. The remaining USWDS markup is unchanged so a difference is attributable to the OGDS layers, not unrelated content edits.</p>
+  <p>When OGDS names, versions, or component APIs change, update the pinned adapter and the component matrix; the left USWDS pane and the comparison shell stay the same.</p>
 </section>
