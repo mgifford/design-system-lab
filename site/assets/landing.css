@@ -1,0 +1,7 @@
+/* Shared landing-page framing for the comparison demo. Original MIT. */
+body { margin: 0; padding: 0; background: #fff; color: #1b1b1b; }
+.usa-hero__callout { max-width: 42rem; }
+.usa-section { padding-block: 2.5rem; }
+.usa-section__heading { margin-top: 0; }
+.usa-footer__primary-content { padding-block: .5rem; }
+.demo-offline { margin: 0; padding: .75rem 1rem; background: #fff3d9; border-bottom: 2px solid #ab6100; color: #1b1b1b; }

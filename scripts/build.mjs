@@ -3,6 +3,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {fixtureHtml} from './components.mjs';
+import {landingHtml} from './landing.mjs';
 import {renderPage} from './layout.mjs';
 import {renderMarkdown, escapeHtml} from './markdown.mjs';
 import {buildStaticPages, buildComponentPages, buildExperimentPages, buildDocPages} from './pages.mjs';
@@ -96,6 +97,10 @@ for (const component of registry.components) {
   }
 }
 
+for (const variant of ['uswds', 'concept']) {
+  write(`demo/${variant}-landing.html`, landingHtml({variant, realAssets}));
+}
+
 const manifestPath = path.join(root, 'reports', 'latest', 'MANIFEST.json');
 const manifest = exists(manifestPath) ? readJson(manifestPath) : {generated: false, runId: null, pages: [], succeeded: 0, failed: 0};
 const buildInfo = {
@@ -187,6 +192,9 @@ const routes = [
   'compare.html',
   'guide.html',
   'preferences.html',
+  'demo.html',
+  'demo/uswds-landing.html',
+  'demo/concept-landing.html',
   ...registry.components.flatMap(component => ['baseline', 'experiment'].map(variant => `fixture/${component.slug}-${variant}.html`)),
   ...registry.components.map(component => `component/${component.slug}.html`),
   ...registry.experiments.map(experiment => `experiment/${experiment.id}.html`)

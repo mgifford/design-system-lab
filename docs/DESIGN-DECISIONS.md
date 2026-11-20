@@ -43,3 +43,7 @@ The lab may prepare a contribution package, but it never opens, comments on, or 
 ## Static hosting first
 
 The site is static HTML, CSS, and small modules. GitHub Pages is the deployment target; no database, server authentication, proprietary API, or cloud AI service is required.
+
+## The landing demo uses a labelled stand-in, not OGDS
+
+`demo.html` compares USWDS 3.14.0 with an original concept stylesheet applied to identical content. The concept pane is explicitly labelled “not OGDS” and is not evidence about OGDS. It exists to validate the comparison workflow while OGDS licensing and permission are unresolved. When the licensed OGDS hybrid is available, only the right renderer changes; the left remains USWDS 3.14.0 and the content stays shared.

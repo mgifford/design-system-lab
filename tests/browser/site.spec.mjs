@@ -281,3 +281,48 @@ test('community ideas search and status filters preserve upstream context', asyn
   await expect(page.locator('#ideas > .card:visible')).toHaveCount(1);
   await expect(page.locator('#ideas .card:visible')).toContainText('Reduced-motion transitions');
 });
+
+test('landing demo: same content, same interaction, different visual system', async ({page}) => {
+  await goto(page, 'demo.html');
+  await expect(page.locator('#demo-uswds')).toHaveCount(1);
+  await expect(page.locator('#demo-concept')).toHaveCount(1);
+  const left = page.frameLocator('#demo-uswds');
+  const right = page.frameLocator('#demo-concept');
+  await expect(left.locator('h1')).toHaveText('Get the support you need');
+  await expect(right.locator('h1')).toHaveText('Get the support you need');
+  expect(await right.locator('main').innerText()).toBe(await left.locator('main').innerText());
+
+  const leftHeader = await left.locator('.usa-header').evaluate(element => getComputedStyle(element).backgroundColor);
+  const rightHeader = await right.locator('.usa-header').evaluate(element => getComputedStyle(element).backgroundColor);
+  expect(rightHeader).not.toBe(leftHeader);
+
+  const leftSheets = await left.locator('html').evaluate(() => [...document.styleSheets].map(sheet => sheet.href).filter(Boolean));
+  const rightSheets = await right.locator('html').evaluate(() => [...document.styleSheets].map(sheet => sheet.href).filter(Boolean));
+  expect(leftSheets.some(href => href.includes('concept.css'))).toBe(false);
+  expect(rightSheets.some(href => href.includes('concept.css'))).toBe(true);
+  expect(rightSheets.some(href => href.includes('uswds.min.css'))).toBe(true);
+
+  const nav = await right.locator('.usa-nav__link').first().evaluate(element => ({
+    color: getComputedStyle(element).color,
+    background: getComputedStyle(element.closest('.usa-header')).backgroundColor
+  }));
+  expect(contrastRatio(nav.color, nav.background), 'concept nav contrast').toBeGreaterThanOrEqual(4.5);
+
+  const hero = await right.locator('.usa-hero__callout').evaluate(element => ({
+    color: getComputedStyle(element).color,
+    background: getComputedStyle(element).backgroundColor
+  }));
+  expect(contrastRatio(hero.color, hero.background), 'concept hero contrast').toBeGreaterThanOrEqual(4.5);
+});
+
+test('landing demo: disclosure is keyboard operable in both panes', async ({page}) => {
+  await goto(page, 'demo.html');
+  for (const id of ['demo-uswds', 'demo-concept']) {
+    const button = page.frameLocator(`#${id}`).getByRole('button', {name: 'How do I apply?'});
+    await button.focus();
+    await button.press('Enter');
+    await expect(button).toHaveAttribute('aria-expanded', 'true');
+    await button.press('Space');
+    await expect(button).toHaveAttribute('aria-expanded', 'false');
+  }
+});

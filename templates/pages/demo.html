@@ -1,0 +1,44 @@
+<p class="eyebrow">Landing-page comparison</p>
+<h1>One service page, two design-system treatments</h1>
+<p class="lead">Same content, same viewport, same interactions. The left pane is the pinned USWDS 3.14.0 distribution. The right pane is an illustrative concept standing in for the future OGDS hybrid.</p>
+
+<div class="callout warning">
+  <strong>The right pane is a concept stand-in, not OGDS Elements.</strong>
+  It exists to validate the comparison workflow and give stakeholders something concrete to review. The content and markup are identical; only the stylesheet changes. When OGDS permission and licensing are resolved, the right renderer is replaced by the licensed OGDS hybrid. This is an experimental contribution, not an endorsement.
+</div>
+
+<div class="demo-compare">
+  <div class="demo-pane">
+    <div class="pane-label"><span>USWDS 3.14.0</span><a href="demo/uswds-landing.html" target="_blank" rel="noopener">Open independently</a></div>
+    <iframe id="demo-uswds" title="Landing page using USWDS 3.14.0" src="demo/uswds-landing.html"></iframe>
+  </div>
+  <div class="demo-pane">
+    <div class="pane-label"><span>Concept stand-in — not OGDS</span><a href="demo/concept-landing.html" target="_blank" rel="noopener">Open independently</a></div>
+    <iframe id="demo-concept" title="Landing page using an illustrative concept treatment, not OGDS" src="demo/concept-landing.html"></iframe>
+  </div>
+</div>
+
+<p class="small">The iframes are independent documents. The comparison shell does not mirror keyboard input; open either page separately for keyboard and assistive-technology testing. At this side-by-side width the USWDS header collapses to a mobile menu; open independently to inspect the full-width header and search. The right pane is a visual stand-in only.</p>
+
+<section aria-labelledby="look-for">
+  <h2 class="section-title" id="look-for">What to compare</h2>
+  <ul class="clean">
+    <li>Header and primary navigation: weight, hierarchy, and search placement.</li>
+    <li>Banner prominence and the amount of vertical space it takes.</li>
+    <li>Hero treatment, heading typography, and the primary call to action.</li>
+    <li>Card shape, borders, and heading style.</li>
+    <li>Accordion controls and panel boundaries.</li>
+    <li>Alert emphasis and footer density.</li>
+  </ul>
+</section>
+
+<section aria-labelledby="not-claimed">
+  <h2 class="section-title" id="not-claimed">What is not being claimed</h2>
+  <p>The right pane is not OGDS Elements and does not predict its exact appearance. It is a controlled visual alternative built from the same content so a department can evaluate the comparison experience before the licensed OGDS integration exists.</p>
+  <p>Automated screenshots, axe results, and Guidepup transcripts support inspection. They are not a WCAG conformance statement or a design verdict.</p>
+</section>
+
+<section aria-labelledby="swap">
+  <h2 class="section-title" id="swap">How this becomes the OGDS comparison</h2>
+  <p>The left pane stays pinned to USWDS 3.14.0. The right pane is generated from the same content model and can be swapped to a licensed OGDS hybrid renderer without changing the comparison shell. Components with no OGDS equivalent remain USWDS and are labelled as unchanged.</p>
+</section>

@@ -210,7 +210,8 @@ export function buildStaticPages({root, registry, issues, buildInfo, manifest, l
     'guide.html': fill(template(root, 'guide'), {
       sourceLock: sourceLockBlock(lock)
     }),
-    'preferences.html': template(root, 'preferences')
+    'preferences.html': template(root, 'preferences'),
+    'demo.html': template(root, 'demo')
   };
 
   const current = {
@@ -221,7 +222,8 @@ export function buildStaticPages({root, registry, issues, buildInfo, manifest, l
     'evidence.html': 'evidence',
     'compare.html': 'components',
     'guide.html': 'methodology',
-    'preferences.html': 'experiments'
+    'preferences.html': 'experiments',
+    'demo.html': 'demo'
   };
   const titles = {
     'index.html': 'USWDS Futures Lab',
@@ -231,7 +233,8 @@ export function buildStaticPages({root, registry, issues, buildInfo, manifest, l
     'evidence.html': 'Evidence and coverage',
     'compare.html': 'Compare components',
     'guide.html': 'Methodology and governance',
-    'preferences.html': 'User preferences panel'
+    'preferences.html': 'User preferences panel',
+    'demo.html': 'Landing-page comparison'
   };
   const descriptions = {
     'index.html': 'Independent, evidence-first experiments for USWDS components and community ideas.',
@@ -241,7 +244,8 @@ export function buildStaticPages({root, registry, issues, buildInfo, manifest, l
     'evidence.html': 'Automated observations, coverage gaps, and links to human-readable evidence.',
     'compare.html': 'Compare a pinned USWDS baseline with a labelled experimental proposal.',
     'guide.html': 'Methodology, provenance, governance, and limitations for the USWDS Futures Lab.',
-    'preferences.html': 'A proposed user preferences panel for appearance, text size, contrast, and motion.'
+    'preferences.html': 'A proposed user preferences panel for appearance, text size, contrast, and motion.',
+    'demo.html': 'A full landing-page comparison of USWDS 3.14.0 with an illustrative concept stand-in for OGDS.'
   };
   const scripts = {
     'components.html': [{src: 'assets/filters.js', type: 'module'}],

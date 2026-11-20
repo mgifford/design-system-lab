@@ -83,6 +83,36 @@
     ]
   },
   {
+    "route": "demo.html",
+    "goal": "Review demo.html for scope, evidence status, and navigation integrity",
+    "steps": [
+      "Capture the accessibility snapshot and heading outline",
+      "Use the primary navigation to reach the page and confirm the current-page state",
+      "Check that baseline and experiment claims are distinguishable",
+      "Record broken links, missing status text, or unsupported claims"
+    ]
+  },
+  {
+    "route": "demo/uswds-landing.html",
+    "goal": "Review demo/uswds-landing.html for scope, evidence status, and navigation integrity",
+    "steps": [
+      "Capture the accessibility snapshot and heading outline",
+      "Use the primary navigation to reach the page and confirm the current-page state",
+      "Check that baseline and experiment claims are distinguishable",
+      "Record broken links, missing status text, or unsupported claims"
+    ]
+  },
+  {
+    "route": "demo/concept-landing.html",
+    "goal": "Review demo/concept-landing.html for scope, evidence status, and navigation integrity",
+    "steps": [
+      "Capture the accessibility snapshot and heading outline",
+      "Use the primary navigation to reach the page and confirm the current-page state",
+      "Check that baseline and experiment claims are distinguishable",
+      "Record broken links, missing status text, or unsupported claims"
+    ]
+  },
+  {
     "route": "fixture/accordion-baseline.html",
     "goal": "Test baseline disclosure with real user input",
     "steps": [
