@@ -24,4 +24,4 @@
 
 ## Human review
 
-A human reviewer must confirm the test does not overstate Voice Control support and must record the browser-specific focus result. Complete [DECISION.md](DECISION.md).
+A human reviewer must confirm the test does not overstate Voice Control support and must record the browser-specific focus result. Record the decision and any conditions in [the central decision log](https://github.com/mgifford/design-system-lab/blob/main/docs/EXPERIMENT-DECISIONS.md).

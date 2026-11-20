@@ -100,6 +100,8 @@ Selected physical alert borders are replaced with `border-inline-start`; accordi
 
 A required radio group with native constraint validation, no redundant `aria-required` or custom radiogroup role, and a recorded focus result after an invalid submit. Voice Control and real screen-reader testing remain outstanding.
 
+Human decisions are recorded in one table, [`docs/EXPERIMENT-DECISIONS.md`](docs/EXPERIMENT-DECISIONS.md), not in a form per experiment. Dark mode is recorded as accepted as a lab experiment; the other three are undecided. Acceptance does not mean upstream adoption or assistive-technology validation.
+
 ## Evidence pipeline
 
 `npm run evidence`:
@@ -129,7 +131,7 @@ CI uses `npm ci` with the committed lockfile. The workflow has not been executed
 ### Local verification
 
 - `npm run test:unit` — 14 passing.
-- `npm run build:strict` — 27 lab routes, 30 documentation pages, 10 fixtures.
+- `npm run build:strict` — 27 lab routes, 27 documentation pages, 10 fixtures.
 - `LAB_BROWSER_CHANNEL=chrome npx playwright test --project=chromium` — **60 passing**.
 - `npm run evidence` (Chrome channel) — **27/27 routes, 72 state transcripts, 0 failed**.
 - `npm run validate` — 5 components, 4 experiments, 14 issues, 5 scenarios, 27 routes, 27 MCP scenarios, evidence run complete.
@@ -140,7 +142,7 @@ WebKit ran locally: **59 passing, 1 skipped** (the axe scan is Chromium-only by 
 
 ```text
 data/                 registry, issue catalogue, review metadata, source lock
-experiments/          experiment docs (README, IMPLEMENTATION, TEST-PLAN, DECISION)
+experiments/          experiment docs (README, IMPLEMENTATION, TEST-PLAN)
 docs/                 architecture, testing, evidence, design decisions, guides
 scripts/              build, evidence, validation, sources, scaffold, MCP sync
 site/assets/          shell CSS, experiment CSS, fixture CSS/JS, preferences

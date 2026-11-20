@@ -51,7 +51,7 @@ The CI workflow runs unit tests, a strict build, browser tests, evidence collect
 
 ## AI assistance
 
-Disclose meaningful AI assistance in `data/registry.json` (`aiAssistance`) and in the experiment’s `DECISION.md`. A human contributor remains responsible for correctness, licenses, accessibility claims, and review.
+Disclose meaningful AI assistance in `data/registry.json` (`aiAssistance`) and in the central decision row in `docs/EXPERIMENT-DECISIONS.md`. A human contributor remains responsible for correctness, licenses, accessibility claims, and review.
 
 ## Reporting problems
 

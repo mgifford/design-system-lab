@@ -25,14 +25,14 @@ npm run validate
 ```
 
 9. Replace the draft language in the experiment documents with what was actually tested. Link the generated reports.
-10. Ask a human reviewer to complete `DECISION.md`. AI-generated material cannot mark itself approved.
+10. Add one row to `docs/EXPERIMENT-DECISIONS.md` when a human is ready to decide. AI-generated material cannot mark itself approved.
 
 ## Required files
 
 - `README.md` — why it exists, baseline, proposal, scope, evidence status, limitations.
 - `IMPLEMENTATION.md` — markup, CSS/JS, accessibility behavior, keyboard, preferences, known gaps.
 - `TEST-PLAN.md` — deterministic checks, states, browsers, evidence to collect.
-- `DECISION.md` — pending human decision with a reviewer checklist.
+- A row in `docs/EXPERIMENT-DECISIONS.md` — decision, date, reviewer, one-sentence rationale, conditions, and upstream authorization. Do not create a per-experiment decision form.
 
 The registry entry must include the id, title, category, status, summary, components, related issues, scenarios, demo route, document paths, review status, and AI-assistance disclosure.
 

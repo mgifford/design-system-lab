@@ -102,7 +102,11 @@
       "reference": "https://designsystem.digital.gov/components/accordion/",
       "accessibility": "https://designsystem.digital.gov/components/accordion/accessibility-tests/",
       "experiment": "Theme-aware disclosure controls",
-      "issues": [4577, 5817, 5861]
+      "issues": [
+        4577,
+        5817,
+        5861
+      ]
     },
     {
       "slug": "alert",
@@ -151,7 +155,10 @@
       "reference": "https://designsystem.digital.gov/components/alert/",
       "accessibility": "https://designsystem.digital.gov/components/alert/accessibility-tests/",
       "experiment": "Dark-mode semantic alerts",
-      "issues": [5069, 4407]
+      "issues": [
+        5069,
+        4407
+      ]
     },
     {
       "slug": "banner",
@@ -198,7 +205,10 @@
       "reference": "https://designsystem.digital.gov/components/banner/",
       "accessibility": "https://designsystem.digital.gov/components/banner/accessibility-tests/",
       "experiment": "Theme-aware banner and logical layout",
-      "issues": [5336, 6030]
+      "issues": [
+        5336,
+        6030
+      ]
     },
     {
       "slug": "form",
@@ -248,7 +258,10 @@
       "reference": "https://designsystem.digital.gov/components/form/",
       "accessibility": "https://designsystem.digital.gov/components/radio-buttons/accessibility-tests/",
       "experiment": "Native validation and theme-safe focus",
-      "issues": [6068, 6080]
+      "issues": [
+        6068,
+        6080
+      ]
     },
     {
       "slug": "radio-validation",
@@ -297,7 +310,10 @@
       "reference": "https://designsystem.digital.gov/components/radio-buttons/",
       "accessibility": "https://designsystem.digital.gov/components/radio-buttons/accessibility-tests/",
       "experiment": "Native radio validation",
-      "issues": [6068, 6080]
+      "issues": [
+        6068,
+        6080
+      ]
     }
   ],
   "experiments": [
@@ -307,23 +323,62 @@
       "type": "cross-component-capability",
       "status": "prototype",
       "summary": "A semantic token layer that lets USWDS components respond to system appearance and an explicit user override without replacing upstream components.",
-      "components": ["accordion", "alert", "banner", "form"],
-      "relatedIssues": [
-        {"repository": "uswds/uswds", "number": 5069, "relationship": "motivation"},
-        {"repository": "uswds/uswds", "number": 4644, "relationship": "technical-dependency"},
-        {"repository": "uswds/uswds", "number": 4577, "relationship": "component-decision"},
-        {"repository": "uswds/uswds", "number": 4407, "relationship": "separate-requirement"}
+      "components": [
+        "accordion",
+        "alert",
+        "banner",
+        "form"
       ],
-      "scenarios": ["initial-light", "initial-dark", "system-preference", "explicit-override", "forced-colors", "no-javascript"],
+      "relatedIssues": [
+        {
+          "repository": "uswds/uswds",
+          "number": 5069,
+          "relationship": "motivation"
+        },
+        {
+          "repository": "uswds/uswds",
+          "number": 4644,
+          "relationship": "technical-dependency"
+        },
+        {
+          "repository": "uswds/uswds",
+          "number": 4577,
+          "relationship": "component-decision"
+        },
+        {
+          "repository": "uswds/uswds",
+          "number": 4407,
+          "relationship": "separate-requirement"
+        }
+      ],
+      "scenarios": [
+        "initial-light",
+        "initial-dark",
+        "system-preference",
+        "explicit-override",
+        "forced-colors",
+        "no-javascript"
+      ],
       "demo": "compare.html?component=accordion&theme=dark",
       "docs": {
         "readme": "experiments/dark-mode/README.md",
         "implementation": "experiments/dark-mode/IMPLEMENTATION.md",
         "testPlan": "experiments/dark-mode/TEST-PLAN.md",
-        "decision": "experiments/dark-mode/DECISION.md"
+        "decision": "docs/EXPERIMENT-DECISIONS.md"
       },
-      "review": {"status": "pending", "reviewer": null, "decision": null, "record": "experiments/dark-mode/DECISION.md"},
-      "aiAssistance": ["issue research", "initial implementation", "test scaffolding", "documentation drafting"]
+      "review": {
+        "status": "accepted",
+        "reviewer": "Mike Gifford",
+        "reviewedAt": "2026-11-20",
+        "decision": "Accepted as a lab experiment; upstream not authorized.",
+        "record": "docs/EXPERIMENT-DECISIONS.md"
+      },
+      "aiAssistance": [
+        "issue research",
+        "initial implementation",
+        "test scaffolding",
+        "documentation drafting"
+      ]
     },
     {
       "id": "preferences-panel",
@@ -333,19 +388,46 @@
       "summary": "A proposed component that gives people a consistent way to choose appearance, text size, contrast, and motion without a third-party overlay.",
       "components": [],
       "relatedIssues": [
-        {"repository": "uswds/uswds", "number": 5069, "relationship": "motivation"},
-        {"repository": "uswds/uswds", "number": 4407, "relationship": "adjacent-requirement"}
+        {
+          "repository": "uswds/uswds",
+          "number": 5069,
+          "relationship": "motivation"
+        },
+        {
+          "repository": "uswds/uswds",
+          "number": 4407,
+          "relationship": "adjacent-requirement"
+        }
       ],
-      "scenarios": ["defaults", "explicit-appearance", "text-size", "contrast", "reduced-motion", "reset", "no-javascript"],
+      "scenarios": [
+        "defaults",
+        "explicit-appearance",
+        "text-size",
+        "contrast",
+        "reduced-motion",
+        "reset",
+        "no-javascript"
+      ],
       "demo": "preferences.html",
       "docs": {
         "readme": "experiments/preferences-panel/README.md",
         "implementation": "experiments/preferences-panel/IMPLEMENTATION.md",
         "testPlan": "experiments/preferences-panel/TEST-PLAN.md",
-        "decision": "experiments/preferences-panel/DECISION.md"
+        "decision": "docs/EXPERIMENT-DECISIONS.md"
       },
-      "review": {"status": "pending", "reviewer": null, "decision": null, "record": "experiments/preferences-panel/DECISION.md"},
-      "aiAssistance": ["issue research", "initial implementation", "test scaffolding", "documentation drafting"]
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "reviewedAt": null,
+        "decision": null,
+        "record": "docs/EXPERIMENT-DECISIONS.md"
+      },
+      "aiAssistance": [
+        "issue research",
+        "initial implementation",
+        "test scaffolding",
+        "documentation drafting"
+      ]
     },
     {
       "id": "rtl-logical-properties",
@@ -353,21 +435,49 @@
       "type": "alternative-implementation",
       "status": "prototype",
       "summary": "Replace selected physical left/right styles in the banner and alert with logical properties so right-to-left layouts do not depend on mirrored overrides.",
-      "components": ["banner", "alert"],
-      "relatedIssues": [
-        {"repository": "uswds/uswds", "number": 5336, "relationship": "motivation"},
-        {"repository": "uswds/uswds", "number": 6030, "relationship": "consolidated-prototype"}
+      "components": [
+        "banner",
+        "alert"
       ],
-      "scenarios": ["ltr", "rtl", "mixed-direction", "narrow-viewport", "keyboard"],
+      "relatedIssues": [
+        {
+          "repository": "uswds/uswds",
+          "number": 5336,
+          "relationship": "motivation"
+        },
+        {
+          "repository": "uswds/uswds",
+          "number": 6030,
+          "relationship": "consolidated-prototype"
+        }
+      ],
+      "scenarios": [
+        "ltr",
+        "rtl",
+        "mixed-direction",
+        "narrow-viewport",
+        "keyboard"
+      ],
       "demo": "compare.html?component=banner&direction=rtl",
       "docs": {
         "readme": "experiments/rtl-logical-properties/README.md",
         "implementation": "experiments/rtl-logical-properties/IMPLEMENTATION.md",
         "testPlan": "experiments/rtl-logical-properties/TEST-PLAN.md",
-        "decision": "experiments/rtl-logical-properties/DECISION.md"
+        "decision": "docs/EXPERIMENT-DECISIONS.md"
       },
-      "review": {"status": "pending", "reviewer": null, "decision": null, "record": "experiments/rtl-logical-properties/DECISION.md"},
-      "aiAssistance": ["issue research", "initial CSS", "test scaffolding", "documentation drafting"]
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "reviewedAt": null,
+        "decision": null,
+        "record": "docs/EXPERIMENT-DECISIONS.md"
+      },
+      "aiAssistance": [
+        "issue research",
+        "initial CSS",
+        "test scaffolding",
+        "documentation drafting"
+      ]
     },
     {
       "id": "radio-validation",
@@ -375,21 +485,49 @@
       "type": "alternative-implementation",
       "status": "prototype",
       "summary": "A focused reproduction of required radio-group submission, native constraint validation, and browser focus placement.",
-      "components": ["radio-validation", "form"],
-      "relatedIssues": [
-        {"repository": "uswds/uswds", "number": 6068, "relationship": "motivation"},
-        {"repository": "uswds/uswds", "number": 6080, "relationship": "historical-consolidation"}
+      "components": [
+        "radio-validation",
+        "form"
       ],
-      "scenarios": ["invalid-submit", "focus-placement", "valid-submit", "keyboard", "dark-mode"],
+      "relatedIssues": [
+        {
+          "repository": "uswds/uswds",
+          "number": 6068,
+          "relationship": "motivation"
+        },
+        {
+          "repository": "uswds/uswds",
+          "number": 6080,
+          "relationship": "historical-consolidation"
+        }
+      ],
+      "scenarios": [
+        "invalid-submit",
+        "focus-placement",
+        "valid-submit",
+        "keyboard",
+        "dark-mode"
+      ],
       "demo": "compare.html?component=radio-validation",
       "docs": {
         "readme": "experiments/radio-validation/README.md",
         "implementation": "experiments/radio-validation/IMPLEMENTATION.md",
         "testPlan": "experiments/radio-validation/TEST-PLAN.md",
-        "decision": "experiments/radio-validation/DECISION.md"
+        "decision": "docs/EXPERIMENT-DECISIONS.md"
       },
-      "review": {"status": "pending", "reviewer": null, "decision": null, "record": "experiments/radio-validation/DECISION.md"},
-      "aiAssistance": ["issue research", "initial implementation", "test scaffolding", "documentation drafting"]
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "reviewedAt": null,
+        "decision": null,
+        "record": "docs/EXPERIMENT-DECISIONS.md"
+      },
+      "aiAssistance": [
+        "issue research",
+        "initial implementation",
+        "test scaffolding",
+        "documentation drafting"
+      ]
     }
   ],
   "scenarios": [
