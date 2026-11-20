@@ -1,0 +1,22 @@
+<p class="eyebrow">Human-readable validation</p>
+<h1>Evidence and coverage</h1>
+<p class="lead">Every published lab route has a deterministic browser test and a Guidepup virtual transcript when collection runs. Missing output is shown as a coverage gap. Automated observations are not human review and do not establish WCAG conformance.</p>
+
+{{evidenceSummary}}
+
+<section aria-labelledby="interpret">
+  <h2 class="section-title" id="interpret">How to interpret this evidence</h2>
+  <p>Playwright tests check defined assertions. A pass is not a WCAG conformance claim. Guidepup uses a virtual screen reader over a DOM snapshot; it does not reproduce actual VoiceOver, NVDA, or JAWS operation. Axe records computable rule violations but cannot judge whether content, names, or interactions are meaningful. Human review is a separate status, never inferred from automated output.</p>
+  <p>Read <a href="docs/EVIDENCE.html">the evidence method</a>, <a href="docs/TESTING.html">the test plan</a>, and <a href="docs/ACCESSIBILITY.html">the accessibility commitment</a>.</p>
+</section>
+
+<section aria-labelledby="not-tested">
+  <h2 class="section-title" id="not-tested">What is not tested</h2>
+  <ul class="clean">
+    <li>Real NVDA, JAWS, VoiceOver, or TalkBack sessions.</li>
+    <li>Voice Control or speech-input operation of the radio and form fixtures.</li>
+    <li>Windows High Contrast Mode on a real Windows device; forced-colors emulation is a browser approximation.</li>
+    <li>Every browser/OS/zoom/text-spacing combination.</li>
+    <li>Adoption, maintenance cost, or upstream compatibility beyond the recorded release.</li>
+  </ul>
+</section>

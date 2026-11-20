@@ -1,19 +1,40 @@
 /* MIT-licensed experiment. These are illustrative additions, NOT an upstream USWDS release.
- * Semantic theme layer, intentionally small; incomplete coverage is an evidence gap. */
-:root{--fx-canvas:#fff;--fx-surface:#f1f3f5;--fx-text:#1b1b1b;--fx-muted:#4f5965;--fx-border:#77808b;--fx-link:#005ea2;--fx-focus:#ffbe2e;--fx-info-bg:#e7f6f8;--fx-info-edge:#005ea2;--fx-warn-bg:#faf3d1;--fx-warn-edge:#936f38;--fx-error-bg:#f8e1de;--fx-error-edge:#b50909;--fx-btn-bg:#005ea2;--fx-btn-text:#fff;color-scheme:light}
-:root[data-mode=dark]{--fx-canvas:#151c28;--fx-surface:#273448;--fx-text:#f5f6f9;--fx-muted:#dae1eb;--fx-border:#aab7c8;--fx-link:#86c9fa;--fx-focus:#f7c65d;--fx-info-bg:#1d3a48;--fx-info-edge:#73d7ee;--fx-warn-bg:#44391d;--fx-warn-edge:#f4cb58;--fx-error-bg:#4d292e;--fx-error-edge:#fd9997;--fx-btn-bg:#a5d5ff;--fx-btn-text:#0b2741;color-scheme:dark}
-@media(prefers-color-scheme:dark){:root[data-mode=system]{--fx-canvas:#151c28;--fx-surface:#273448;--fx-text:#f5f6f9;--fx-muted:#dae1eb;--fx-border:#aab7c8;--fx-link:#86c9fa;--fx-focus:#f7c65d;--fx-info-bg:#1d3a48;--fx-info-edge:#73d7ee;--fx-warn-bg:#44391d;--fx-warn-edge:#f4cb58;--fx-error-bg:#4d292e;--fx-error-edge:#fd9997;--fx-btn-bg:#a5d5ff;--fx-btn-text:#0b2741;color-scheme:dark}}
+ * Semantic theme layer, intentionally small; incomplete coverage is an evidence gap.
+ * Focus token: #005ea2 on light surfaces (6.2:1+), #ffbe2e on dark (10.7:1).
+ */
+:root{--fx-canvas:#fff;--fx-surface:#f1f3f5;--fx-text:#1b1b1b;--fx-muted:#4f5965;--fx-border:#77808b;--fx-link:#005ea2;--fx-focus:#005ea2;--fx-info-bg:#e7f6f8;--fx-info-edge:#005ea2;--fx-warn-bg:#faf3d1;--fx-warn-edge:#936f38;--fx-error-bg:#f8e1de;--fx-error-edge:#b50909;--fx-btn-bg:#005ea2;--fx-btn-text:#fff;color-scheme:light}
+:root[data-mode=dark]{--fx-canvas:#151c28;--fx-surface:#273448;--fx-text:#f5f6f9;--fx-muted:#dae1eb;--fx-border:#aab7c8;--fx-link:#86c9fa;--fx-focus:#ffbe2e;--fx-info-bg:#1d3a48;--fx-info-edge:#73d7ee;--fx-warn-bg:#44391d;--fx-warn-edge:#f4cb58;--fx-error-bg:#4d292e;--fx-error-edge:#fd9997;--fx-btn-bg:#a5d5ff;--fx-btn-text:#0b2741;color-scheme:dark}
+@media(prefers-color-scheme:dark){:root[data-mode=system]{--fx-canvas:#151c28;--fx-surface:#273448;--fx-text:#f5f6f9;--fx-muted:#dae1eb;--fx-border:#aab7c8;--fx-link:#86c9fa;--fx-focus:#ffbe2e;--fx-info-bg:#1d3a48;--fx-info-edge:#73d7ee;--fx-warn-bg:#44391d;--fx-warn-edge:#f4cb58;--fx-error-bg:#4d292e;--fx-error-edge:#fd9997;--fx-btn-bg:#a5d5ff;--fx-btn-text:#0b2741;color-scheme:dark}}
+
 :root[data-mode=dark] body,:root[data-mode=system] body{background:var(--fx-canvas);color:var(--fx-text)}
 :root[data-mode=dark] a,:root[data-mode=system] a{color:var(--fx-link)}
 :root[data-mode=dark] .fixture-label,:root[data-mode=dark] .fixture-note,:root[data-mode=system] .fixture-label,:root[data-mode=system] .fixture-note{color:var(--fx-muted);border-color:var(--fx-border)}
-.usa-accordion__button,.usa-banner__button{background:var(--fx-surface)!important;color:var(--fx-text)!important;border:1px solid var(--fx-border)!important}
+.usa-accordion__button,.usa-banner__button{background:var(--fx-surface)!important;color:var(--fx-text)!important;border:1px solid var(--fx-border)!important;text-align:start}
 .usa-accordion__content,.usa-banner__content{background:var(--fx-canvas);color:var(--fx-text);border:1px solid var(--fx-border)}
 .usa-banner,.usa-banner__header{background:var(--fx-surface)!important;color:var(--fx-text)!important}
-.usa-alert{background:var(--fx-info-bg)!important;border-color:var(--fx-info-edge)!important;color:var(--fx-text)!important}
-.usa-alert--warning{background:var(--fx-warn-bg)!important;border-color:var(--fx-warn-edge)!important}.usa-alert--error{background:var(--fx-error-bg)!important;border-color:var(--fx-error-edge)!important}
+.usa-banner__header-text,.usa-banner__header-action{text-align:start}
+.usa-alert{background:var(--fx-info-bg)!important;border-left:0!important;border-right:0!important;border-inline-start:8px solid var(--fx-info-edge)!important;color:var(--fx-text)!important;text-align:start}
+.usa-alert--warning{background:var(--fx-warn-bg)!important;border-inline-start-color:var(--fx-warn-edge)!important}
+.usa-alert--error{background:var(--fx-error-bg)!important;border-inline-start-color:var(--fx-error-edge)!important}
 .usa-alert__heading,.usa-alert__text,.usa-legend,.usa-label{color:var(--fx-text)!important}
 .usa-button{background:var(--fx-btn-bg)!important;color:var(--fx-btn-text)!important;border-color:var(--fx-btn-bg)!important}
 .usa-input,.usa-textarea{background:var(--fx-canvas);color:var(--fx-text);border-color:var(--fx-border)}
 .usa-accordion__button:focus-visible,.usa-banner__button:focus-visible,.usa-button:focus-visible,.usa-input:focus-visible,.usa-radio__input:focus-visible+label{outline:3px solid var(--fx-focus)!important;outline-offset:3px!important}
-@media(forced-colors:active){.usa-accordion__button,.usa-banner__button,.usa-button{forced-color-adjust:auto!important;border:2px solid ButtonText!important}.usa-accordion__button:focus-visible,.usa-button:focus-visible{outline:3px solid Highlight!important}}
+
+/* Upstream paints .usa-radio and .usa-checkbox surfaces white. Keep the
+ * container consistent with the theme and move the label color with it.
+ * Without both rules the dark theme shows a white slab or dark-on-dark text. */
+:root[data-mode=dark] .usa-radio,:root[data-mode=dark] .usa-checkbox{background:var(--fx-canvas)}
+:root[data-mode=dark] .usa-radio__label,:root[data-mode=dark] .usa-checkbox__label{color:var(--fx-text)}
+:root[data-mode=dark] .usa-banner__header-action{color:var(--fx-link)}
+@media(prefers-color-scheme:dark){
+  :root[data-mode=system] .usa-radio,:root[data-mode=system] .usa-checkbox{background:var(--fx-canvas)}
+  :root[data-mode=system] .usa-radio__label,:root[data-mode=system] .usa-checkbox__label{color:var(--fx-text)}
+  :root[data-mode=system] .usa-banner__header-action{color:var(--fx-link)}
+}
+@media(forced-colors:active){
+  .usa-accordion__button,.usa-banner__button,.usa-button{forced-color-adjust:auto!important;border:2px solid ButtonText!important}
+  .usa-accordion__button:focus-visible,.usa-banner__button:focus-visible,.usa-button:focus-visible{outline:3px solid Highlight!important}
+  .usa-alert{border-inline-start:8px solid CanvasText!important}
+}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}

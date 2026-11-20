@@ -1,32 +1,50 @@
 # Pilot roadmap
 
-## P0: Validate the delivered starter
+## Completed in this pass
 
-- [ ] Run `npm install` locally and commit the generated `package-lock.json`; switch CI to `npm ci`.
-- [ ] Inspect real `@uswds/uswds@3.14.0` assets and verify all baseline fixtures match official implementation guidance.
-- [ ] Run Chromium tests, Guidepup evidence collector and inspect every report.
-- [ ] Run Firefox and WebKit tests, record coverage gaps, and confirm native validation behavior.
-- [ ] Confirm correct independent deployment under the final GitHub Pages repository subpath.
+- [x] Generate and commit `package-lock.json`; use `npm ci`.
+- [x] Record immutable source provenance (release, commit, package-lock hash, asset hashes).
+- [x] Add a validator that checks the registry, source lock, docs, routes, MCP scenarios, and evidence.
+- [x] Replace the limited fixture registry with a component + experiment registry and lifecycle statuses.
+- [x] Generate component and experiment pages from the registry, with shared navigation and layout.
+- [x] Fix the evidence collector: missing `CSS` global, stale manifests, transcript wrap-around, stale keyboard locators, and missing state coverage.
+- [x] Publish only the current evidence run; preserve historical runs.
+- [x] Add state-specific Guidepup transcripts, screenshots, and axe observations.
+- [x] Add dark-mode contrast tests that measure the rendered focus ring and radio surface.
+- [x] Add the user preferences panel with native controls, persistence, reset, and no-JavaScript fallback.
+- [x] Add RTL logical-property and native radio-validation prototypes.
+- [x] Add GitHub Pages and pull-request workflows with artifact upload and no PR deployment.
+- [x] Add contributor, architecture, testing, evidence, and design-decision documentation.
+- [x] Add `experiment:new`, `sources:*`, and `mcp:*` scripts.
 
-## P1: Complete a defensible dark mode pilot
+## P0: verify in CI and real environments
 
-- [ ] Review all semantic token roles, including text, links, icons, borders, backgrounds, warnings, forms and focus.
-- [ ] Implement component-specific expected contrast checks and documented manual reviews.
-- [ ] Add `prefers-contrast`, color scheme persistence, high zoom and RTL journey scenarios without overriding OS forced colors.
-- [ ] Document how selected techniques could be proposed upstream without requiring a whole Sass redesign.
-- [ ] Record unchanged behavior for the existing light theme and reduced-motion support.
+- [ ] Run the GitHub Actions workflows on a real runner and confirm Pages deployment under the final repository subpath.
+- [x] Run Playwright in WebKit locally (59 passing, 1 axe skip).
+- [ ] Run Playwright in Firefox; the authoring sandbox could not create a Firefox profile. Record the result separately from Chromium.
+- [ ] Perform a real NVDA/VoiceOver session for the four experiments and the radio group.
+- [ ] Perform a Voice Control / speech-input session for the radio-validation and form fixtures.
+- [ ] Test Windows High Contrast Mode on a real Windows device.
+- [ ] Test 400% zoom, 200% text, and text-spacing overrides.
 
-## P2: Add interoperable adapters
+## P1: strengthen the dark-mode and preferences work
 
-- [ ] Verify OGDS Elements licensing and select an immutable package version; build isolated test frames from real package code, never a lookalike.
+- [ ] Extend semantic tokens to header, footer, navigation, cards, tables, and the upstream alert icon.
+- [ ] Replace remaining `!important` overrides where upstream specificity allows.
+- [ ] Add a visual-difference mode with normalized screenshot comparison, or document why onion overlay is sufficient.
+- [ ] Measure CSS/JS size and initialization flash; separate observation from energy claims.
+- [ ] Review the preferences panel’s storage contract and cross-tab behavior.
+
+## P2: deepen the community experiments
+
+- [ ] Add a native-language review of the RTL sample and longer mixed-direction content.
+- [ ] Record Chromium/Firefox radio focus differences and investigate upstream positioning.
+- [ ] Evaluate responsive tables (#4143) and multiselect combobox (#4863) as future experiments.
+- [ ] Add a read-only issue importer with provenance and human curation; do not auto-rank by reactions.
+
+## P3: interoperable adapters and upstream proposals
+
+- [ ] Verify OGDS Elements licensing and select an immutable package version before any adapter.
 - [ ] Add USWDS Elements only when stable enough to reproduce and license-reviewed.
-- [ ] Compare like-for-like *capabilities*, not assumed identical component markup.
-- [ ] Preserve source versions, compatibility notes and missing components.
-
-## P3: Sustainable community issue workflow
-
-- [ ] Add a read-only GitHub issue/discussion importer with provenance and explicit human curation.
-- [ ] Import issue comments and linked PR evidence, preserving why something was closed or consolidated.
-- [ ] Add reviewer decisions, screenshots and before/after accessibility-tree differences.
-- [ ] Evaluate selected RTL, native form validation, accordion loading and contrast false-positive proposals.
-- [ ] Generate upstream-ready PR drafts only after the pilot has reproducible, reviewed evidence.
+- [ ] Generate upstream-ready contribution drafts only after human-reviewed evidence exists.
+- [ ] Never open, comment on, or submit upstream without explicit maintainer authorization.

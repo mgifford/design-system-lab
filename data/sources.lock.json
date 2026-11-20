@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-11-20",
+  "baseline": {
+    "project": "USWDS",
+    "repository": "https://github.com/uswds/uswds",
+    "release": "v3.14.0",
+    "package": "@uswds/uswds",
+    "version": "3.14.0",
+    "commit": "92391c3b1bf536d15fe85846c16c2c0937049b16",
+    "releaseDate": "2026-08-18T20:08:42Z",
+    "packageLock": {
+      "path": "package-lock.json",
+      "sha256": "5d2a19124eb150a809118c2daca15806b1d565f83ecb8d863b0f616d01ff42b6"
+    },
+    "assets": {
+      "css": {
+        "path": "dist/css/uswds.min.css",
+        "sha256": "8cd2afd3302314b66885312b6045f724365242c85bf055a38e03a909a6463e58"
+      },
+      "js": {
+        "path": "dist/js/uswds.min.js",
+        "sha256": "0212309fde335c4aa8f037f5368ddc0cf68705c4d26e62f1349d7b86ce8b271b"
+      }
+    }
+  },
+  "experiments": [
+    {"id": "dark-mode", "path": "experiments/dark-mode", "revision": null},
+    {"id": "preferences-panel", "path": "experiments/preferences-panel", "revision": null},
+    {"id": "rtl-logical-properties", "path": "experiments/rtl-logical-properties", "revision": null},
+    {"id": "radio-validation", "path": "experiments/radio-validation", "revision": null}
+  ]
+}

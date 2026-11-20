@@ -1,0 +1,22 @@
+# Dependencies and build output
+node_modules/
+dist/
+
+# Generated evidence (published from the build; history is uploaded as CI artifacts)
+reports/latest/
+reports/runs/
+reports/experiments/*/runs/
+
+# Test output
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+.playwright-browsers/
+
+# Local noise
+.DS_Store
+*.log
+.env
+.env.*
+.tmp/

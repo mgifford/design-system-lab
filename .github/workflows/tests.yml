@@ -1,0 +1,51 @@
+name: Tests
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Unit tests, strict build, registry validation
+        run: npm run check
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Browser tests (Chromium)
+        run: npm run test:browser:chromium
+      - name: Collect evidence
+        run: npm run evidence
+      - name: Rebuild with evidence
+        run: npm run build:strict
+      - name: MCP scenario coverage
+        run: node scripts/sync-mcp.mjs --check
+      - name: Validate routes, sources, docs, and evidence
+        run: npm run validate
+      - name: Check internal links
+        run: npm run links:check
+      - name: Upload test and evidence artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-evidence-${{ github.run_id }}
+          if-no-files-found: warn
+          path: |
+            reports/latest
+            reports/runs
+            playwright-report
+            test-results

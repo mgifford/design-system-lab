@@ -1,0 +1,29 @@
+<p class="eyebrow">Stable baseline and proposals</p>
+<h1>Components under study</h1>
+<p class="lead">Each component page separates the released USWDS baseline, the lab fixture, and any experimental proposal. Filtering is a convenience; every component remains readable without JavaScript.</p>
+
+<form class="controls" id="component-filters" aria-label="Filter components">
+  <div class="field">
+    <label for="component-group">Category</label>
+    <select id="component-group" name="group">
+      <option value="all">All categories</option>
+      {{groupOptions}}
+    </select>
+  </div>
+  <div class="field">
+    <label for="component-experiments">Experiment availability</label>
+    <select id="component-experiments" name="experiments">
+      <option value="all">All components</option>
+      <option value="yes">Has a lab experiment</option>
+      <option value="no">Baseline only</option>
+    </select>
+  </div>
+</form>
+
+<p class="small" id="component-count" aria-live="polite">{{count}} components</p>
+<div id="component-list" class="cards">{{cards}}</div>
+
+<section aria-labelledby="component-note">
+  <h2 class="section-title" id="component-note">What “baseline” means here</h2>
+  <p>The baseline is the pinned npm distribution plus authored fixture markup and a small fixture stylesheet. It is not a byte-for-byte copy of every official example. The experimental pane is a separate MIT-licensed layer over the same fixture. See <a href="guide.html">methodology</a> for provenance and limitations.</p>
+</section>

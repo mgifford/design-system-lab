@@ -1,0 +1,72 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Unit tests, strict build, registry validation
+        run: npm run check
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Browser tests (Chromium)
+        run: npm run test:browser:chromium
+      - name: Collect evidence
+        run: npm run evidence
+      - name: Rebuild with evidence
+        run: npm run build:strict
+      - name: MCP scenario coverage
+        run: node scripts/sync-mcp.mjs --check
+      - name: Validate routes, sources, docs, and evidence
+        run: npm run validate
+      - name: Check internal links
+        run: npm run links:check
+      - name: Upload evidence artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pages-evidence-${{ github.run_id }}
+          if-no-files-found: warn
+          path: |
+            reports/latest
+            reports/runs
+            playwright-report
+            test-results
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: verify
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,6 +1,13 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "project": "USWDS Futures Lab",
+  "baseline": {
+    "source": "uswds",
+    "release": "v3.14.0",
+    "package": "@uswds/uswds",
+    "version": "3.14.0",
+    "lock": "data/sources.lock.json"
+  },
   "sources": {
     "uswds": {
       "name": "USWDS",
@@ -23,59 +30,366 @@
       "licensingReviewRequired": true
     }
   },
+  "experimentTypes": {
+    "component-improvement": "Component improvement",
+    "new-component": "New component",
+    "cross-component-capability": "Cross-component capability",
+    "alternative-implementation": "Alternative implementation"
+  },
+  "experimentStatuses": {
+    "proposed": "Proposed",
+    "investigating": "Under investigation",
+    "prototype": "Prototype available",
+    "evidence-collected": "Automated evidence collected",
+    "ready-for-review": "Ready for human review",
+    "changes-requested": "Changes requested",
+    "accepted": "Reviewed and accepted for publication",
+    "submitted-upstream": "Submitted upstream",
+    "adopted-upstream": "Adopted upstream",
+    "deferred": "Deferred",
+    "archived": "Archived"
+  },
   "components": [
     {
       "slug": "accordion",
       "name": "Accordion",
       "group": "Disclosure",
       "summary": "Expand and collapse supporting information without losing keyboard access.",
+      "purpose": "Put long secondary content behind a short, named control so a page stays scannable while the content remains reachable.",
+      "whenToUse": [
+        "Secondary guidance is long enough to interrupt the primary task.",
+        "The heading of each disclosure makes sense without the hidden content.",
+        "People need to compare several short sections without leaving the page."
+      ],
+      "whenNotToUse": [
+        "The content is essential to every user on first read; keep it visible.",
+        "You need to hide a single sentence; plain text is less work.",
+        "The control would be used as a menu, filter, or navigation pattern."
+      ],
+      "implementation": [
+        "Use a real button inside a heading; never a div with a click handler.",
+        "Give the button aria-controls pointing at a unique panel id.",
+        "Keep aria-expanded in sync with the panel's visible state.",
+        "Use the official USWDS accordion JavaScript rather than a lookalike handler."
+      ],
+      "keyboard": [
+        "Tab reaches each disclosure button once.",
+        "Enter and Space both toggle the panel.",
+        "Focus stays on the button after toggling.",
+        "No keyboard trap is created inside the panel."
+      ],
+      "preferences": [
+        "The panel stays readable when text is resized and when JavaScript is unavailable.",
+        "Reduced motion must not remove essential state feedback.",
+        "Forced colors must keep the boundary and focus indicator visible."
+      ],
+      "mistakes": [
+        "Styling a link as a disclosure or omitting the button element.",
+        "Updating visual state without updating aria-expanded.",
+        "Duplicating ids when the same component appears twice.",
+        "Treating the loading-state flash as solved when scripts fail."
+      ],
+      "testing": [
+        "Test every collapsed and expanded state with a real key press.",
+        "Test content availability with JavaScript disabled.",
+        "Test with 200% text, forced colors, and a narrow viewport."
+      ],
+      "limitations": [
+        "This fixture is author-created markup using official USWDS assets, not a byte-for-byte copy of an upstream example.",
+        "The baseline is rendered with a small fixture stylesheet for consistent page framing."
+      ],
+      "guide": "docs/IMPLEMENTATION-GUIDE.md#accordion",
       "reference": "https://designsystem.digital.gov/components/accordion/",
       "accessibility": "https://designsystem.digital.gov/components/accordion/accessibility-tests/",
       "experiment": "Theme-aware disclosure controls",
-      "issues": [
-        4577,
-        5817,
-        5861
-      ]
+      "issues": [4577, 5817, 5861]
     },
     {
       "slug": "alert",
       "name": "Alert",
       "group": "Messaging",
       "summary": "Communicate status, warnings and errors with meaning beyond color.",
+      "purpose": "Draw attention to a short message that relates to the current task or page without blocking the rest of the interface.",
+      "whenToUse": [
+        "A short message must stay visible near the task it affects.",
+        "A warning or error needs an explicit heading and next step."
+      ],
+      "whenNotToUse": [
+        "The message is a transient success confirmation; use a status message.",
+        "The content is long-form guidance; use prose or a callout.",
+        "The alert would interrupt a flow that already has an error summary."
+      ],
+      "implementation": [
+        "Choose the alert variant by meaning, not decoration.",
+        "Include a heading that makes sense without the icon or border color.",
+        "Do not add a live region to a static alert; use role=status or role=alert only for the state change that warrants it."
+      ],
+      "keyboard": [
+        "Static alerts add no tab stops.",
+        "If an alert contains a link or button, that control follows normal keyboard order.",
+        "A live alert must not steal focus."
+      ],
+      "preferences": [
+        "Meaning must survive without color, including forced colors.",
+        "Text must remain readable at 200% and in dark themes."
+      ],
+      "mistakes": [
+        "Relying on the colored left border to distinguish warning from error.",
+        "Putting an entire error summary inside every inline alert.",
+        "Using role=alert for content that is present on page load."
+      ],
+      "testing": [
+        "Read each variant without seeing color and confirm the heading carries the meaning.",
+        "Measure text and boundary contrast in every supported theme.",
+        "Test forced colors and zoom."
+      ],
+      "limitations": [
+        "The alert variants are static examples; no live-region announcement is claimed.",
+        "The experimental theme does not yet recolor the upstream alert icon."
+      ],
+      "guide": "docs/IMPLEMENTATION-GUIDE.md#alert",
       "reference": "https://designsystem.digital.gov/components/alert/",
       "accessibility": "https://designsystem.digital.gov/components/alert/accessibility-tests/",
       "experiment": "Dark-mode semantic alerts",
-      "issues": [
-        5069,
-        4407
-      ]
+      "issues": [5069, 4407]
     },
     {
       "slug": "banner",
       "name": "Banner",
       "group": "Identity",
       "summary": "Distinguish a government-service identity pattern from ordinary site content.",
+      "purpose": "Give a service a consistent identity area at the top of the page, including a short explanation of the site's official status.",
+      "whenToUse": [
+        "A site needs the standard USWDS identity pattern.",
+        "The banner can make an accurate statement about the service."
+      ],
+      "whenNotToUse": [
+        "The banner would imply government endorsement that does not exist.",
+        "A marketing header is needed instead."
+      ],
+      "implementation": [
+        "Keep the official banner structure and disclosure button.",
+        "Use the correct language and direction for the page.",
+        "Do not recolor agency logos or identity marks without authorization."
+      ],
+      "keyboard": [
+        "The disclosure button is reachable once and toggles with Enter or Space.",
+        "The banner content remains readable without JavaScript."
+      ],
+      "preferences": [
+        "Test logical direction, not just mirrored layout.",
+        "Keep text and controls legible in dark and forced-colors modes."
+      ],
+      "mistakes": [
+        "Using the banner for a private product with a false official claim.",
+        "Reversing the entire page visually instead of using logical properties.",
+        "Hard-coding English text in a shared banner include."
+      ],
+      "testing": [
+        "Test the disclosure in LTR and RTL.",
+        "Test no-JavaScript content availability.",
+        "Check narrow layouts at 320 CSS pixels."
+      ],
+      "limitations": [
+        "The demo copy is deliberately neutral and is not a government identity.",
+        "The RTL prototype uses sample Arabic content; a native-language review is outstanding."
+      ],
+      "guide": "docs/IMPLEMENTATION-GUIDE.md#banner",
       "reference": "https://designsystem.digital.gov/components/banner/",
       "accessibility": "https://designsystem.digital.gov/components/banner/accessibility-tests/",
       "experiment": "Theme-aware banner and logical layout",
-      "issues": [
-        5336,
-        6030
-      ]
+      "issues": [5336, 6030]
     },
     {
       "slug": "form",
       "name": "Form controls",
       "group": "Forms",
       "summary": "Labels, required controls, validation and legible focus states.",
+      "purpose": "Collect a small amount of information with explicit labels, native validation, and a local-only submission path.",
+      "whenToUse": [
+        "A short form needs visible labels and native constraint validation.",
+        "A demonstration must not send data to a live service."
+      ],
+      "whenNotToUse": [
+        "The flow needs multi-step error recovery; add an error summary.",
+        "The field set is long enough to require a review step."
+      ],
+      "implementation": [
+        "Associate every control with a visible label.",
+        "Use fieldset and legend for grouped radios or checkboxes.",
+        "Use native required and reportValidity rather than a custom validation widget.",
+        "Keep submission local in this lab; never post test data to a government endpoint."
+      ],
+      "keyboard": [
+        "Tab reaches each control in reading order.",
+        "Arrow keys move within a native radio group.",
+        "Space selects a radio option.",
+        "Invalid submission leaves focus on a useful control."
+      ],
+      "preferences": [
+        "Focus indicators must remain visible in every theme.",
+        "Text size and zoom must not clip labels or error text."
+      ],
+      "mistakes": [
+        "Using placeholder text as the only label.",
+        "Hiding the radio input in a way that removes focus or Voice Control access.",
+        "Marking required fields with an unexplained asterisk."
+      ],
+      "testing": [
+        "Submit empty, correct one field, submit valid.",
+        "Test keyboard-only completion and focus after validation.",
+        "Test the browser's native validation message in at least two engines."
+      ],
+      "limitations": [
+        "Native validation messaging differs by browser and is not controlled by this lab.",
+        "Voice Control testing has not been performed by a person."
+      ],
+      "guide": "docs/IMPLEMENTATION-GUIDE.md#forms-and-native-validation",
       "reference": "https://designsystem.digital.gov/components/form/",
       "accessibility": "https://designsystem.digital.gov/components/radio-buttons/accessibility-tests/",
       "experiment": "Native validation and theme-safe focus",
-      "issues": [
-        6068,
-        6080
-      ]
+      "issues": [6068, 6080]
+    },
+    {
+      "slug": "radio-validation",
+      "name": "Radio validation",
+      "group": "Forms",
+      "summary": "Investigate required radio groups, native constraint validation, and focus placement.",
+      "purpose": "Reproduce how a required radio group behaves when a form is submitted with no selection, including where focus lands and what the browser exposes.",
+      "whenToUse": [
+        "A required choice must be made before submission.",
+        "The team wants to rely on native browser validation rather than a custom widget."
+      ],
+      "whenNotToUse": [
+        "The group is optional; do not mark it required to demonstrate validation.",
+        "A custom validation pattern is already in place and tested."
+      ],
+      "implementation": [
+        "Use a fieldset and legend for the group.",
+        "Put required on the native radio inputs.",
+        "Do not add redundant aria-required to native required inputs.",
+        "Let the browser prevent submission and report the invalid control."
+      ],
+      "keyboard": [
+        "Arrow keys move between radio options.",
+        "Space selects the focused option.",
+        "Submitting an empty group leaves focus on the first invalid radio in tested browsers."
+      ],
+      "preferences": [
+        "The visible radio boundary and focus ring must meet non-text contrast.",
+        "Native validation bubbles are browser-controlled and may not be customizable."
+      ],
+      "mistakes": [
+        "Adding role=radiogroup or aria-required to a native fieldset without evidence.",
+        "Replacing radios with clickable divs.",
+        "Assuming every browser moves focus to the same element."
+      ],
+      "testing": [
+        "Submit with no selection and record document.activeElement.",
+        "Select with the keyboard and submit successfully.",
+        "Test in Chromium and Firefox; record the browser-specific result."
+      ],
+      "limitations": [
+        "Voice Control and real screen-reader confirmation remain outstanding.",
+        "The lab records browser behavior; it does not change upstream radio positioning."
+      ],
+      "guide": "experiments/radio-validation/README.md",
+      "reference": "https://designsystem.digital.gov/components/radio-buttons/",
+      "accessibility": "https://designsystem.digital.gov/components/radio-buttons/accessibility-tests/",
+      "experiment": "Native radio validation",
+      "issues": [6068, 6080]
+    }
+  ],
+  "experiments": [
+    {
+      "id": "dark-mode",
+      "title": "Native dark-mode support",
+      "type": "cross-component-capability",
+      "status": "prototype",
+      "summary": "A semantic token layer that lets USWDS components respond to system appearance and an explicit user override without replacing upstream components.",
+      "components": ["accordion", "alert", "banner", "form"],
+      "relatedIssues": [
+        {"repository": "uswds/uswds", "number": 5069, "relationship": "motivation"},
+        {"repository": "uswds/uswds", "number": 4644, "relationship": "technical-dependency"},
+        {"repository": "uswds/uswds", "number": 4577, "relationship": "component-decision"},
+        {"repository": "uswds/uswds", "number": 4407, "relationship": "separate-requirement"}
+      ],
+      "scenarios": ["initial-light", "initial-dark", "system-preference", "explicit-override", "forced-colors", "no-javascript"],
+      "demo": "compare.html?component=accordion&theme=dark",
+      "docs": {
+        "readme": "experiments/dark-mode/README.md",
+        "implementation": "experiments/dark-mode/IMPLEMENTATION.md",
+        "testPlan": "experiments/dark-mode/TEST-PLAN.md",
+        "decision": "experiments/dark-mode/DECISION.md"
+      },
+      "review": {"status": "pending", "reviewer": null, "decision": null, "record": "experiments/dark-mode/DECISION.md"},
+      "aiAssistance": ["issue research", "initial implementation", "test scaffolding", "documentation drafting"]
+    },
+    {
+      "id": "preferences-panel",
+      "title": "User preferences panel",
+      "type": "new-component",
+      "status": "prototype",
+      "summary": "A proposed component that gives people a consistent way to choose appearance, text size, contrast, and motion without a third-party overlay.",
+      "components": [],
+      "relatedIssues": [
+        {"repository": "uswds/uswds", "number": 5069, "relationship": "motivation"},
+        {"repository": "uswds/uswds", "number": 4407, "relationship": "adjacent-requirement"}
+      ],
+      "scenarios": ["defaults", "explicit-appearance", "text-size", "contrast", "reduced-motion", "reset", "no-javascript"],
+      "demo": "preferences.html",
+      "docs": {
+        "readme": "experiments/preferences-panel/README.md",
+        "implementation": "experiments/preferences-panel/IMPLEMENTATION.md",
+        "testPlan": "experiments/preferences-panel/TEST-PLAN.md",
+        "decision": "experiments/preferences-panel/DECISION.md"
+      },
+      "review": {"status": "pending", "reviewer": null, "decision": null, "record": "experiments/preferences-panel/DECISION.md"},
+      "aiAssistance": ["issue research", "initial implementation", "test scaffolding", "documentation drafting"]
+    },
+    {
+      "id": "rtl-logical-properties",
+      "title": "Logical properties for RTL support",
+      "type": "alternative-implementation",
+      "status": "prototype",
+      "summary": "Replace selected physical left/right styles in the banner and alert with logical properties so right-to-left layouts do not depend on mirrored overrides.",
+      "components": ["banner", "alert"],
+      "relatedIssues": [
+        {"repository": "uswds/uswds", "number": 5336, "relationship": "motivation"},
+        {"repository": "uswds/uswds", "number": 6030, "relationship": "consolidated-prototype"}
+      ],
+      "scenarios": ["ltr", "rtl", "mixed-direction", "narrow-viewport", "keyboard"],
+      "demo": "compare.html?component=banner&direction=rtl",
+      "docs": {
+        "readme": "experiments/rtl-logical-properties/README.md",
+        "implementation": "experiments/rtl-logical-properties/IMPLEMENTATION.md",
+        "testPlan": "experiments/rtl-logical-properties/TEST-PLAN.md",
+        "decision": "experiments/rtl-logical-properties/DECISION.md"
+      },
+      "review": {"status": "pending", "reviewer": null, "decision": null, "record": "experiments/rtl-logical-properties/DECISION.md"},
+      "aiAssistance": ["issue research", "initial CSS", "test scaffolding", "documentation drafting"]
+    },
+    {
+      "id": "radio-validation",
+      "title": "Native radio validation",
+      "type": "alternative-implementation",
+      "status": "prototype",
+      "summary": "A focused reproduction of required radio-group submission, native constraint validation, and browser focus placement.",
+      "components": ["radio-validation", "form"],
+      "relatedIssues": [
+        {"repository": "uswds/uswds", "number": 6068, "relationship": "motivation"},
+        {"repository": "uswds/uswds", "number": 6080, "relationship": "historical-consolidation"}
+      ],
+      "scenarios": ["invalid-submit", "focus-placement", "valid-submit", "keyboard", "dark-mode"],
+      "demo": "compare.html?component=radio-validation",
+      "docs": {
+        "readme": "experiments/radio-validation/README.md",
+        "implementation": "experiments/radio-validation/IMPLEMENTATION.md",
+        "testPlan": "experiments/radio-validation/TEST-PLAN.md",
+        "decision": "experiments/radio-validation/DECISION.md"
+      },
+      "review": {"status": "pending", "reviewer": null, "decision": null, "record": "experiments/radio-validation/DECISION.md"},
+      "aiAssistance": ["issue research", "initial implementation", "test scaffolding", "documentation drafting"]
     }
   ],
   "scenarios": [
@@ -101,6 +415,12 @@
       "id": "form-required",
       "component": "form",
       "intent": "Submit required fields and inspect native feedback",
+      "interaction": "form"
+    },
+    {
+      "id": "radio-required",
+      "component": "radio-validation",
+      "intent": "Submit an empty required radio group and inspect focus and validity",
       "interaction": "form"
     }
   ]

@@ -1,26 +1,45 @@
 {
   "name": "uswds-futures-lab",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "license": "MIT",
   "description": "Evidence-first, independently maintained USWDS component experiments and comparison lab",
-  "engines": {"node": ">=22"},
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "node scripts/build.mjs",
     "build:strict": "node scripts/build.mjs --require-uswds",
     "dev": "node scripts/build.mjs && node scripts/serve.mjs",
     "serve": "node scripts/serve.mjs",
     "test:unit": "node --test tests/unit/*.test.mjs",
+    "pretest:browser": "npm run build:strict",
     "test:browser": "playwright test",
+    "pretest:browser:chromium": "npm run build:strict",
+    "test:browser:chromium": "playwright test --project=chromium",
+    "preevidence": "npm run build:strict",
     "evidence": "node scripts/collect-evidence.mjs",
     "validate": "node scripts/validate.mjs",
-    "check": "npm run test:unit && npm run validate"
+    "links:check": "node scripts/check-links.mjs",
+    "check": "npm run test:unit && npm run build:strict && npm run validate && npm run links:check",
+    "experiment:new": "node scripts/new-experiment.mjs",
+    "sources:write": "node scripts/check-releases.mjs --write",
+    "sources:verify": "node scripts/check-releases.mjs --verify",
+    "sources:latest": "node scripts/check-releases.mjs --latest",
+    "premcp:check": "npm run build:strict",
+    "mcp:sync": "node scripts/sync-mcp.mjs",
+    "mcp:check": "node scripts/sync-mcp.mjs --check"
   },
-  "dependencies": {"@uswds/uswds": "3.14.0"},
+  "dependencies": {
+    "@uswds/uswds": "3.14.0"
+  },
   "devDependencies": {
-    "@playwright/test": "1.64.1",
+    "@axe-core/playwright": "4.14.0",
     "@guidepup/virtual-screen-reader": "0.32.1",
-    "jsdom": "26.1.0"
+    "@playwright/mcp": "0.0.86",
+    "@playwright/test": "1.64.1",
+    "jsdom": "26.1.0",
+    "marked": "18.2.1"
   }
 }

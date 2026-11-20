@@ -1,0 +1,38 @@
+<p class="eyebrow">Reproducible browser fixtures</p>
+<h1>Compare a released component with an experiment</h1>
+<p class="lead">Both panes use the same authored fixture and pinned USWDS assets. The right pane adds proposed styles; it is <strong>not OGDS</strong>. Open each side independently for keyboard and assistive-technology testing. The comparison viewport scrolls horizontally if the selected widths do not fit.</p>
+
+<form class="controls" id="controls">
+  <div class="field"><label for="component">Component</label><select id="component" name="component">{{componentOptions}}</select></div>
+  <div class="field"><label for="theme">Experimental theme</label><select id="theme"><option value="system">System preference</option><option value="light">Light</option><option value="dark">Dark</option></select></div>
+  <div class="field"><label for="direction">Writing direction</label><select id="direction"><option value="ltr">Left to right</option><option value="rtl">Right to left</option></select></div>
+  <div class="field"><label for="width">Viewport</label><select id="width"><option value="desktop">Desktop</option><option value="tablet">Tablet</option><option value="mobile" selected>Mobile</option></select></div>
+  <div class="field"><label for="view">View</label><select id="view"><option value="split">Side by side</option><option value="onion">Onion overlay</option></select></div>
+  <div class="field" id="onion-control" hidden><label for="opacity">Overlay opacity</label><input id="opacity" type="range" min="0" max="100" value="50"><output id="opacity-output" for="opacity">50%</output></div>
+</form>
+
+<div class="callout" id="asset-banner" role="status">{{assetState}}</div>
+<p id="difference-note" class="small">Choose a component to see the registered experimental treatment.</p>
+<p id="onion-note" class="state-panel" hidden><strong>Onion mode is visual only.</strong> Both iframes are removed from keyboard order so focus cannot land in a covered pane. Use the “Open independently” links for keyboard testing.</p>
+
+<section aria-label="Comparison results">
+  <div class="compare-stage" id="stage" data-view="split" tabindex="0">
+    <div class="comparison" id="frames">
+      <div class="compare-pane">
+        <div class="pane-label"><span>Baseline: USWDS 3.14.0</span><a id="open-before" href="fixture/accordion-baseline.html" target="_blank" rel="noopener">Open independently</a></div>
+        <iframe title="USWDS baseline component" id="before" src="fixture/accordion-baseline.html"></iframe>
+      </div>
+      <div class="compare-pane">
+        <div class="pane-label"><span>Experiment: proposed theme layer</span><a id="open-after" href="fixture/accordion-experiment.html" target="_blank" rel="noopener">Open independently</a></div>
+        <iframe title="Experimental component" id="after" src="fixture/accordion-experiment.html"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="state-panel"><strong>Testing note:</strong> The viewer does not mirror keyboard events. Test both panes separately using a keyboard. Forced colors and reduced motion are tested with browser emulation, not imitated by this menu. Onion mode is visual only.</div>
+
+<section id="component-info" aria-labelledby="info-title">
+  <h2 id="info-title" class="section-title">Component guidance and evidence</h2>
+  <p>Select a component to load its registry guidance. <a href="components.html">Browse the component directory</a> if JavaScript is unavailable.</p>
+</section>
