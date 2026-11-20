@@ -248,7 +248,7 @@ export function buildStaticPages({root, registry, issues, buildInfo, manifest, l
     'compare.html': 'Compare a pinned USWDS baseline with a labelled experimental proposal.',
     'guide.html': 'Methodology, provenance, governance, and limitations for the USWDS Futures Lab.',
     'preferences.html': 'A proposed user preferences panel for appearance, text size, contrast, and motion.',
-    'demo.html': 'A full landing-page comparison of USWDS 3.14.0 with an illustrative concept stand-in for OGDS.'
+    'demo.html': 'A full landing-page comparison of USWDS 3.14.0 with a USWDS + OGDS Elements hybrid.'
   };
   const scripts = {
     'components.html': [{src: 'assets/filters.js', type: 'module'}],

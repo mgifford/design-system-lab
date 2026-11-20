@@ -24,7 +24,10 @@
 
 The repository's MIT license applies to original pilot code and documentation only. It does not override upstream licenses, patent rights, or trademark rights.
 
-## Landing-demo content
+## Landing-demo content and OGDS Elements
 
+- `@ogds/elements` `1.0.0-beta.2`: public domain by permission confirmed to the lab maintainer on 2026-11-20. The upstream `LICENSE` file and npm `license` metadata are still pending; see [docs/OGDS-PERMISSION.md](docs/OGDS-PERMISSION.md) for the pinned tag/commit, tarball integrity, scope, and component boundary. The lab bundles the published package with `esbuild` and copies its published token CSS; it does not modify OGDS source.
+- `@ogds/tokens` `1.0.0-alpha.3`: OGDS project package, covered by the same permission record until upstream licence metadata is published.
+- `lit`: BSD-3-Clause; included in the OGDS browser bundle with its licence notices retained.
+- `esbuild` `0.28.2`: MIT; build-time bundling only.
 - `mgifford/uswds-sandbox`: package metadata declares CC0-1.0 (no root LICENSE file). The landing-demo copy is adapted from its public sample content with attribution. The lab does not copy its build system or source code.
-- `site/assets/concept.css`: original MIT-licensed lab code. It is an illustrative concept, **not** OGDS Elements, and must be replaced by a licensed OGDS renderer before any OGDS claim is made.

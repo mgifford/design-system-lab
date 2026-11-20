@@ -43,6 +43,11 @@ const routes = readRequired('dist/data/routes.json', 'route inventory (run npm r
 const mcp = readRequired('tests/mcp/scenarios.json', 'MCP scenarios');
 const evidence = readRequired('dist/data/evidence.json', 'evidence metadata');
 const experimentTypes = new Set(Object.keys(registry?.experimentTypes || {}));
+const ogdsDependency = registry?.sources?.ogds;
+if (ogdsDependency) {
+  if (pkg?.dependencies?.['@ogds/elements'] !== ogdsDependency.version) add('package.json must pin @ogds/elements to the registry version');
+  if (lock?.external?.find(entry => entry.id === 'ogds-elements')?.version !== ogdsDependency.version) add('source lock is missing the pinned OGDS Elements version');
+}
 const experimentStatuses = new Set(Object.keys(registry?.experimentStatuses || {}));
 const componentSlugs = new Set((registry?.components || []).map(component => component.slug));
 const issueNumbers = new Set((issues || []).map(issue => issue.number));
@@ -201,6 +206,7 @@ for (const relative of [
   'docs/EVIDENCE.md',
   'docs/DESIGN-DECISIONS.md',
   'docs/EXPERIMENT-DECISIONS.md',
+  'docs/OGDS-PERMISSION.md',
   'CONTRIBUTING.md',
   'README.md',
   'ACCESSIBILITY.md',

@@ -25,9 +25,15 @@
     "ogds": {
       "name": "Open Government Design System",
       "repository": "https://github.com/open-government-design-system/ogds-elements",
-      "kind": "research-link-only",
-      "integration": "not-yet-implemented",
-      "licensingReviewRequired": true
+      "kind": "external-adapter",
+      "integration": "landing-hybrid-beta",
+      "licensingReviewRequired": false,
+      "package": "@ogds/elements",
+      "release": "v1.0.0-beta.2",
+      "version": "1.0.0-beta.2",
+      "commit": "59b05f1",
+      "license": "public-domain",
+      "permissionRecord": "docs/OGDS-PERMISSION.md"
     }
   },
   "experimentTypes": {

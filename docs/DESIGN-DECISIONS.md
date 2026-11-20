@@ -46,6 +46,8 @@ The lab may prepare a contribution package, but it never opens, comments on, or 
 
 The site is static HTML, CSS, and small modules. GitHub Pages is the deployment target; no database, server authentication, proprietary API, or cloud AI service is required.
 
-## The landing demo uses a labelled stand-in, not OGDS
+## The landing demo uses a licensed OGDS hybrid
 
-`demo.html` compares USWDS 3.14.0 with an original concept stylesheet applied to identical content. The concept pane is explicitly labelled “not OGDS” and is not evidence about OGDS. It exists to validate the comparison workflow while OGDS licensing and permission are unresolved. When the licensed OGDS hybrid is available, only the right renderer changes; the left remains USWDS 3.14.0 and the content stays shared.
+`demo.html` compares USWDS 3.14.0 with the same content rendered through a USWDS + OGDS Elements `1.0.0-beta.2` hybrid. OGDS components are used only where the beta package exports a built module: banner, header/primary navigation, and accordion. The alert remains USWDS because beta.2 does not export a built alert module; hero, cards, search, and footer remain USWDS. The left pane never loads OGDS.
+
+Public-domain permission is recorded in [OGDS-PERMISSION.md](OGDS-PERMISSION.md). The hybrid is labelled as a hybrid, not a full replacement, and is not a conformance or endorsement claim. OGDS components use shadow DOM; Guidepup transcripts cover slotted light-DOM text only, so browser tests, axe observations, and screenshots are the primary evidence for this page.

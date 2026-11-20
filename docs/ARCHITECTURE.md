@@ -12,7 +12,7 @@
 
 1. `scripts/build.mjs` verifies the pinned USWDS version, package-lock hash, and USWDS CSS/JS hashes.
 2. It recreates `dist/` and copies only `site/assets`, `data/*.json`, and the official USWDS distribution.
-3. It generates ten fixtures (five components × baseline/experiment), nine static pages, five component pages, four experiment pages, three landing-demo pages, and documentation pages.
+3. It generates ten fixtures (five components × baseline/experiment), nine static pages, five component pages, four experiment pages, three landing-demo pages, and documentation pages. The OGDS hybrid bundles `@ogds/elements@1.0.0-beta.2` and its token CSS into `dist/vendor/ogds`; the left pane never loads them.
 4. It publishes evidence only from the current `reports/latest` run. `dist/evidence` is deleted first, so a previous run cannot leak in.
 5. It writes `dist/data/routes.json` for lab routes. Documentation (`docs/**`) and evidence artifacts (`evidence/**`) are published but are not lab routes; they do not receive their own Guidepup transcript.
 

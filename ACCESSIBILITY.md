@@ -13,7 +13,7 @@
 - Forced colors and reduced motion are exercised through browser emulation and recorded as emulation, not real-device testing.
 - Each component links to the original USWDS implementation and accessibility guidance.
 - The Evidence page distinguishes generated observations, collection failures, missing states, and human judgments.
-- The landing demo uses identical content on both sides and is tested for a visible stylesheet difference, keyboard-operable disclosures, and explicit “concept, not OGDS” labelling.
+- The landing demo uses identical content on both sides and is tested for OGDS custom-element registration, a visible hybrid difference, keyboard-operable disclosures, and explicit “hybrid, not a full replacement” labelling. Guidepup transcripts do not traverse OGDS shadow DOM, so browser tests, axe, and screenshots are the primary evidence for that page.
 
 ## What we do not claim
 
