@@ -12,7 +12,7 @@ It currently contains:
 
 - **5 component fixtures:** accordion, alert, banner, form controls, and native radio validation.
 - **4 experiments:** native dark mode (cross-component capability), a user preferences panel (new component), logical properties for RTL (alternative implementation), and native radio validation (alternative implementation).
-- **30 published lab routes** with route smoke tests and evidence collection.
+- **33 published lab routes** with route smoke tests and evidence collection.
 - **72 state-specific Guidepup transcripts** in the verified local run (initial, expanded, collapsed, invalid, valid, dark, RTL).
 - **Pinned provenance** in `data/sources.lock.json`: release tag, commit, package-lock SHA-256, and USWDS CSS/JS SHA-256.
 
@@ -80,6 +80,7 @@ OGDS Elements `1.0.0-beta.2` (tag `v1.0.0-beta.2`, commit `59b05f1`) is pinned f
 - **Evidence** — the current run, per-route reports, state transcripts, screenshots, axe observations, and coverage gaps.
 - **Methodology and governance** — provenance, experiment lifecycle, AI disclosure, and scope boundaries.
 - **Landing demo** — a full-page USWDS vs OGDS hybrid comparison with independent iframes.
+- **Forms demo** — a secondary form comparison showing USWDS controls inside the OGDS hybrid shell.
 - **Compare** — side-by-side and onion views with independent iframe links and explicit state controls.
 - **User preferences panel** — the new-component proposal, with persistence, reset, and a live preview.
 
@@ -106,6 +107,20 @@ A required radio group with native constraint validation, no redundant `aria-req
 ### Landing-page comparison (OGDS hybrid)
 
 [the landing demo](https://mgifford.github.io/design-system-lab/demo.html) shows the same service landing page twice: straight USWDS 3.14.0 on the left, and a USWDS 3.14.0 + **OGDS Elements 1.0.0-beta.2** hybrid on the right. OGDS is used for the banner, header/primary navigation, and accordion; the alert remains USWDS because beta.2 does not export a built alert module; hero, cards, search, and footer remain USWDS. Public-domain permission is recorded in [docs/OGDS-PERMISSION.md](docs/OGDS-PERMISSION.md); this is an experimental contribution, not a full replacement or endorsement.
+
+### Forms comparison and the content model
+
+[the forms comparison](https://mgifford.github.io/design-system-lab/demo/forms.html) uses the same contact form on both sides. OGDS beta.2 has no form controls, so the form remains USWDS; the banner and header are the hybrid layers. The page records that boundary in the coverage table and tests native validation, error summary, inline errors, and status feedback.
+
+The landing and forms pages are generated from one JSON content model:
+
+- `content/pages/landing.json` and `content/pages/forms.json` contain the shared copy and block structure.
+- `renderers/uswds.mjs` maps blocks to USWDS markup.
+- `renderers/ogds.mjs` maps a block to OGDS only when `data/coverage.json` says an alternate exists; everything else falls back to USWDS and is marked unchanged.
+- `content/sandbox.lock.json` pins the sandbox content source at commit `26d5a939476512ca08ce9a8f5b4f757a5df06198`; the lab adapts selected content and does not copy its build system.
+- Each generated page carries the same `data-content-hash` on both sides; tests assert the hash and content parity.
+
+A block without an OGDS implementation cannot silently disappear: the renderer falls back to USWDS, and the coverage table says so.
 
 Human decisions are recorded in one table, [`docs/EXPERIMENT-DECISIONS.md`](docs/EXPERIMENT-DECISIONS.md), not in a form per experiment. Dark mode is recorded as accepted as a lab experiment; the other three are undecided. Acceptance does not mean upstream adoption or assistive-technology validation.
 
@@ -138,17 +153,19 @@ CI uses `npm ci` with the committed lockfile. The workflow has not been executed
 ### Local verification
 
 - `npm run test:unit` — 14 passing.
-- `npm run build:strict` — 30 lab routes, 28 documentation pages, 10 fixtures.
-- `LAB_BROWSER_CHANNEL=chrome npx playwright test --project=chromium` — **65 passing**.
-- `npm run evidence` (Chrome channel) — **30/30 routes, 82 state transcripts, 0 failed**.
-- `npm run validate` — 5 components, 4 experiments, 14 issues, 5 scenarios, 30 routes, 30 MCP scenarios, evidence run complete.
+- `npm run build:strict` — 33 lab routes, 28 documentation pages, 10 fixtures.
+- `LAB_BROWSER_CHANNEL=chrome npx playwright test --project=chromium` — **70 passing**.
+- `npm run evidence` (Chrome channel) — **33/33 routes, 96 state transcripts, 0 failed**.
+- `npm run validate` — 5 components, 4 experiments, 14 issues, 5 scenarios, 33 routes, 33 MCP scenarios, evidence run complete.
 
-WebKit ran locally: **64 passing, 1 skipped** (the axe scan is Chromium-only by design). Firefox could not launch in the authoring sandbox because it could not create its profile folder; that is recorded as a blocked check, not a pass. CI currently runs Chromium only.
+WebKit ran locally: **69 passing, 1 skipped** (the axe scan is Chromium-only by design). Firefox could not launch in the authoring sandbox because it could not create its profile folder; that is recorded as a blocked check, not a pass. CI currently runs Chromium only.
 
 ## Repository layout
 
 ```text
-data/                 registry, issue catalogue, review metadata, source lock
+data/                 registry, issue catalogue, review metadata, source lock, coverage map
+content/              shared page content and the pinned sandbox content lock
+renderers/            USWDS and OGDS block renderers
 experiments/          experiment docs (README, IMPLEMENTATION, TEST-PLAN)
 docs/                 architecture, testing, evidence, design decisions, guides
 scripts/              build, evidence, validation, sources, scaffold, MCP sync

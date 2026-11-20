@@ -51,3 +51,12 @@ The site is static HTML, CSS, and small modules. GitHub Pages is the deployment 
 `demo.html` compares USWDS 3.14.0 with the same content rendered through a USWDS + OGDS Elements `1.0.0-beta.2` hybrid. OGDS components are used only where the beta package exports a built module: banner, header/primary navigation, and accordion. The alert remains USWDS because beta.2 does not export a built alert module; hero, cards, search, and footer remain USWDS. The left pane never loads OGDS.
 
 Public-domain permission is recorded in [OGDS-PERMISSION.md](OGDS-PERMISSION.md). The hybrid is labelled as a hybrid, not a full replacement, and is not a conformance or endorsement claim. OGDS components use shadow DOM; Guidepup transcripts cover slotted light-DOM text only, so browser tests, axe observations, and screenshots are the primary evidence for this page.
+
+## One content model, two renderers
+
+The landing and forms comparisons are generated from `content/pages/*.json`. `renderers/uswds.mjs` and `renderers/ogds.mjs` render the same blocks; `data/coverage.json` decides whether a block has an OGDS alternate or falls back to USWDS. The renderers cannot silently drop an uncovered block: the fallback is explicit and appears in the page coverage table.
+
+Both generated pages carry the same `data-content-hash`. Tests assert the hash and content parity, and the forms page uses the same USWDS controls on both sides. This keeps consistency at the content/behaviour contract level while allowing the OGDS markup to differ.
+
+`content/sandbox.lock.json` pins selected content from `mgifford/uswds-sandbox` at commit `26d5a939476512ca08ce9a8f5b4f757a5df06198`. The lab adapts content; it does not fork or run the sandbox build.
+

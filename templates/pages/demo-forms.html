@@ -1,0 +1,55 @@
+<p class="eyebrow">Forms comparison</p>
+<h1>One form, USWDS vs the OGDS hybrid shell</h1>
+<p class="lead">The same no-network contact form on both sides. OGDS beta.2 has no form controls, so the form itself remains USWDS; the banner and header are the OGDS hybrid layers.</p>
+
+<div class="callout warning">
+  <strong>This is a hybrid comparison, not a full OGDS form.</strong>
+  OGDS has no form controls in beta.2. The fields, labels, validation, and status message are USWDS on both sides. The right pane changes only the banner and header shell. No data is sent.
+</div>
+
+<div class="preview-controls">
+  <div class="field">
+    <label for="preview-layout">Preview layout</label>
+    <select id="preview-layout">
+      <option value="side">Side by side</option>
+      <option value="full">Full width (stacked)</option>
+    </select>
+  </div>
+  <p class="small">Full width stacks the panes at the container width. Open either page independently for keyboard and assistive-technology testing.</p>
+</div>
+
+<div class="demo-compare" data-layout="side">
+  <div class="demo-pane">
+    <div class="pane-label"><span>USWDS 3.14.0</span><a href="uswds-forms.html" target="_blank" rel="noopener">Open independently</a></div>
+    <iframe id="forms-uswds" title="Contact form using USWDS 3.14.0" src="uswds-forms.html"></iframe>
+  </div>
+  <div class="demo-pane">
+    <div class="pane-label"><span>USWDS + OGDS hybrid — beta.2</span><a href="ogds-forms.html" target="_blank" rel="noopener">Open independently</a></div>
+    <iframe id="forms-ogds" title="Contact form using USWDS 3.14.0 with an OGDS banner and header" src="ogds-forms.html"></iframe>
+  </div>
+</div>
+
+<p class="small">Both pages share the same content hash. The form controls are identical; only the surrounding design-system shell changes.</p>
+
+<p><a class="button secondary" href="../demo.html">Back to the landing comparison</a></p>
+
+<section aria-labelledby="coverage">
+  <h2 class="section-title" id="coverage">What OGDS covers on this page</h2>
+  {{coverageTable}}
+</section>
+
+<section aria-labelledby="look-for">
+  <h2 class="section-title" id="look-for">What to compare</h2>
+  <ul class="clean">
+    <li>Banner and header behavior around the same form.</li>
+    <li>Native required-field validation and focus placement.</li>
+    <li>Labels, hints, and the local status message.</li>
+    <li>Which parts are identical because OGDS has no form controls.</li>
+  </ul>
+</section>
+
+<section aria-labelledby="not-claimed">
+  <h2 class="section-title" id="not-claimed">What is not being claimed</h2>
+  <p>This does not show an OGDS form because OGDS beta.2 does not ship form controls. It shows the USWDS form inside the hybrid shell. The comparison is useful for layout, shell behavior, and regression checking, but it is not a form-control redesign.</p>
+  <p>Native validation messages are browser-controlled. Guidepup covers the DOM snapshot, not real screen-reader behavior.</p>
+</section>

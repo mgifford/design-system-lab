@@ -18,9 +18,7 @@
 
 - `mgifford/FOSDEM-website`: reference design for independent comparisons; this pilot does not copy its source code.
 - `mgifford/drupal-core-lab`: GPL-2.0-or-later per its README; this pilot does not copy its source code. Its viewer, coverage, and report ideas informed independent implementation.
-- `open-government-design-system/ogds-elements`: research link only. Verify licensing before downloading or including source or package distribution.
 - `uswds/uswds-elements`: research link only. No source is bundled.
-- `mgifford/uswds-sandbox`: existing CC0 reference for future fixtures; no source copied.
 
 The repository's MIT license applies to original pilot code and documentation only. It does not override upstream licenses, patent rights, or trademark rights.
 
@@ -30,4 +28,4 @@ The repository's MIT license applies to original pilot code and documentation on
 - `@ogds/tokens` `1.0.0-alpha.3`: OGDS project package, covered by the same permission record until upstream licence metadata is published.
 - `lit`: BSD-3-Clause; included in the OGDS browser bundle with its licence notices retained.
 - `esbuild` `0.28.2`: MIT; build-time bundling only.
-- `mgifford/uswds-sandbox`: package metadata declares CC0-1.0 (no root LICENSE file). The landing-demo copy is adapted from its public sample content with attribution. The lab does not copy its build system or source code.
+- `mgifford/uswds-sandbox`: package metadata declares CC0-1.0 (no root LICENSE file). Content lock: commit `26d5a939476512ca08ce9a8f5b4f757a5df06198` (2026-09-09). Selected landing and forms content is adapted with attribution in `content/sandbox.lock.json`; the lab does not copy its Eleventy/Gulp build, layouts, or source code.

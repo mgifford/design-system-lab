@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "id": "forms",
+  "title": "Example Service — contact form",
+  "description": "A demonstration contact form used to compare USWDS form controls with the OGDS hybrid shell.",
+  "sections": [
+    {
+      "type": "banner",
+      "text": "A demonstration service website",
+      "action": "Here’s how you know",
+      "panels": [
+        {
+          "heading": "Example only",
+          "body": "This is an independent comparison demo, not a government service. In production, this banner must accurately explain who operates the site."
+        },
+        {
+          "heading": "Same content, two treatments",
+          "body": "The content and interaction are shared. Only the design-system layer changes between the two panes."
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "logo": "Example Service",
+      "nav": [
+        {"label": "Services", "href": "#form-heading"},
+        {"label": "Questions", "href": "#form-heading"},
+        {"label": "Contact", "href": "#form-heading"}
+      ],
+      "search": {"label": "Search"}
+    },
+    {
+      "type": "page-heading",
+      "eyebrow": "Form demo",
+      "heading": "Contact us",
+      "intro": "Use this no-network form to compare native validation, labels, and focus behavior. No data is sent."
+    },
+    {
+      "type": "form",
+      "id": "contact-form",
+      "heading": "Send a message",
+      "fields": [
+        {"kind": "text", "id": "contact-name", "label": "Full name", "required": true, "autocomplete": "name"},
+        {"kind": "email", "id": "contact-email", "label": "Email address", "required": true, "autocomplete": "email"},
+        {"kind": "tel", "id": "contact-phone", "label": "Phone number", "required": false, "autocomplete": "tel", "hint": "Optional. Format: (555) 555-5555"},
+        {
+          "kind": "select",
+          "id": "contact-subject",
+          "label": "Subject",
+          "required": true,
+          "options": [
+            {"value": "", "label": "-- Select a subject --"},
+            {"value": "general", "label": "General inquiry"},
+            {"value": "technical", "label": "Technical support"},
+            {"value": "feedback", "label": "Feedback"}
+          ]
+        },
+        {"kind": "textarea", "id": "contact-message", "label": "Message", "required": true, "hint": "Provide as much detail as possible."},
+        {"kind": "checkbox", "id": "contact-copy", "label": "Send me a copy of this message", "required": false}
+      ],
+      "submit": "Send message",
+      "reset": "Clear form",
+      "status": "Example submission validated locally. No data was sent."
+    },
+    {
+      "type": "footer",
+      "link": "Example Service",
+      "text": "Independent comparison demo. No government endorsement is implied."
+    }
+  ]
+}

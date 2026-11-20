@@ -164,9 +164,16 @@ main { width: min(80rem, 100%); margin: auto; padding: 2rem 1.3rem 4rem; }
 .compare-stage[data-view="onion"] .compare-pane:last-child .pane-label { background: var(--callout); }
 .compare-stage[data-view="onion"] .compare-pane:first-child .pane-label { background: var(--warning); }
 .state-panel { padding: .75rem 1rem; background: var(--surface-subtle); margin: 1rem 0; border-radius: .3rem; }
+.preview-controls { display: none; }
+html[data-js="true"] .preview-controls { display: flex; flex-wrap: wrap; gap: 1rem; align-items: end; margin-block: 1.25rem; }
+html[data-js="true"] .preview-controls .field { display: grid; gap: .25rem; }
+html[data-js="true"] .preview-controls label { font-weight: 700; }
+html[data-js="true"] .preview-controls select { min-height: 2.5rem; padding: .35rem .5rem; }
 .demo-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
 .demo-pane { min-width: 0; border: 1px solid var(--border); border-radius: .6rem; overflow: hidden; background: var(--panel); }
 .demo-pane iframe { display: block; width: 100%; height: 780px; border: 0; background: #fff; }
+.demo-compare[data-layout="full"] { grid-template-columns: 1fr; }
+.demo-compare[data-layout="full"] .demo-pane iframe { height: 900px; }
 .demo-pane .pane-label { background: var(--surface-subtle); padding: .7rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: .6rem; flex-wrap: wrap; font-weight: 750; }
 .demo-pane .pane-label a { font-size: .78rem; }
 
@@ -195,7 +202,12 @@ summary { cursor: pointer; font-weight: 700; }
 
 @media (max-width: 700px) {
   .comparison { grid-template-columns: 1fr; }
-  .demo-compare { grid-template-columns: 1fr; }
+  .preview-controls { display: none; }
+html[data-js="true"] .preview-controls { display: flex; flex-wrap: wrap; gap: 1rem; align-items: end; margin-block: 1.25rem; }
+html[data-js="true"] .preview-controls .field { display: grid; gap: .25rem; }
+html[data-js="true"] .preview-controls label { font-weight: 700; }
+html[data-js="true"] .preview-controls select { min-height: 2.5rem; padding: .35rem .5rem; }
+.demo-compare { grid-template-columns: 1fr; }
   .demo-pane iframe { height: 620px; }
   .compare-pane iframe { height: 380px; }
   .head-inner { align-items: start; }

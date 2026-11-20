@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "source": "@ogds/elements@1.0.0-beta.2",
+  "note": "The renderer uses an OGDS implementation only when status is alternate and an ogds component is listed. Everything else falls back to USWDS and is marked not-covered or not-built.",
+  "components": [
+    {"block": "banner", "uswds": "usa-banner", "ogds": "ogds-banner", "status": "alternate", "note": "OGDS banner with custom slots for the demo text."},
+    {"block": "header", "uswds": "usa-header + usa-nav", "ogds": "ogds-header + ogds-primary-nav", "status": "alternate", "note": "OGDS header shell with primary nav and a consumer-owned search slot."},
+    {"block": "accordion", "uswds": "usa-accordion", "ogds": "ogds-accordion", "status": "alternate", "note": "OGDS wrapper around native details/summary."},
+    {"block": "alert", "uswds": "usa-alert", "ogds": null, "status": "not-built", "note": "ogds-alert source exists, but beta.2 does not export a built alert module."},
+    {"block": "hero", "uswds": "usa-hero", "ogds": null, "status": "not-covered", "note": "No OGDS equivalent used; USWDS remains on both sides."},
+    {"block": "cards", "uswds": "usa-card", "ogds": null, "status": "not-covered", "note": "No OGDS equivalent used; USWDS remains on both sides."},
+    {"block": "form", "uswds": "usa-form + usa-fieldset + native validation", "ogds": null, "status": "not-covered", "note": "OGDS has no form controls in beta.2; USWDS remains on both sides."},
+    {"block": "page-heading", "uswds": "usa-intro + headings", "ogds": null, "status": "not-covered", "note": "Page-level text and layout remain USWDS."},
+    {"block": "prose", "uswds": "usa-prose", "ogds": null, "status": "not-covered", "note": "No OGDS equivalent used; USWDS remains on both sides."},
+    {"block": "footer", "uswds": "usa-footer", "ogds": null, "status": "not-covered", "note": "No OGDS footer in beta.2; USWDS remains on both sides."}
+  ]
+}

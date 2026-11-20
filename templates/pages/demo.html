@@ -7,7 +7,18 @@
   OGDS is used for the banner, header/primary navigation, and accordion. The alert remains USWDS because OGDS beta.2 does not export a built alert module. Hero, cards, search, footer, and every other component remain USWDS. This is an experimental contribution; no endorsement by OGDS, USWDS, GSA, or any agency is implied, and no WCAG conformance is claimed.
 </div>
 
-<div class="demo-compare">
+<div class="preview-controls">
+  <div class="field">
+    <label for="preview-layout">Preview layout</label>
+    <select id="preview-layout">
+      <option value="side">Side by side</option>
+      <option value="full">Full width (stacked)</option>
+    </select>
+  </div>
+  <p class="small">Full width stacks the panes at the container width. Open either page independently for true viewport and assistive-technology testing.</p>
+</div>
+
+<div class="demo-compare" data-layout="side">
   <div class="demo-pane">
     <div class="pane-label"><span>USWDS 3.14.0</span><a href="demo/uswds-landing.html" target="_blank" rel="noopener">Open independently</a></div>
     <iframe id="demo-uswds" title="Landing page using USWDS 3.14.0" src="demo/uswds-landing.html"></iframe>
@@ -18,14 +29,15 @@
   </div>
 </div>
 
-<p class="small">The iframes are independent documents. The comparison shell does not mirror keyboard input; open either page separately for keyboard and assistive-technology testing. At this side-by-side width the USWDS header collapses to a mobile menu; open independently to inspect the full-width header and search.</p>
+<p class="small">The iframes are independent documents. The comparison shell does not mirror keyboard input. The left and right pages share a content hash; only the renderer changes.</p>
+
+<p><a class="button secondary" href="demo/forms.html">Open the forms comparison</a></p>
 
 <section aria-labelledby="look-for">
   <h2 class="section-title" id="look-for">What to compare</h2>
   <ul class="clean">
     <li>Banner prominence and how much explanatory content it reveals.</li>
     <li>Header hierarchy, menu behavior, and search placement.</li>
-    <li>Alert treatment remains USWDS on both sides; the table records the missing OGDS beta.2 alert module.</li>
     <li>Accordion control, panel boundary, and keyboard behavior.</li>
     <li>Which parts of the page are unchanged because OGDS has no equivalent.</li>
   </ul>
@@ -33,19 +45,7 @@
 
 <section aria-labelledby="coverage">
   <h2 class="section-title" id="coverage">What OGDS covers on this page</h2>
-  <div class="table-wrap" tabindex="0">
-    <table>
-      <caption>Hybrid composition on the landing page</caption>
-      <thead><tr><th scope="col">Area</th><th scope="col">Right pane</th><th scope="col">Status</th></tr></thead>
-      <tbody>
-        <tr><td>Banner</td><td><code>ogds-banner</code></td><td>OGDS beta.2</td></tr>
-        <tr><td>Header and primary navigation</td><td><code>ogds-header</code> + <code>ogds-primary-nav</code></td><td>OGDS beta.2</td></tr>
-        <tr><td>Alert</td><td>USWDS <code>usa-alert</code></td><td>Unchanged: OGDS alert source exists but is not in the beta.2 package build</td></tr>
-        <tr><td>Common questions</td><td><code>ogds-accordion</code></td><td>OGDS beta.2</td></tr>
-        <tr><td>Hero, cards, search, footer</td><td>USWDS 3.14.0</td><td>Unchanged: no OGDS equivalent used</td></tr>
-      </tbody>
-    </table>
-  </div>
+  {{coverageTable}}
 </section>
 
 <section aria-labelledby="not-claimed">
@@ -56,6 +56,6 @@
 
 <section aria-labelledby="reuse">
   <h2 class="section-title" id="reuse">How the hybrid is composed</h2>
-  <p>The left and right pages share content and state. The right page adds the OGDS token CSS and bundled web components, then replaces only the covered components. The remaining USWDS markup is unchanged so a difference is attributable to the OGDS layers, not unrelated content edits.</p>
+  <p>Both pages are generated from one content model. The right page adds the OGDS token CSS and bundled web components, then replaces only the covered components. The remaining USWDS markup is unchanged so a difference is attributable to the OGDS layers, not unrelated content edits.</p>
   <p>When OGDS names, versions, or component APIs change, update the pinned adapter and the component matrix; the left USWDS pane and the comparison shell stay the same.</p>
 </section>

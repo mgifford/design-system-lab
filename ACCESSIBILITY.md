@@ -14,6 +14,7 @@
 - Each component links to the original USWDS implementation and accessibility guidance.
 - The Evidence page distinguishes generated observations, collection failures, missing states, and human judgments.
 - The landing demo uses identical content on both sides and is tested for OGDS custom-element registration, a visible hybrid difference, keyboard-operable disclosures, and explicit “hybrid, not a full replacement” labelling. Guidepup transcripts do not traverse OGDS shadow DOM, so browser tests, axe, and screenshots are the primary evidence for that page.
+- The forms demo uses identical USWDS controls on both sides, visible required labels, native required attributes, an error summary that receives focus, inline errors associated with `aria-describedby`, `aria-invalid`, and a stable polite status region. The form remains native-validation operable when JavaScript is unavailable. OGDS is not used for form controls in beta.2.
 
 ## What we do not claim
 
