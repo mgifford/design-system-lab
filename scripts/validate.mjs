@@ -121,8 +121,8 @@ for (const experiment of registry?.experiments || []) {
     add(`experiment ${experiment.id} must register readme, implementation, testPlan, and decision documents`);
   }
   if (!experiment.review || !experiment.review.status) add(`experiment ${experiment.id} has no review status`);
-  if (experiment.review?.status === 'accepted' && (!experiment.review.reviewer || !experiment.review.decision)) {
-    add(`experiment ${experiment.id} is marked accepted without a reviewer and decision`);
+  if (experiment.review?.status === 'accepted' && (!experiment.review.reviewer || !experiment.review.decision || !experiment.review.reviewedAt)) {
+    add(`experiment ${experiment.id} is marked accepted without a reviewer, decision, and reviewedAt date`);
   }
   if (experiment.demo) {
     const demoRoute = String(experiment.demo).split('?')[0];
@@ -200,6 +200,7 @@ for (const relative of [
   'docs/TESTING.md',
   'docs/EVIDENCE.md',
   'docs/DESIGN-DECISIONS.md',
+  'docs/EXPERIMENT-DECISIONS.md',
   'CONTRIBUTING.md',
   'README.md',
   'ACCESSIBILITY.md',

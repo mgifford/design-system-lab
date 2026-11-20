@@ -1,22 +1,12 @@
-# Experiment decision
+# Experiment decision (optional short record)
 
-- Experiment ID and category:
-- Proposal and upstream references:
-- Exact baseline release, commit, and asset hashes:
-- Evidence links and run ID:
-- Review date:
-- Reviewer:
-- Decision: pending / accept as experiment / revise / reject / propose upstream / defer / archive
-- Decision rationale:
-- User need and scope confirmed:
-- Implementation and semantic quality:
-- Keyboard and focus behavior:
-- Accessibility evidence reviewed:
-- Browser and preference coverage:
-- Compatibility and maintenance:
-- Risks:
-- Explicitly unverified:
-- AI-assisted contribution and review disclosure:
-- Authorization to publish or submit upstream: none unless explicitly granted
+The canonical decision log is [`docs/EXPERIMENT-DECISIONS.md`](../docs/EXPERIMENT-DECISIONS.md). Use this short form only when a standalone record is genuinely needed; do not copy it for every experiment.
 
-A human reviewer must complete this record. Automated tests, axe counts, and virtual screen-reader transcripts do not constitute approval.
+- Experiment:
+- Decision: accepted as a lab experiment / changes requested / rejected / deferred / upstream-ready
+- Reviewer and date:
+- Rationale (one sentence):
+- Conditions or exceptions not covered by `ACCESSIBILITY.md`:
+- Upstream authorization: none unless explicitly granted
+
+Everything else — baseline hashes, test results, axe counts, Guidepup transcripts, browser coverage, and known gaps — belongs in the evidence run and `ACCESSIBILITY.md`, not in this form.

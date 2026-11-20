@@ -21,4 +21,4 @@
 
 ## Human review
 
-A native Arabic speaker and a human reviewer must assess the sample and the layout. Record the decision in [DECISION.md](DECISION.md). Automated computed styles are not a substitute for that review.
+A native Arabic speaker and a human reviewer must assess the sample and the layout. Record the decision and any conditions in [the central decision log](https://github.com/mgifford/design-system-lab/blob/main/docs/EXPERIMENT-DECISIONS.md). Automated computed styles are not a substitute for that review.

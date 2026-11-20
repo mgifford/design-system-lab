@@ -24,4 +24,4 @@
 
 ## Human review
 
-A reviewer must decide whether the settings have a documented user need, whether the storage and reset contract are acceptable, and whether the panel risks being mistaken for an accessibility overlay. Record the decision in [DECISION.md](DECISION.md).
+A reviewer must decide whether the settings have a documented user need, whether the storage and reset contract are acceptable, and whether the panel risks being mistaken for an accessibility overlay. Record the decision and any conditions in [the central decision log](https://github.com/mgifford/design-system-lab/blob/main/docs/EXPERIMENT-DECISIONS.md).

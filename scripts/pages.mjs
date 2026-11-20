@@ -49,8 +49,11 @@ function evidenceLine(experiment, manifest) {
   if (!pages.length) return {text: 'No automated evidence in this build.', className: 'muted'};
   const collected = pages.filter(page => page.result === 'collected-not-reviewed').length;
   const failed = pages.length - collected;
+  const review = experiment.review?.status === 'pending'
+    ? 'Human review pending.'
+    : `Human review: ${experiment.review?.status || 'pending'}.`;
   return {
-    text: `${collected} of ${pages.length} routes collected${failed ? `, ${failed} failed` : ''}. Human review pending.`,
+    text: `${collected} of ${pages.length} routes collected${failed ? `, ${failed} failed` : ''}. ${review}`,
     className: failed ? 'warning-text' : ''
   };
 }
@@ -348,7 +351,14 @@ function experimentPage(experiment, registry, issues, manifest, root) {
     ['Implementation', docs.implementation],
     ['Test plan', docs.testPlan],
     ['Decision record', docs.decision]
-  ].filter(([, file]) => file).map(([label, file]) => `<li><a href="../docs/${docHref(file)}">${escapeHtml(label)}</a></li>`).join('');
+  ].filter(([, file]) => file).map(([label, file]) => {
+    const href = file.startsWith('experiments/') ? `../docs/${docHref(file)}` : `../${docHref(file)}`;
+    return `<li><a href="${href}">${escapeHtml(label)}</a></li>`;
+  }).join('');
+  const review = experiment.review || {};
+  const reviewMeta = review.status === 'pending'
+    ? 'No human reviewer has recorded a decision.'
+    : `Reviewer: ${escapeHtml(review.reviewer || 'not recorded')}${review.reviewedAt ? ` on ${escapeHtml(review.reviewedAt)}` : ''}. ${review.decision ? escapeHtml(review.decision) : ''}`;
   const noBaseline = experiment.type === 'new-component'
     ? '<div class="callout warning"><strong>No equivalent component is included in stable USWDS 3.14.0.</strong> The proposal is shown on its own; inventing a baseline would misrepresent upstream. This is a capability gap, not an accessibility failure.</div>'
     : '';
@@ -357,8 +367,8 @@ function experimentPage(experiment, registry, issues, manifest, root) {
 <p class="lead">${escapeHtml(experiment.summary)}</p>
 ${noBaseline}
 <div class="callout">
-  <strong>Review status: ${escapeHtml(experiment.review?.status || 'pending')}.</strong>
-  ${experiment.review?.reviewer ? `Reviewer: ${escapeHtml(experiment.review.reviewer)}.` : 'No human reviewer has recorded a decision.'}
+  <strong>Review status: ${escapeHtml(review.status || 'pending')}.</strong>
+  ${reviewMeta}
   <span class="${evidence.className}">Evidence: ${escapeHtml(evidence.text)}</span>
 </div>
 

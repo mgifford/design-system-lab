@@ -1,8 +1,8 @@
 {
-  "reviewStatus": "initial pilot, not a conformance assessment",
-  "reviewedAt": null,
-  "reviewer": null,
-  "acceptance": "not-reviewed",
+  "reviewStatus": "partial: dark mode accepted as a lab experiment; three experiments pending",
+  "reviewedAt": "2026-11-20",
+  "reviewer": "Mike Gifford",
+  "acceptance": "not a conformance assessment",
   "testMatrix": [
     "chromium",
     "chrome-channel",
@@ -22,5 +22,6 @@
     "400% zoom and text-spacing overrides"
   ],
   "evidencePolicy": "Publish only the current reports/latest run; see reports/latest/MANIFEST.json and reports/latest/COVERAGE.md. Historical runs are under reports/runs.",
-  "scope": "Comparison fixtures, generated pages, preferences panel, and isolated browser states only; not real user journeys or deployed government services"
+  "scope": "Comparison fixtures, generated pages, preferences panel, and isolated browser states only; not real user journeys or deployed government services",
+  "decisionLog": "docs/EXPERIMENT-DECISIONS.md"
 }

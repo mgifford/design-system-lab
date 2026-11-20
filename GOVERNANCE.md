@@ -18,7 +18,7 @@ Every registry experiment declares one category and one lifecycle status.
 3. **Prototype:** Build an independent fixture or page with source provenance and implementation guidance.
 4. **Automated evidence collected:** Attach browser results, state-specific Guidepup transcripts, screenshots, axe observations, and failures.
 5. **Ready for human review:** The contributor confirms the evidence is complete enough to review and lists what is missing.
-6. **Changes requested / reviewed and accepted:** A human examines the evidence and signs `experiments/<id>/DECISION.md`, noting limitations.
+6. **Changes requested / reviewed and accepted:** A human examines the evidence and records one row in `docs/EXPERIMENT-DECISIONS.md`, noting limitations and any conditions.
 7. **Submitted upstream / adopted upstream:** Only after explicit human authorization. Approval here is not approval upstream.
 8. **Deferred / archived:** A proposal may end as useful documentation or a rejected experiment. Not every experiment should become an upstream pull request.
 
