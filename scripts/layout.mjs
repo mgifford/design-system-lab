@@ -4,6 +4,7 @@ export const NAV = [
   {key: 'overview', href: 'index.html', label: 'Overview'},
   {key: 'components', href: 'components.html', label: 'Components'},
   {key: 'experiments', href: 'experiments.html', label: 'Experiments'},
+  {key: 'demo', href: 'demo.html', label: 'Landing demo'},
   {key: 'ideas', href: 'ideas.html', label: 'Community ideas'},
   {key: 'evidence', href: 'evidence.html', label: 'Evidence'},
   {key: 'methodology', href: 'guide.html', label: 'Methodology'}

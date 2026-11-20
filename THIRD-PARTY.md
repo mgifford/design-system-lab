@@ -23,3 +23,8 @@
 - `mgifford/uswds-sandbox`: existing CC0 reference for future fixtures; no source copied.
 
 The repository's MIT license applies to original pilot code and documentation only. It does not override upstream licenses, patent rights, or trademark rights.
+
+## Landing-demo content
+
+- `mgifford/uswds-sandbox`: package metadata declares CC0-1.0 (no root LICENSE file). The landing-demo copy is adapted from its public sample content with attribution. The lab does not copy its build system or source code.
+- `site/assets/concept.css`: original MIT-licensed lab code. It is an illustrative concept, **not** OGDS Elements, and must be replaced by a licensed OGDS renderer before any OGDS claim is made.

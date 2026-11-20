@@ -24,7 +24,7 @@ npm run validate              # schema, sources, routes, evidence
 
 ## Browser policy
 
-Playwright's configuration names Chromium, Firefox, and WebKit. CI runs Chromium. In the authoring environment, Chromium (Chrome channel) passed 60 tests and WebKit passed 59 with the axe scan skipped; Firefox could not create a profile folder and did not run. Do not claim a browser was tested when it was not.
+Playwright's configuration names Chromium, Firefox, and WebKit. CI runs Chromium. In the authoring environment, Chromium (Chrome channel) passed 65 tests and WebKit passed 64 with the axe scan skipped; Firefox could not create a profile folder and did not run. Do not claim a browser was tested when it was not.
 
 ## Accessibility testing boundaries
 
