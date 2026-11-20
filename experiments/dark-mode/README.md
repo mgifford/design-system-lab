@@ -34,7 +34,7 @@ Only the experimental pane changes. The baseline pane keeps the official assets 
 
 ## Evidence status
 
-Automated evidence is collected by `npm run evidence` and published on the the lab evidence page after a build. A successful collection is not a review. The decision record is [DECISION.md](DECISION.md) and remains pending until a person completes it.
+Automated evidence is collected by `npm run evidence` and published on the lab evidence page after a build. A successful collection is not a review. The decision is recorded in [the central decision log](https://github.com/mgifford/design-system-lab/blob/main/docs/EXPERIMENT-DECISIONS.md): **accepted as a lab experiment** on 2026-11-20, with the stated limitations.
 
 ## Known limitations
 

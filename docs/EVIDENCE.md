@@ -52,7 +52,7 @@ A transcript difference is a signal to investigate. It may reflect a real semant
 
 ## Human review
 
-Automated evidence is an observation. The decision record (`experiments/<id>/DECISION.md`) is the approval surface. A reviewer must read the transcripts, inspect the DOM and focus behavior, evaluate forced colors and preferences, and record limitations. AI may draft the material but cannot sign the decision.
+Automated evidence is an observation. The decision log (`docs/EXPERIMENT-DECISIONS.md`) is the approval surface. A reviewer must read the transcripts, inspect the DOM and focus behavior, evaluate forced colors and preferences, and record limitations or conditions in one row. The evidence details stay in the run. AI may draft the material but cannot make the decision.
 
 ## Retention
 

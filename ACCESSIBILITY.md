@@ -27,7 +27,7 @@ Guidepup virtual speech is not a real VoiceOver, NVDA, or JAWS session. Axe is n
 4. Read the Guidepup transcript alongside the DOM and accessible names; verify it is an informative representation, not a substitute for AT testing.
 5. Check USWDS component-specific accessibility instructions and any new risks from customizations.
 6. Perform at least one real screen-reader session and, for the radio/form work, a Voice Control or speech-input session; record the tool, OS, browser, and result.
-7. Record the tester, tools, browser/OS version, date, observations, limitations, and decision in the experiment's `DECISION.md`.
+7. Record the decision, date, reviewer, and any conditions beyond this file in `docs/EXPERIMENT-DECISIONS.md`. The evidence run carries the tools, browser/OS, and observations; do not copy them into the decision row.
 
 ## Known gaps in this pilot
 

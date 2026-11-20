@@ -1,5 +1,7 @@
 # Design decisions
 
+> **Scope:** this file records architecture and design decisions for the lab. Experiment approval decisions live in [EXPERIMENT-DECISIONS.md](EXPERIMENT-DECISIONS.md). Do not fill a form per experiment; that duplicated evidence and was too much work.
+
 ## The baseline is immutable
 
 A USWDS release is evidence, not a moving target. `data/sources.lock.json` pins the release tag, commit, package version, package-lock hash, and distributed CSS/JS hashes. A newer release is reported, never promoted automatically. Promotion requires a reviewed change and a recorded decision.

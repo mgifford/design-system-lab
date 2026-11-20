@@ -105,6 +105,8 @@ A required radio group with native constraint validation, no redundant `aria-req
 
 [the landing demo](https://mgifford.github.io/design-system-lab/demo.html) shows the same service landing page twice: straight USWDS 3.14.0 on the left, and a clearly labelled concept style on the right. The right pane is **not OGDS Elements**; it is a visual stand-in used to validate the comparison workflow until the OGDS licence and permission are resolved. When they are, the right renderer is replaced without changing the left pane or the content model.
 
+Human decisions are recorded in one table, [`docs/EXPERIMENT-DECISIONS.md`](docs/EXPERIMENT-DECISIONS.md), not in a form per experiment. Dark mode is recorded as accepted as a lab experiment; the other three are undecided. Acceptance does not mean upstream adoption or assistive-technology validation.
+
 ## Evidence pipeline
 
 `npm run evidence`:
@@ -134,7 +136,7 @@ CI uses `npm ci` with the committed lockfile. The workflow has not been executed
 ### Local verification
 
 - `npm run test:unit` — 14 passing.
-- `npm run build:strict` — 30 lab routes, 30 documentation pages, 10 fixtures.
+- `npm run build:strict` — 30 lab routes, 27 documentation pages, 10 fixtures.
 - `LAB_BROWSER_CHANNEL=chrome npx playwright test --project=chromium` — **65 passing**.
 - `npm run evidence` (Chrome channel) — **30/30 routes, 82 state transcripts, 0 failed**.
 - `npm run validate` — 5 components, 4 experiments, 14 issues, 5 scenarios, 30 routes, 30 MCP scenarios, evidence run complete.
@@ -145,7 +147,7 @@ WebKit ran locally: **64 passing, 1 skipped** (the axe scan is Chromium-only by 
 
 ```text
 data/                 registry, issue catalogue, review metadata, source lock
-experiments/          experiment docs (README, IMPLEMENTATION, TEST-PLAN, DECISION)
+experiments/          experiment docs (README, IMPLEMENTATION, TEST-PLAN)
 docs/                 architecture, testing, evidence, design decisions, guides
 scripts/              build, evidence, validation, sources, scaffold, MCP sync
 site/assets/          shell CSS, experiment CSS, fixture CSS/JS, preferences

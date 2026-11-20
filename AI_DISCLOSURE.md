@@ -17,7 +17,7 @@ AI assistance was used for issue research, code generation, test scaffolding, ev
 
 ## Human review status
 
-**No human has reviewed or approved the experiments in this pass.** The `DECISION.md` records are pending. A passing build, a clean axe scan, and a Guidepup transcript are observations, not approval.
+**No human has reviewed or approved most experiments in this pass.** Dark mode was accepted as a lab experiment by Mike Gifford on 2026-11-20 and is recorded in `docs/EXPERIMENT-DECISIONS.md`; the other three experiments are pending. A passing build, a clean axe scan, and a Guidepup transcript are observations, not approval.
 
 A human reviewer must still:
 

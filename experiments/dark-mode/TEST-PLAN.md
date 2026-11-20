@@ -35,4 +35,4 @@
 
 ## Human review
 
-A person must read the transcripts alongside the DOM, inspect focus and forced-colors behavior, and complete [DECISION.md](DECISION.md). Automated output is not approval.
+A person must read the transcripts alongside the DOM, inspect focus and forced-colors behavior, and record any conditions in [the central decision log](https://github.com/mgifford/design-system-lab/blob/main/docs/EXPERIMENT-DECISIONS.md). Automated output is not approval.
