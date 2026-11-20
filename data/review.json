@@ -3,6 +3,24 @@
   "reviewedAt": null,
   "reviewer": null,
   "acceptance": "not-reviewed",
-  "testMatrix": ["chromium", "firefox", "webkit", "forced-colors", "reduced-motion", "rtl", "no-javascript"],
-  "scope": "Comparison fixtures and isolated browser states only; not real user journeys or deployed government services"
+  "testMatrix": [
+    "chromium",
+    "chrome-channel",
+    "webkit",
+    "dark-mode",
+    "forced-colors",
+    "reduced-motion",
+    "rtl",
+    "no-javascript",
+    "preferences"
+  ],
+  "blockedChecks": [
+    "firefox (profile folder launch failure in the authoring sandbox)",
+    "real screen reader session",
+    "voice control",
+    "windows high contrast mode on a real device",
+    "400% zoom and text-spacing overrides"
+  ],
+  "evidencePolicy": "Publish only the current reports/latest run; see reports/latest/MANIFEST.json and reports/latest/COVERAGE.md. Historical runs are under reports/runs.",
+  "scope": "Comparison fixtures, generated pages, preferences panel, and isolated browser states only; not real user journeys or deployed government services"
 }

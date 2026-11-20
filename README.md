@@ -1,76 +1,172 @@
 # USWDS Futures Lab
 
-**Independent, MIT-licensed USWDS comparison and research pilot.** No endorsement by GSA, USWDS, OGDS, or CivicActions is claimed.
+**An independent, MIT-licensed laboratory for testing proposed improvements and new components against a stable USWDS release, with reproducible evidence and human-reviewed decisions.**
 
-This repository ships an interactive site for GitHub Pages. It compares the released **USWDS 3.14.0** package with a *separately authored, experimental* CSS customization for light/dark themes, then connects experiments to historical USWDS issues and human-readable evidence. It does not claim that OGDS or USWDS Elements code is running: these are research references for future adapters.
+No endorsement by GSA, USWDS, OGDS, or CivicActions is claimed. The experiments are proposals, not upstream features.
 
-## Requirements
+## What the lab is
 
-- Node.js 22 or newer; npm
-- Internet access for the initial npm install
-- Chromium for Playwright evidence collection (and optionally Firefox/WebKit for local cross-browser checks)
+The lab compares the released **USWDS 3.14.0** npm distribution with small, separately authored proposals. It connects each proposal to community issue history, implementation guidance, deterministic browser tests, Guidepup virtual-screen-reader transcripts, screenshots, axe observations, and an explicit human-review record.
 
-## Local start
+It currently contains:
 
-```sh
-npm install
-npm run build:strict
-npm run dev
-```
+- **5 component fixtures:** accordion, alert, banner, form controls, and native radio validation.
+- **4 experiments:** native dark mode (cross-component capability), a user preferences panel (new component), logical properties for RTL (alternative implementation), and native radio validation (alternative implementation).
+- **27 published lab routes** with route smoke tests and evidence collection.
+- **72 state-specific Guidepup transcripts** in the verified local run (initial, expanded, collapsed, invalid, valid, dark, RTL).
+- **Pinned provenance** in `data/sources.lock.json`: release tag, commit, package-lock SHA-256, and USWDS CSS/JS SHA-256.
 
-Open http://127.0.0.1:4173/ and select **Compare**.
+## What the lab is not
 
-`build:strict` refuses to build if actual `@uswds/uswds@3.14.0` CSS and JS are not installed. `npm run dev` builds again and starts a static server. With no network or dependencies, `npm run build` still makes a clearly labeled offline illustration; **do not report its visual output as upstream USWDS**.
+- It is not a fork of USWDS or a competing government design system.
+- It does not claim official endorsement, WCAG conformance, or real screen-reader coverage.
+- It does not fabricate a baseline for a new component.
+- It does not automatically promote a newer USWDS release.
+- It does not open, comment on, or submit upstream issues or pull requests without explicit human authorization.
+- It does not require a database, server authentication, proprietary API, or cloud AI service.
 
-## Test and collect evidence
+## Quick start
 
-```sh
-npx playwright install chromium firefox webkit
-npm run test:unit
-npm run test:browser
+```bash
+npm ci
+npm run check
+npx playwright install chromium
+npm run test:browser:chromium
 npm run evidence
 npm run build:strict
 npm run validate
 ```
 
-Playwright includes per-page smoke tests, real keyboard interaction, RTL direction, dark-mode switching, form validation, forced-colors emulation, and no-JavaScript content access. Test fixtures remain readable without JavaScript. By default Playwright tests Chromium, Firefox, and WebKit. GitHub Pages CI uses Chromium only and explicitly leaves broader coverage as a gap.
+Then:
 
-The [Playwright MCP procedures](docs/PLAYWRIGHT-MCP.md) include a scenario for every published route. A validation check prevents route drift. These are agent-guided explorations, not CI assertions.
+```bash
+npm run dev
+```
 
-`npm run evidence` visits every published page, captures its browser DOM, records an ARIA inventory and keyboard disclosure observation where applicable, and runs Guidepup's **virtual** screen reader over a jsdom snapshot. It writes each page's transcript and context into `reports/latest/*.md`, plus `SUMMARY.md` and `MANIFEST.json`. This is **not** a real NVDA/VoiceOver test. It fails when any published page cannot be captured; missing evidence is never marked as passed.
+Open <http://127.0.0.1:4173/>. The test server uses port **4181** by default so it does not collide with a local `npm run dev` server on 4173. Override with `LAB_TEST_PORT`.
 
-To publish locally captured evidence in the built site, run `npm run build:strict` again and open **Evidence**. The reports remain human-readable Markdown and are also shown in text-based HTML wrappers on GitHub Pages.
+### Restricted local environments
 
-## GitHub Pages
+Playwright's bundled Chromium may be blocked by a sandbox. If an installed Chrome is available:
 
-1. Create a new empty GitHub repository (for example `uswds-futures-lab`).
-2. Extract the starter zip into its root, then commit all **source** files. Do not commit `node_modules/` or `dist/`.
-3. In **Settings → Pages**, select **GitHub Actions** as the build and deployment source.
-4. Push the default branch as `main`. `.github/workflows/pages.yml` installs dependencies, builds with pinned USWDS, tests, generates Markdown transcripts for each page, rebuilds with the evidence, and publishes `dist/`.
-5. Open `https://<account>.github.io/<repository>/`. All internal links are relative and support the GitHub Pages repository subpath.
+```bash
+LAB_BROWSER_CHANNEL=chrome npm run test:browser:chromium
+PLAYWRIGHT_CHANNEL=chrome npm run evidence
+```
 
-The first install creates a `package-lock.json` locally; **commit it** before ongoing development and switch CI to `npm ci` for reproducible dependency resolution. The starter's CI uses `npm install` because the lockfile cannot be generated in this restricted environment. Exact direct dependencies are pinned in `package.json`. This is a known pilot limitation, not the desired final state.
+Record that substitution in the evidence notes; do not present a Chrome-channel run as a bundled-Chromium run.
 
-**Before publishing a real comparison** inspect the GitHub Actions results, validate interactions and review `reports/latest/SUMMARY.md`. A successful build is not a WCAG conformance statement.
+If `npm install` is unavailable, `npm run build` still produces a clearly labelled offline illustration. It is **not** upstream USWDS and `npm run evidence` refuses to run against it.
 
-## What is implemented
+## Source provenance
 
-- Static, GitHub Pages compatible five-page site (Overview, Compare, Community ideas, Evidence, About).
-- Pinned USWDS 3.14.0 as real build dependency for baseline fixtures.
-- Four component fixtures: accordion, alert, banner, form controls, each in baseline and experimental variants.
-- Adjustable experiment theme, LTR/RTL, viewport simulation, split/onion viewer, independent-frame links.
-- Tested no-JS content fallback, automatic preference and forced-colors CSS layers.
-- Curated issue data preserving distinctions between open, closed, completed and consolidated work.
-- Automated per-page Guidepup virtual transcripts and Markdown reports; site can expose them.
-- Playwright tests, project-scoped Playwright MCP configuration, GitHub Actions deployment.
-- Documented human review and AI-disclosure contract.
+`data/sources.lock.json` records:
 
-## Scope boundaries
+- USWDS release `v3.14.0`, published 2026-08-18.
+- Commit `92391c3b1bf536d15fe85846c16c2c0937049b16`.
+- npm package `@uswds/uswds@3.14.0`.
+- SHA-256 of `package-lock.json`, the distributed CSS, and the distributed JS.
 
-This is a **pilot**, not a comprehensive USWDS fork. Themes, CSS variable coverage, the official component markup and responsive behavior require deeper review, particularly when adding complex variants. There is no OGDS Elements runtime integration yet. No source from GPL-licensed `mgifford/drupal-core-lab` has been copied. See `THIRD-PARTY.md`.
+`npm run sources:verify` fails if the installed package, lockfile, or asset hashes differ. `npm run sources:latest` queries GitHub for a newer non-prerelease release and prints a proposal workflow; it never changes the baseline. A newer release becomes the baseline only through a reviewed change and a maintainer decision.
 
-Do not use generated transcripts as an assertion that real assistive technology works. Do not infer that a USWDS issue is unresolved merely because it was closed; check the linked successor issue, discussion, and release.
+## Pages
 
-## Next steps
+- **Overview** — what the lab contains, featured experiments, and current evidence counts.
+- **Components** — stable components, official USWDS guidance, implementation notes, keyboard behavior, limitations, experiments, and fixtures.
+- **Experiments** — proposals with category, status, related issue history, demonstration, implementation guidance, evidence, and review status.
+- **Community ideas** — a curated issue catalogue that distinguishes open, closed-not-planned, completed, and consolidated work.
+- **Evidence** — the current run, per-route reports, state transcripts, screenshots, axe observations, and coverage gaps.
+- **Methodology and governance** — provenance, experiment lifecycle, AI disclosure, and scope boundaries.
+- **Compare** — side-by-side and onion views with independent iframe links and explicit state controls.
+- **User preferences panel** — the new-component proposal, with persistence, reset, and a live preview.
 
-See [`ROADMAP.md`](ROADMAP.md), [`docs/CANDIDATES.md`](docs/CANDIDATES.md), and [`docs/IMPLEMENTATION-GUIDE.md`](docs/IMPLEMENTATION-GUIDE.md). Start with confirming baseline consistency, improving dark theme token coverage, and adding a small reusable `component.json` / test-evidence schema. Only then add an independently licensed adapter for OGDS or USWDS Elements.
+## Experiments
+
+### Native dark mode
+
+A semantic `--fx-*` token layer over the official components. It follows `prefers-color-scheme`, accepts an explicit light/dark override, and covers the accordion, alert, banner, and form. Focus is measured against the rendered surface: the light ring is `#005ea2` (6.2:1 on the light surface), the dark ring is `#ffbe2e` (10.7:1 on the dark canvas). The upstream white `.usa-radio`/`.usa-checkbox` container and the visible narrow-screen banner prompt are explicitly themed.
+
+This is not complete USWDS dark mode. Header, footer, navigation, tables, cards, and the upstream alert icon are not covered.
+
+### User preferences panel
+
+A proposed component with native radios and selects for appearance, text size, contrast, and motion. It stores only those four values in `localStorage` under `uswds-lab-prefs`, catches storage failures, resets to system defaults, and keeps the page readable without JavaScript. Stable USWDS has no equivalent panel; the missing baseline is stated rather than invented.
+
+### Logical properties for RTL
+
+Selected physical alert borders are replaced with `border-inline-start`; accordion and banner controls use `text-align:start`. A short labelled Arabic sample tests mixed direction. A native-language review is outstanding.
+
+### Native radio validation
+
+A required radio group with native constraint validation, no redundant `aria-required` or custom radiogroup role, and a recorded focus result after an invalid submit. Voice Control and real screen-reader testing remain outstanding.
+
+## Evidence pipeline
+
+`npm run evidence`:
+
+1. Refuses to run if the build is an offline illustration.
+2. Clears `reports/latest` and writes a `running` manifest before collection.
+3. Loads every route in `dist/data/routes.json` with the pinned USWDS assets.
+4. Records page/console errors, axe violations, screenshots, and Guidepup virtual transcripts.
+5. Captures state-specific transcripts for disclosures, forms, dark appearance, and RTL where applicable.
+6. Writes `SUMMARY.md`, `COVERAGE.md`, and a final `MANIFEST.json`.
+7. Copies the run to `reports/runs/<run-id>`.
+8. Fails when any route cannot be collected; missing output is never a pass.
+
+The build publishes evidence only from the current `reports/latest` run. `dist/evidence` is deleted first, so a previous run cannot leak in.
+
+**Guidepup is a virtual screen reader over a DOM snapshot. It is not NVDA, JAWS, or VoiceOver.** Axe runs on the initial route state only and is not a WCAG conformance determination. Screenshots are evidence for human inspection, not a design verdict.
+
+## GitHub Pages and CI
+
+The site is static and repository-subpath safe. CI is configured in:
+
+- `.github/workflows/tests.yml` — pull requests: install, unit tests, strict build, Playwright Chromium, evidence, validation, artifact upload. No deployment.
+- `.github/workflows/pages.yml` — pushes to `main`: the same checks and publication to GitHub Pages.
+
+CI uses `npm ci` with the committed lockfile. The workflow has not been executed in the authoring environment; the local Chromium-channel checks are recorded below.
+
+### Local verification
+
+- `npm run test:unit` — 14 passing.
+- `npm run build:strict` — 27 lab routes, 30 documentation pages, 10 fixtures.
+- `LAB_BROWSER_CHANNEL=chrome npx playwright test --project=chromium` — **60 passing**.
+- `npm run evidence` (Chrome channel) — **27/27 routes, 72 state transcripts, 0 failed**.
+- `npm run validate` — 5 components, 4 experiments, 14 issues, 5 scenarios, 27 routes, 27 MCP scenarios, evidence run complete.
+
+WebKit ran locally: **59 passing, 1 skipped** (the axe scan is Chromium-only by design). Firefox could not launch in the authoring sandbox because it could not create its profile folder; that is recorded as a blocked check, not a pass. CI currently runs Chromium only.
+
+## Repository layout
+
+```text
+data/                 registry, issue catalogue, review metadata, source lock
+experiments/          experiment docs (README, IMPLEMENTATION, TEST-PLAN, DECISION)
+docs/                 architecture, testing, evidence, design decisions, guides
+scripts/              build, evidence, validation, sources, scaffold, MCP sync
+site/assets/          shell CSS, experiment CSS, fixture CSS/JS, preferences
+templates/pages/      shared page fragments rendered by the build
+tests/browser/        deterministic Playwright tests and helpers
+tests/unit/           registry, source-lock, and Markdown tests
+reports/templates/    human evidence and decision templates
+reports/latest/       generated current evidence (gitignored)
+```
+
+`data/registry.json` is the canonical registry. Component pages, experiment pages, fixture routes, the comparison viewer, MCP scenarios, and validation derive from it. `experiments/<id>/experiment.json` is intentionally not duplicated; the registry is the single source of truth.
+
+## Contributing
+
+Read [`CONTRIBUTING.md`](CONTRIBUTING.md), [`GOVERNANCE.md`](GOVERNANCE.md), [`ACCESSIBILITY.md`](ACCESSIBILITY.md), and [`docs/CONTRIBUTING-EXPERIMENTS.md`](docs/CONTRIBUTING-EXPERIMENTS.md).
+
+```bash
+npm run experiment:new -- --slug my-idea --title "My idea" --type component-improvement
+```
+
+The scaffold creates a draft with **no verified evidence**. It does not generate test results or a review decision.
+
+## AI disclosure
+
+The initial starter was drafted with ChatGPT assistance. This implementation pass was drafted with the DeepSeek Harness coding agent (`deepseek-flash`) on 2026-11-20. AI assisted with issue research, implementation, test scaffolding, evidence generation, and documentation. No human has reviewed or approved the experiments. No upstream project has endorsed this work. See [`AI_DISCLOSURE.md`](AI_DISCLOSURE.md).
+
+## License
+
+Original lab code and documentation are MIT-licensed. USWDS and third-party assets keep their own licenses. See [`THIRD-PARTY.md`](THIRD-PARTY.md).

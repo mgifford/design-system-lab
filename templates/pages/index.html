@@ -1,0 +1,34 @@
+<section class="hero">
+  <p class="eyebrow">Independent pilot / stable baseline <span class="pill">{{version}}</span></p>
+  <h1>Better design systems need visible evidence.</h1>
+  <p class="lead">Compare released USWDS with small, labelled proposals. Every experiment states its category, evidence status, and human-review status. The lab is independent of GSA, USWDS, OGDS, and CivicActions.</p>
+  <p><a class="button" href="experiment/dark-mode.html">Explore the dark-mode experiment</a> <a class="button secondary" href="experiments.html">All experiments</a></p>
+</section>
+
+<div class="callout warning">
+  <strong>This is not an official USWDS or OGDS project.</strong>
+  Experimental styles are not upstream changes and are not WCAG conformance claims.
+  {{assetState}}
+</div>
+
+<section aria-labelledby="lab-status">
+  <h2 class="section-title" id="lab-status">What the lab contains</h2>
+  <div class="metrics">{{metrics}}</div>
+  <p class="small">Counts describe the curated registry. An automated test does not make an experiment reviewed, and a human decision is never implied by a passing build.</p>
+</section>
+
+<section aria-labelledby="featured-heading">
+  <h2 class="section-title" id="featured-heading">Featured experiments</h2>
+  <div class="cards">{{featured}}</div>
+</section>
+
+<section aria-labelledby="components-heading">
+  <h2 class="section-title" id="components-heading">Stable components under study</h2>
+  <div class="cards">{{componentCards}}</div>
+</section>
+
+<section aria-labelledby="read-heading">
+  <h2 class="section-title" id="read-heading">How to read a result</h2>
+  <p>Baseline panes load the pinned <a href="https://github.com/uswds/uswds/releases/tag/v3.14.0">USWDS 3.14.0</a> distribution. The experimental pane adds a separate stylesheet and, where relevant, small markup changes. Guidepup transcripts are virtual screen-reader output over a DOM snapshot; they are not NVDA, JAWS, or VoiceOver sessions. Automated results are observations, not approval.</p>
+  <p>Start with <a href="guide.html">methodology and governance</a>, then open the <a href="evidence.html">evidence index</a>.</p>
+</section>

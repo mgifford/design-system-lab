@@ -1,5 +1,33 @@
 # AI assistance disclosure
 
-This initial starter code and documentation were drafted with OpenAI GPT-6 assistance on November 20, 2026, following human project requirements. The initial source structure and behavior have not been reviewed or approved by upstream USWDS or OGDS maintainers. Automated local smoke validation in the authoring environment does not constitute real assistive technology testing or standards conformance.
+## Initial starter
 
-The same principle applies to future contributions: indicate which code, tests, documentation and judgments involved AI; identify the human who reviewed them; link evidence; specify limitations and any source or license concerns. AI-generated tests may contain incorrect assumptions. A successful build is not independent verification.
+The initial starter code and documentation were drafted with OpenAI ChatGPT assistance on November 20, 2026, following human project requirements. The initial source structure and behavior were not reviewed or approved by upstream USWDS or OGDS maintainers. Automated local smoke validation in the authoring environment does not constitute real assistive-technology testing or standards conformance.
+
+## Current implementation pass
+
+On November 20, 2026, the DeepSeek Harness coding agent (`deepseek-flash`) extended the starter: source locking, the experiment registry and pages, the dark-mode token layer and contrast fixes, the user preferences panel, RTL and radio-validation prototypes, the evidence collector, browser and unit tests, CI configuration, and documentation.
+
+AI assistance was used for issue research, code generation, test scaffolding, evidence generation, and documentation drafting. The agent:
+
+- did not push a branch, open an issue, or submit anything upstream;
+- did not mark any experiment as human-reviewed;
+- did not invent test results, screenshots, or transcript output;
+- recorded browser substitutions and blocked checks rather than hiding them.
+
+## Human review status
+
+**No human has reviewed or approved the experiments in this pass.** The `DECISION.md` records are pending. A passing build, a clean axe scan, and a Guidepup transcript are observations, not approval.
+
+A human reviewer must still:
+
+- verify the issue history and user need;
+- inspect semantics, keyboard behavior, focus, and state communication;
+- perform real screen-reader and, where relevant, speech-input testing;
+- evaluate forced colors, high contrast, zoom, and text spacing;
+- assess upstream compatibility, maintenance cost, and licensing;
+- record the decision and its limitations.
+
+## Future contributions
+
+Indicate which code, tests, documentation, and judgments involved AI; identify the human who reviewed them; link evidence; specify limitations and any source or license concerns. AI-generated tests may contain incorrect assumptions. Do not attribute human work to AI, and do not claim a model contribution that cannot be verified.

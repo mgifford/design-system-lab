@@ -1,0 +1,29 @@
+<p class="eyebrow">Research catalogue</p>
+<h1>Community ideas</h1>
+<p class="lead">A curated, manually verified starting list from the USWDS issue history. This is not a complete backlog, a popularity ranking, or a claim that a closed issue remains unresolved. A closed issue may still describe a real user need that maintainers deferred.</p>
+
+<form class="controls" id="idea-filters" aria-label="Filter community ideas">
+  <div class="field">
+    <label for="status">Status</label>
+    <select id="status" name="status">
+      <option value="all">All statuses</option>
+      <option value="open">Open / under review</option>
+      <option value="closed-not-planned">Closed, not planned</option>
+      <option value="completed">Completed</option>
+      <option value="consolidated">Consolidated elsewhere</option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="search">Search title, proposal, or issue number</label>
+    <input id="search" type="search" placeholder="e.g. dark, 5069" autocomplete="off">
+  </div>
+</form>
+
+<p class="small" id="count" aria-live="polite">{{count}}</p>
+<div id="ideas" class="cards">{{cards}}</div>
+
+<section aria-labelledby="candidate-process">
+  <h2 class="section-title" id="candidate-process">How candidates become experiments</h2>
+  <p>A contributor links the original issue and its important follow-ups, writes a problem statement and acceptance criteria, implements an isolated proposal, runs repeatable tests, and prepares Markdown evidence. A maintainer decides whether to recommend, revise, reject, or contribute the change upstream.</p>
+  <p>Status meanings are deliberate: <strong>Completed</strong> work is a regression reference, not a missing feature; <strong>Consolidated</strong> work is tracked elsewhere; <strong>Closed, not planned</strong> is not evidence that maintainers rejected the need. Read <a href="guide.html">governance requirements</a>.</p>
+</section>

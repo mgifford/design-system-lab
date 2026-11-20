@@ -2,8 +2,17 @@
 :root{font-family:system-ui,"Segoe UI",sans-serif;color-scheme:light}body{margin:0;padding:1.1rem;font-size:1rem;background:#fff;color:#1b1b1b}
 .fixture-label{font:600 .74rem/1.4 system-ui,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:#4d5663;margin:0 0 1.1rem}.fixture-note{font-size:.86rem;color:#444b55;border-top:1px solid #dfe1e2;padding-top:.7rem;margin-top:2rem}
 .fixture-grid{max-width:780px}.fixture-grid>*{max-width:100%}.fixture-heading{margin:0 0 1rem;font-size:1.4rem}.button-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem}
-/* Clear no-JavaScript fallback: collapsed content is readable if JS cannot initialize. */
+.fixture-required{font-weight:400}.fixture-hint{font-size:.9rem;color:#444b55;margin:.2rem 0 .8rem}
+/* Clear no-JavaScript fallback: content is readable if JS cannot initialize.
+ * Hide the dead disclosure buttons so a screen reader is not told "collapsed"
+ * while the content is visible. */
 html:not(.js) .usa-accordion__content[hidden],html:not(.js) .usa-banner__content[hidden]{display:block!important}
+html:not(.js) .usa-accordion__button,html:not(.js) .usa-banner__button{display:none!important}
+/* User text-size preference, applied to both baseline and experiment fixtures. */
+html[data-text-size="large"]{font-size:112.5%}
+html[data-text-size="x-large"]{font-size:125%}
+html[data-contrast="more"] .usa-accordion__button,html[data-contrast="more"] .usa-banner__button,html[data-contrast="more"] .usa-input{border-width:2px}
+html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-motion="reduce"] *::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 /* OFFLINE DEMO ONLY. Real USWDS CSS takes precedence when present. */
 .offline .usa-accordion__button,.offline .usa-banner__button{width:100%;font:inherit;text-align:left;padding:.8rem;border:1px solid #aeb0b5;background:#e6e6e6;color:#1b1b1b;cursor:pointer}
 .offline .usa-accordion__content,.offline .usa-banner__content{padding:1rem;border:1px solid #aeb0b5}

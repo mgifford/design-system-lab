@@ -1,0 +1,87 @@
+<p class="eyebrow">New component proposal</p>
+<h1>User preferences panel</h1>
+<p class="lead">A consistent place to choose appearance, text size, contrast, and motion. It is an alternative to third-party accessibility overlays, not a replacement for accessible design, browser preferences, or assistive technology.</p>
+
+<div class="callout warning">
+  <strong>No equivalent preference panel is included in stable USWDS 3.14.0.</strong>
+  This is a proposed component, not an upstream feature. Teams currently implement their own controls, storage, reset behavior, and documentation. The absence of a stable baseline is a capability gap, not an accessibility failure.
+</div>
+
+<noscript><p class="callout">JavaScript is required to save preferences. This page and its explanation remain readable, and your browser or operating-system settings still apply.</p></noscript>
+
+<section aria-labelledby="panel-title">
+  <h2 class="section-title" id="panel-title">Try the panel</h2>
+  <form class="prefs-panel" id="prefs-form" aria-describedby="prefs-help">
+    <p id="prefs-help" class="small">Changes apply immediately on this device. The preference is stored only in this browser with <code>localStorage</code>; it is not sent anywhere. Reset returns to system defaults.</p>
+
+    <fieldset class="prefs-group">
+      <legend>Appearance</legend>
+      <p class="small" id="appearance-help">System follows your operating-system setting. An explicit choice overrides it.</p>
+      <div class="pref-choices">
+        <label class="pref-choice"><input type="radio" name="theme" value="system" checked> System</label>
+        <label class="pref-choice"><input type="radio" name="theme" value="light"> Light</label>
+        <label class="pref-choice"><input type="radio" name="theme" value="dark"> Dark</label>
+      </div>
+    </fieldset>
+
+    <div class="prefs-grid">
+      <div class="field">
+        <label for="pref-text-size">Text size</label>
+        <select id="pref-text-size" name="textSize">
+          <option value="default">Default (100%)</option>
+          <option value="large">Large (112.5%)</option>
+          <option value="x-large">Extra large (125%)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="pref-contrast">Contrast</label>
+        <select id="pref-contrast" name="contrast">
+          <option value="default">Default</option>
+          <option value="more">More contrast</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="pref-motion">Motion</label>
+        <select id="pref-motion" name="motion">
+          <option value="system">Follow system</option>
+          <option value="reduce">Reduce motion</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button class="button secondary" type="button" id="prefs-reset">Reset to system defaults</button>
+    </div>
+    <p id="prefs-status" role="status" aria-live="polite"></p>
+  </form>
+</section>
+
+<section aria-labelledby="preview-title">
+  <h2 class="section-title" id="preview-title">Preview</h2>
+  <p>The preview is a separate experimental accordion fixture. It reads the saved preference when it loads; changing a setting reloads the frame. Open it independently for keyboard testing.</p>
+  <p><a href="fixture/accordion-experiment.html" target="_blank" rel="noopener">Open the preview fixture in a new tab</a></p>
+  <iframe id="prefs-preview-frame" class="prefs-preview" title="Experimental accordion preview using saved preferences" src="fixture/accordion-experiment.html"></iframe>
+</section>
+
+<section aria-labelledby="settings-title">
+  <h2 class="section-title" id="settings-title">What each setting does</h2>
+  <div class="table-wrap" tabindex="0">
+    <table>
+      <caption>Preference behavior and scope</caption>
+      <thead><tr><th scope="col">Setting</th><th scope="col">Behavior</th><th scope="col">Limit</th></tr></thead>
+      <tbody>
+        <tr><td>Appearance</td><td>Sets an explicit light or dark theme, or removes the override so <code>prefers-color-scheme</code> applies.</td><td>The lab’s experiment fixtures support the theme; the stable baseline stays unchanged.</td></tr>
+        <tr><td>Text size</td><td>Scales the root font size to 100%, 112.5%, or 125%.</td><td>It does not replace browser zoom or a user stylesheet. Test 200% and 400% zoom separately.</td></tr>
+        <tr><td>Contrast</td><td>Strengthens borders and focus indicators.</td><td>It is not a high-contrast mode and does not override forced colors.</td></tr>
+        <tr><td>Motion</td><td>Reduces non-essential animation and transitions.</td><td>It does not replace the OS reduced-motion setting for other sites.</td></tr>
+        <tr><td>Reset</td><td>Deletes the stored preference and returns to system defaults.</td><td>The current page updates immediately; other open tabs may need a reload.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="scope-title">
+  <h2 class="section-title" id="scope-title">Implementation and limitations</h2>
+  <p>The panel uses native radios and selects, a labelled fieldset, a status region, and no custom widget role. Persistence is limited to this origin and may fail in private browsing; the implementation catches storage errors and keeps the current page usable. No personal information is stored.</p>
+  <p>Read the <a href="docs/experiments/preferences-panel/IMPLEMENTATION.html">implementation guidance</a>, <a href="docs/experiments/preferences-panel/TEST-PLAN.html">test plan</a>, and <a href="docs/experiments/preferences-panel/README.html">proposal</a>. The review decision is still pending.</p>
+</section>

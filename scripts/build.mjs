@@ -3,48 +3,202 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {fixtureHtml} from './components.mjs';
-const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const dist=path.join(root,'dist');
-const vendor=path.join(root,'node_modules','@uswds','uswds','dist');
-const requireUswds=process.argv.includes('--require-uswds');
-const pkgFile=path.join(root,'node_modules','@uswds','uswds','package.json');
-const installedVersion=fs.existsSync(pkgFile)?JSON.parse(fs.readFileSync(pkgFile,'utf8')).version:null;
-const css=path.join(vendor,'css','uswds.min.css');
-const js=path.join(vendor,'js','uswds.min.js');
-const realAssets=installedVersion==='3.14.0'&&fs.existsSync(css)&&fs.existsSync(js);
-const fileSha256=p=>fs.existsSync(p)?createHash('sha256').update(fs.readFileSync(p)).digest('hex'):null;
-if(requireUswds&&!realAssets)throw Error(`Strict build requires @uswds/uswds version 3.14.0 with dist CSS and JS. Installed: ${installedVersion||'none'}. Run npm install first.`);
-const issues=JSON.parse(fs.readFileSync(path.join(root,'data','issues.json'),'utf8'));
-const registry=JSON.parse(fs.readFileSync(path.join(root,'data','registry.json'),'utf8'));
-fs.rmSync(dist,{recursive:true,force:true});fs.mkdirSync(dist,{recursive:true});
-fs.cpSync(path.join(root,'site'),dist,{recursive:true});
-const outData=path.join(dist,'data');fs.mkdirSync(outData,{recursive:true});
-for(const file of ['registry.json','issues.json','review.json'])fs.copyFileSync(path.join(root,'data',file),path.join(outData,file));
-if(realAssets){
- const dest=path.join(dist,'vendor','uswds');fs.mkdirSync(dest,{recursive:true});
- for(const folder of ['css','js','img','fonts']){const source=path.join(vendor,folder);if(fs.existsSync(source))fs.cpSync(source,path.join(dest,folder),{recursive:true})}
- const packageLicense=path.join(root,'node_modules','@uswds','uswds','LICENSE.md');
- if(fs.existsSync(packageLicense))fs.copyFileSync(packageLicense,path.join(dest,'LICENSE.md'));
- // An alternative package layout must not be silently accepted by strict build.
- if(!fs.existsSync(path.join(dest,'css','uswds.min.css'))||!fs.existsSync(path.join(dest,'js','uswds.min.js')))throw Error('Missing copied USWDS dist assets');
+import {renderPage} from './layout.mjs';
+import {renderMarkdown, escapeHtml} from './markdown.mjs';
+import {buildStaticPages, buildComponentPages, buildExperimentPages, buildDocPages} from './pages.mjs';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const dist = path.join(root, 'dist');
+const vendor = path.join(root, 'node_modules', '@uswds', 'uswds', 'dist');
+const requireUswds = process.argv.includes('--require-uswds');
+const packageFile = path.join(root, 'package.json');
+const installedFile = path.join(root, 'node_modules', '@uswds', 'uswds', 'package.json');
+const lockFile = path.join(root, 'data', 'sources.lock.json');
+const packageLock = path.join(root, 'package-lock.json');
+const cssPath = path.join(vendor, 'css', 'uswds.min.css');
+const jsPath = path.join(vendor, 'js', 'uswds.min.js');
+
+const readJson = file => JSON.parse(fs.readFileSync(file, 'utf8'));
+const exists = file => fs.existsSync(file);
+const sha256 = file => exists(file) ? createHash('sha256').update(fs.readFileSync(file)).digest('hex') : null;
+const write = (relative, content) => {
+  const target = path.join(dist, relative);
+  fs.mkdirSync(path.dirname(target), {recursive: true});
+  fs.writeFileSync(target, content);
+};
+
+const pkg = readJson(packageFile);
+const registry = readJson(path.join(root, 'data', 'registry.json'));
+const issues = readJson(path.join(root, 'data', 'issues.json'));
+const review = readJson(path.join(root, 'data', 'review.json'));
+if (!exists(lockFile)) throw new Error('data/sources.lock.json is missing. Run npm run sources:write after installing the pinned USWDS package.');
+const lock = readJson(lockFile);
+const installedVersion = exists(installedFile) ? readJson(installedFile).version : null;
+const realAssets = installedVersion === lock.baseline.version && exists(cssPath) && exists(jsPath);
+
+if (pkg.dependencies?.['@uswds/uswds'] !== lock.baseline.version) {
+  throw new Error(`package.json pins ${pkg.dependencies?.['@uswds/uswds']}; sources.lock.json expects ${lock.baseline.version}.`);
 }
-const fixtureDir=path.join(dist,'fixture');fs.mkdirSync(fixtureDir,{recursive:true});
-for(const component of registry.components){for(const variant of ['baseline','experiment']){
- fs.writeFileSync(path.join(fixtureDir,`${component.slug}-${variant}.html`),fixtureHtml({component:component.slug,variant,realAssets}));
-}}
-// A generated evidence manifest must distinguish absent evidence from actual passes.
-const manifestPath=path.join(root,'reports','latest','MANIFEST.json');
-const evidence=fs.existsSync(manifestPath)?JSON.parse(fs.readFileSync(manifestPath,'utf8')):{generated:false,runId:null,pages:[],succeeded:0,failed:0};
-fs.writeFileSync(path.join(outData,'evidence.json'),JSON.stringify(evidence,null,2));
-fs.writeFileSync(path.join(outData,'build.json'),JSON.stringify({uswdsRealAssets:realAssets,uswdsVersion:realAssets?'3.14.0':null,generatedAt:new Date().toISOString(),components:registry.components.map(c=>c.slug),source:'@uswds/uswds@3.14.0',assetSha256:realAssets?{css:fileSha256(css),js:fileSha256(js)}:null,lockSha256:fileSha256(path.join(root,'package-lock.json'))},null,2));
-const evDir=path.join(dist,'evidence','latest');fs.mkdirSync(evDir,{recursive:true});
-const latest=path.join(root,'reports','latest');
-if(fs.existsSync(latest)){
- for(const filename of fs.readdirSync(latest))if(filename.endsWith('.md')){const content=fs.readFileSync(path.join(latest,filename),'utf8');fs.copyFileSync(path.join(latest,filename),path.join(evDir,filename));
- const html=`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${filename} | Evidence</title><link rel="stylesheet" href="../../assets/base.css"></head><body><main><p><a href="../../evidence.html">Back to evidence index</a></p><h1>${filename}</h1><pre style="white-space:pre-wrap;overflow-wrap:anywhere;background:white;border:1px solid #aaa;padding:1.2rem">${content.replaceAll('&','&amp;').replaceAll('<','&lt;')}</pre></main></body></html>`;
- fs.writeFileSync(path.join(evDir,filename.replace(/\.md$/,'.html')),html);
- }
+if (!exists(packageLock)) {
+  if (requireUswds) throw new Error('Strict build requires package-lock.json. Run npm ci and commit the generated lockfile.');
+  console.warn('WARNING: package-lock.json is missing; the build is not reproducible.');
 }
-// Generate link inventory for built fixture smoke tests and evidence collection.
-fs.writeFileSync(path.join(outData,'routes.json'),JSON.stringify(['index.html','compare.html','ideas.html','evidence.html','guide.html',...registry.components.flatMap(c=>['baseline','experiment'].map(v=>`fixture/${c.slug}-${v}.html`))],null,2));
-console.log(`Built ${dist} (${realAssets?'real pinned USWDS 3.14.0':'OFFLINE ILLUSTRATION; no USWDS assets'}), ${registry.components.length*2} fixtures, ${issues.length} curated issues.`);
+if (lock.baseline.packageLock?.sha256 && exists(packageLock) && sha256(packageLock) !== lock.baseline.packageLock.sha256) {
+  const message = 'package-lock.json does not match data/sources.lock.json. Run npm run sources:write in a reviewed change if the dependency change is intentional.';
+  if (requireUswds) throw new Error(message);
+  console.warn(`WARNING: ${message}`);
+}
+if (realAssets && lock.baseline.assets) {
+  const cssHash = sha256(cssPath);
+  const jsHash = sha256(jsPath);
+  if (cssHash !== lock.baseline.assets.css?.sha256 || jsHash !== lock.baseline.assets.js?.sha256) {
+    const message = 'Installed USWDS CSS/JS hashes do not match data/sources.lock.json.';
+    if (requireUswds) throw new Error(`${message} Run npm run sources:write in a reviewed change if the release changed.`);
+    console.warn(`WARNING: ${message}`);
+  }
+}
+if (requireUswds && !realAssets) {
+  throw new Error(`Strict build requires @uswds/uswds ${lock.baseline.version} with dist CSS and JS. Installed: ${installedVersion || 'none'}. Run npm ci first.`);
+}
+
+fs.rmSync(dist, {recursive: true, force: true});
+fs.mkdirSync(dist, {recursive: true});
+fs.cpSync(path.join(root, 'site', 'assets'), path.join(dist, 'assets'), {recursive: true});
+
+fs.mkdirSync(path.join(dist, 'data'), {recursive: true});
+for (const file of ['registry.json', 'issues.json', 'review.json', 'sources.lock.json']) {
+  fs.copyFileSync(path.join(root, 'data', file), path.join(dist, 'data', file));
+}
+
+if (realAssets) {
+  const destination = path.join(dist, 'vendor', 'uswds');
+  fs.mkdirSync(destination, {recursive: true});
+  for (const folder of ['css', 'js', 'img', 'fonts']) {
+    const source = path.join(vendor, folder);
+    if (exists(source)) fs.cpSync(source, path.join(destination, folder), {recursive: true});
+  }
+  const license = path.join(root, 'node_modules', '@uswds', 'uswds', 'LICENSE.md');
+  if (exists(license)) fs.copyFileSync(license, path.join(destination, 'LICENSE.md'));
+  if (!exists(path.join(destination, 'css', 'uswds.min.css')) || !exists(path.join(destination, 'js', 'uswds.min.js'))) {
+    throw new Error('Missing copied USWDS dist assets.');
+  }
+}
+
+// Fixtures are generated for every registered component. A new-component
+// experiment (no stable equivalent) is a page, not a fabricated baseline pair.
+for (const component of registry.components) {
+  for (const variant of ['baseline', 'experiment']) {
+    write(`fixture/${component.slug}-${variant}.html`, fixtureHtml({
+      component: component.slug,
+      variant,
+      realAssets
+    }));
+  }
+}
+
+const manifestPath = path.join(root, 'reports', 'latest', 'MANIFEST.json');
+const manifest = exists(manifestPath) ? readJson(manifestPath) : {generated: false, runId: null, pages: [], succeeded: 0, failed: 0};
+const buildInfo = {
+  uswdsRealAssets: realAssets,
+  uswdsVersion: realAssets ? lock.baseline.version : null,
+  baselineRelease: lock.baseline.release,
+  sourceCommit: lock.baseline.commit,
+  generatedAt: new Date().toISOString(),
+  components: registry.components.map(component => component.slug),
+  experiments: registry.experiments.map(experiment => experiment.id),
+  source: '@uswds/uswds ' + lock.baseline.version + ' (npm)',
+  assetSha256: realAssets ? {css: sha256(cssPath), js: sha256(jsPath)} : null,
+  lockSha256: sha256(path.join(root, 'package-lock.json'))
+};
+
+// Evidence is published only from the current reports/latest run. Nothing from
+// a previous run is copied into dist, because the directory is recreated.
+fs.rmSync(path.join(dist, 'evidence'), {recursive: true, force: true});
+const latest = path.join(root, 'reports', 'latest');
+let evidenceInfo = {generated: false, reason: realAssets ? 'No evidence run is published in this build.' : 'Offline illustration; evidence is not published.'};
+if (realAssets && exists(manifestPath) && Array.isArray(manifest.pages) && manifest.pages.length) {
+  evidenceInfo = {
+    generated: true,
+    status: manifest.status || 'completed',
+    runId: manifest.runId,
+    generatedAt: manifest.generatedAt || manifest.finishedAt || manifest.startedAt,
+    source: manifest.source,
+    gitSha: manifest.gitSha,
+    browser: manifest.browser,
+    succeeded: manifest.succeeded,
+    failed: manifest.failed,
+    pages: manifest.pages,
+    coverage: manifest.coverage || null
+  };
+  const evidenceDir = path.join(dist, 'evidence', 'latest');
+  fs.mkdirSync(evidenceDir, {recursive: true});
+  const copyEvidence = directory => {
+    for (const entry of fs.readdirSync(directory, {withFileTypes: true})) {
+      const full = path.join(directory, entry.name);
+      const relative = path.relative(latest, full).split(path.sep).join('/');
+      const target = path.join(evidenceDir, relative);
+      if (entry.isDirectory()) {
+        fs.mkdirSync(target, {recursive: true});
+        copyEvidence(full);
+      } else if (/\.(md|png|json)$/.test(entry.name)) {
+        fs.mkdirSync(path.dirname(target), {recursive: true});
+        fs.copyFileSync(full, target);
+        if (entry.name.endsWith('.md')) {
+          const markdown = fs.readFileSync(full, 'utf8');
+          const title = (markdown.match(/^#\s+(.+)$/m) || [null, entry.name])[1];
+          const outputDir = path.posix.dirname(`evidence/latest/${relative}`);
+          const depth = outputDir.split('/').filter(Boolean).length;
+          const base = '../'.repeat(depth);
+          const html = renderPage({
+            route: `evidence/latest/${relative}`,
+            title,
+            description: `Generated evidence: ${relative}`,
+            current: 'evidence',
+            base,
+            content: `<p class="eyebrow">Generated evidence</p><div class="callout warning"><strong>Automated observation only.</strong> This is not a real screen-reader session, a WCAG conformance statement, or human approval.</div><article class="prose">${renderMarkdown(markdown)}</article>
+<p class="small"><a href="${base}evidence.html">Back to the evidence index</a> · <a href="${base}data/sources.lock.json">Source lock</a></p>`
+          });
+          fs.writeFileSync(path.join(evidenceDir, relative.replace(/\.md$/, '.html')), html);
+        }
+      }
+    }
+  };
+  copyEvidence(latest);
+  write('data/evidence.json', `${JSON.stringify(evidenceInfo, null, 2)}\n`);
+} else {
+  write('data/evidence.json', `${JSON.stringify(evidenceInfo, null, 2)}\n`);
+}
+
+const pageManifest = realAssets ? manifest : {generated: false, pages: [], succeeded: 0, failed: 0};
+const pages = [
+  ...buildStaticPages({root, registry, issues, buildInfo, manifest: pageManifest, lock}),
+  ...buildComponentPages({root, registry, issues, manifest: pageManifest, lock}),
+  ...buildExperimentPages({root, registry, issues, manifest: pageManifest}),
+  ...buildDocPages({root})
+];
+for (const page of pages) write(page.route, page.html);
+
+const routes = [
+  'index.html',
+  'components.html',
+  'experiments.html',
+  'ideas.html',
+  'evidence.html',
+  'compare.html',
+  'guide.html',
+  'preferences.html',
+  ...registry.components.flatMap(component => ['baseline', 'experiment'].map(variant => `fixture/${component.slug}-${variant}.html`)),
+  ...registry.components.map(component => `component/${component.slug}.html`),
+  ...registry.experiments.map(experiment => `experiment/${experiment.id}.html`)
+];
+if (new Set(routes).size !== routes.length) throw new Error('Duplicate route generated.');
+write('data/routes.json', `${JSON.stringify(routes, null, 2)}\n`);
+write('data/build.json', `${JSON.stringify(buildInfo, null, 2)}\n`);
+
+console.log(`Built ${dist}`);
+console.log(`  baseline: ${realAssets ? `${lock.baseline.release} (${lock.baseline.version})` : 'OFFLINE ILLUSTRATION; no USWDS assets'}`);
+console.log(`  fixtures: ${registry.components.length * 2}; components: ${registry.components.length}; experiments: ${registry.experiments.length}`);
+const docPageCount = pages.filter(page => page.route.startsWith('docs/')).length;
+console.log(`  lab routes: ${routes.length}; documentation pages: ${docPageCount}`);
+console.log(`  evidence: ${evidenceInfo.generated ? `run ${evidenceInfo.runId} (${evidenceInfo.succeeded} collected, ${evidenceInfo.failed} failed)` : 'none in this build'}`);
+if (!realAssets) console.log('  WARNING: offline illustration only. Do not report its visual output as upstream USWDS.');

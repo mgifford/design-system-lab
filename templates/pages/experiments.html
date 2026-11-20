@@ -1,0 +1,28 @@
+<p class="eyebrow">Proposals, not upstream features</p>
+<h1>Experiments</h1>
+<p class="lead">An experiment is a working proposal with a category, baseline, implementation guidance, evidence status, and a human-review record. Absence of a stable USWDS component is described as a gap in capability, not as an accessibility failure.</p>
+
+<form class="controls" id="experiment-filters" aria-label="Filter experiments">
+  <div class="field">
+    <label for="experiment-type">Category</label>
+    <select id="experiment-type" name="type">
+      <option value="all">All categories</option>
+      {{typeOptions}}
+    </select>
+  </div>
+  <div class="field">
+    <label for="experiment-status">Status</label>
+    <select id="experiment-status" name="status">
+      <option value="all">All statuses</option>
+      {{statusOptions}}
+    </select>
+  </div>
+</form>
+
+<p class="small" id="experiment-count" aria-live="polite">{{count}} experiments</p>
+<div id="experiment-list" class="cards">{{cards}}</div>
+
+<section aria-labelledby="experiment-lifecycle">
+  <h2 class="section-title" id="experiment-lifecycle">How an experiment moves</h2>
+  <p>A prototype is not an approval. Human review is a separate, recorded decision. An experiment may end as documentation or a rejected proposal; not every result should become an upstream pull request. Read <a href="guide.html">governance and the lifecycle</a>.</p>
+</section>

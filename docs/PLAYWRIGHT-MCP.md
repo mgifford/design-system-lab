@@ -1,25 +1,35 @@
 # Playwright MCP exploration procedures
 
-The project-scoped `.mcp.json` configures `@playwright/mcp` for use by capable coding agents. This is a **separate exploratory interface**, not CI automation. The executable regression assertions live in `tests/browser/site.spec.mjs`.
+The project-scoped `.mcp.json` configures `@playwright/mcp` at version **0.0.86** for capable coding agents. The package is pinned in `devDependencies` as well. This is a **separate exploratory interface**, not CI automation. Deterministic regression assertions live in `tests/browser/site.spec.mjs`.
+
+## Execution status
+
+**No MCP exploration has been recorded as executed for this build.** The scenario inventory is complete (27 routes), but a scenario file is not evidence that an agent ran it. When an exploration is performed, add a dated note to the relevant experiment's evidence or a `reports/` note with the tool version, route, browser, observations, and what was not verified. Do not claim execution from the presence of `tests/mcp/scenarios.json`.
 
 ## Setup
 
-1. Run `npm install`, `npm run build:strict`, and `npm run serve` locally.
-2. Launch a coding assistant that supports project MCP configuration and explicitly approve the Playwright MCP server it proposes to run.
-3. Use `http://127.0.0.1:4173/` as the test origin. Do not navigate to real government account pages or type secrets into the pilot.
-4. Follow the scenarios in `tests/mcp/scenarios.json`. They cover **each published route**, including both variants of every component. The `validate` script fails if the scenario inventory drifts from the built page list.
-5. Record exact route, date, browser, viewport, theme, source version, observed results and anything not verified. Preserve accessibility snapshots and screenshots only where they clarify a finding.
-6. Convert stable behavior expectations into deterministic Playwright assertions and collect Guidepup transcripts through `npm run evidence`. Do not treat exploratory MCP output as proof of conformance.
+1. Run `npm ci`, `npm run build:strict`, and `npm run serve` locally.
+2. Approve the project-scoped Playwright MCP server when the coding assistant proposes it.
+3. Use `http://127.0.0.1:4173/` as the origin. Do not navigate to real government account pages or type secrets into the pilot.
+4. Follow the scenarios in `tests/mcp/scenarios.json`. They cover every published lab route, including both variants of every component and every generated component/experiment page.
+5. `npm run mcp:check` fails if the scenario inventory drifts from `dist/data/routes.json`.
 
-## Assistant instructions for each route
+## Investigation steps
 
-- Navigate directly to the fixture's stable route.
-- Obtain and inspect the browser accessibility snapshot. Confirm the page and component are the requested ones.
-- Follow all listed exploration steps, using browser-level keyboard inputs rather than dispatching synthetic DOM events.
-- Record unexpected differences between baseline and experiment without describing them as bugs until reproduced.
-- Re-run at narrow viewport and with user preferences where relevant. If the MCP tool does not expose a feature, record `not tested` rather than guessing.
-- If a script or browser cannot complete the steps, record the blocker and link a human-readable `EVIDENCE.md` draft.
+For each route:
 
-## Versioning and scope
+1. Open the baseline fixture or page and record the exact source version.
+2. Inspect the rendered DOM, headings, landmarks, and relevant interactive elements.
+3. Perform realistic keyboard interactions. Use browser-level input, not synthetic DOM events.
+4. Record accessibility-relevant observations: names, roles, states, focus, and announcements.
+5. Repeat the same scenario on the experimental version.
+6. Compare results and identify potential problems and uncertainties.
+7. Save human-readable notes; do not describe a single observation as a confirmed regression.
+8. Convert a reproducible finding into a deterministic Playwright assertion.
 
-MCP agent invocation is not locked to a precise server build in the pilot's `.mcp.json`. Before producing evidence that will be published, record the actual MCP server version. Pin it once a known-good version has been established locally. The Playwright browser test package itself is pinned in `package.json` and should be lockfile-pinned on first successful install.
+## Boundaries
+
+- MCP output is not a substitute for deterministic tests, real assistive technology, or human review.
+- Do not allow an exploratory agent to open, comment on, or submit upstream GitHub issues or pull requests.
+- If a tool cannot expose a feature, record `not tested` rather than guessing.
+- Before publishing evidence that depends on MCP, record the actual server version and the execution date.

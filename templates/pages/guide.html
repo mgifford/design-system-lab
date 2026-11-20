@@ -1,0 +1,30 @@
+<p class="eyebrow">Scope, provenance and governance</p>
+<h1>Methodology and governance</h1>
+<p class="lead">The lab tests small proposals against an immutable USWDS release. It does not fork USWDS, claim official endorsement, or treat a passing automated run as an accessibility decision.</p>
+
+<h2>Stable baseline</h2>
+{{sourceLock}}
+<p>The baseline is the pinned npm distribution plus authored fixture markup and a small fixture stylesheet. It is not a byte-for-byte copy of every official example. A newer USWDS release is reported by <code>npm run sources:latest</code> but never promoted automatically; promotion requires a reviewed decision.</p>
+
+<h2>What is compared</h2>
+<p>Baseline panes load the exact released CSS and JavaScript. Experimental panes load the same assets plus a separate MIT-licensed stylesheet and, where needed, extra markup. The comparison viewer does not mirror keyboard or mouse input between panes; independent pages are provided for real keyboard and assistive-technology testing.</p>
+
+<h2>Experiment categories</h2>
+<ul class="clean">
+  <li><strong>Component improvement:</strong> a change to an existing USWDS component.</li>
+  <li><strong>New component:</strong> a proposal with no stable equivalent; the missing baseline is stated, not fabricated.</li>
+  <li><strong>Cross-component capability:</strong> a systematic change such as appearance preferences.</li>
+  <li><strong>Alternative implementation:</strong> a different approach to an existing interaction or layout problem.</li>
+</ul>
+
+<h2>Experiment lifecycle</h2>
+<p>Proposed → under investigation → prototype → automated evidence collected → ready for human review → changes requested / reviewed and accepted → submitted upstream → adopted upstream, or deferred / archived. Human review is recorded in each experiment’s <code>DECISION.md</code>. AI may draft material but cannot mark its own work as human-approved.</p>
+
+<h2>AI assistance and human responsibility</h2>
+<p>AI assistance is disclosed per experiment. Generated code, tests, summaries, and review drafts are proposals. A human must inspect implementation quality, semantics, keyboard behavior, evidence, compatibility, maintenance impact, and upstream context. A successful build or a clean scanner run is not approval. See <a href="docs/AI_DISCLOSURE.html">the AI disclosure</a> and <a href="docs/GOVERNANCE.html">governance</a>.</p>
+
+<h2>What is out of scope</h2>
+<p>This is not an official USWDS release channel, a competing government design system, a WCAG certification, or a complete replacement for upstream documentation. OGDS Elements and USWDS Elements are research links only; no runtime adapter is claimed until one is implemented and license-reviewed.</p>
+
+<h2>Contributing</h2>
+<p>Read <a href="docs/CONTRIBUTING-EXPERIMENTS.html">the experiment contributor guide</a>. Use <code>npm run experiment:new</code> to create a draft with no fabricated evidence, then implement a fixture and a deterministic test before requesting review.</p>
