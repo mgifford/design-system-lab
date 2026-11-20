@@ -291,6 +291,7 @@ test('landing demo: USWDS and OGDS hybrid share content', async ({page}) => {
 
   const content = async frame => (await frame.locator('main').textContent()).replace(/\s+/g, '');
   expect(await content(right)).toBe(await content(left));
+  expect(await right.locator('body').getAttribute('data-content-hash')).toBe(await left.locator('body').getAttribute('data-content-hash'));
 
   for (const tag of ['ogds-banner', 'ogds-header', 'ogds-primary-nav', 'ogds-accordion']) {
     await expect(right.locator(tag)).toHaveCount(1);
@@ -325,4 +326,47 @@ test('landing demo: disclosure is keyboard operable in both systems', async ({pa
   await expect(details).toHaveAttribute('open', '');
   await summary.press('Space');
   expect(await details.getAttribute('open')).toBeNull();
+});
+
+test('landing demo: full-width preview layout is available', async ({page}) => {
+  await goto(page, 'demo.html');
+  await page.locator('#preview-layout').selectOption('full');
+  await expect(page.locator('.demo-compare')).toHaveAttribute('data-layout', 'full');
+  const columns = await page.locator('.demo-compare').evaluate(element => getComputedStyle(element).gridTemplateColumns);
+  expect(columns.trim().split(/\s+/)).toHaveLength(1);
+});
+
+test('forms demo: same content hash, OGDS shell, USWDS form controls', async ({page}) => {
+  await goto(page, 'demo/forms.html');
+  const left = page.frameLocator('#forms-uswds');
+  const right = page.frameLocator('#forms-ogds');
+  await expect(left.locator('h1')).toHaveText('Contact us');
+  await expect(right.locator('h1')).toHaveText('Contact us');
+  expect(await right.locator('body').getAttribute('data-content-hash')).toBe(await left.locator('body').getAttribute('data-content-hash'));
+
+  await expect(left.locator('ogds-banner')).toHaveCount(0);
+  await expect(left.locator('ogds-header')).toHaveCount(0);
+  await expect(right.locator('ogds-banner')).toHaveCount(1);
+  await expect(right.locator('ogds-header')).toHaveCount(1);
+  await expect(left.locator('form#contact-form')).toHaveCount(1);
+  await expect(right.locator('form#contact-form')).toHaveCount(1);
+  await expect(left.locator('form#contact-form')).toHaveAttribute('class', /usa-form/);
+  await expect(right.locator('form#contact-form')).toHaveAttribute('class', /usa-form/);
+
+  const form = left.locator('form#contact-form');
+  await form.locator('button[type="submit"]').click();
+  await expect(left.locator('#contact-form-error-summary')).toBeVisible();
+  await expect(left.locator('#contact-name-error')).toContainText('Enter full name');
+  await expect(left.locator('#contact-name')).toHaveAttribute('aria-invalid', 'true');
+  await expect(left.locator('#contact-name')).toHaveAttribute('aria-describedby', /contact-name-error/);
+  expect(await left.locator('#contact-form-error-summary').evaluate(element => document.activeElement === element)).toBe(true);
+  await expect(left.locator('#form-status')).toBeEmpty();
+  await left.locator('#contact-name').fill('Sample Person');
+  await left.locator('#contact-email').fill('sample@example.gov');
+  await left.locator('#contact-subject').selectOption('general');
+  await left.locator('#contact-message').fill('This is a sample message for local validation.');
+  await form.locator('button[type="submit"]').click();
+  await expect(left.locator('#form-status')).toContainText('validated locally');
+  await expect(left.locator('#contact-form-error-summary')).toBeHidden();
+  await expect(left.locator('#contact-name')).not.toHaveAttribute('aria-invalid', 'true');
 });

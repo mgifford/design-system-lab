@@ -48,6 +48,27 @@ if (ogdsDependency) {
   if (pkg?.dependencies?.['@ogds/elements'] !== ogdsDependency.version) add('package.json must pin @ogds/elements to the registry version');
   if (lock?.external?.find(entry => entry.id === 'ogds-elements')?.version !== ogdsDependency.version) add('source lock is missing the pinned OGDS Elements version');
 }
+
+const coverage = readRequired('data/coverage.json', 'coverage map');
+const sandboxLock = readRequired('content/sandbox.lock.json', 'sandbox content lock');
+const contentPages = ['landing', 'forms'].map(id => readRequired(`content/pages/${id}.json`, `content page ${id}`)).filter(Boolean);
+if (coverage) {
+  const blocks = new Set((coverage.components || []).map(component => component.block));
+  for (const page of contentPages) {
+    for (const section of page.sections || []) {
+      if (!blocks.has(section.type)) add(`content page ${page.id} uses block "${section.type}" with no coverage entry`);
+    }
+  }
+  if (coverage.source !== `@ogds/elements@${ogdsDependency?.version || ''}`) add('coverage source does not match the pinned OGDS version');
+}
+if (sandboxLock) {
+  if (!/^[0-9a-f]{40}$/.test(sandboxLock.commit || '')) add('sandbox lock commit must be a 40-character commit SHA');
+  if (!sandboxLock.license) add('sandbox lock license is missing');
+  for (const page of sandboxLock.pages || []) requireFile(page.labContent, `sandbox imported content ${page.labContent}`);
+}
+requireFile('content/pages/landing.json', 'landing content');
+requireFile('content/pages/forms.json', 'forms content');
+
 const experimentStatuses = new Set(Object.keys(registry?.experimentStatuses || {}));
 const componentSlugs = new Set((registry?.components || []).map(component => component.slug));
 const issueNumbers = new Set((issues || []).map(issue => issue.number));

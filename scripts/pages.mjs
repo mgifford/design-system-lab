@@ -159,7 +159,36 @@ function evidenceSummary(manifest, buildInfo) {
   <p class="small">Axe counts are recorded for investigation. A zero count is not a conformance claim. See the <a href="evidence/latest/COVERAGE.html">coverage matrix</a> for states that were and were not collected.</p>`;
 }
 
-export function buildStaticPages({root, registry, issues, buildInfo, manifest, lock}) {
+const BLOCK_LABELS = {
+  banner: 'Banner',
+  header: 'Header and navigation',
+  hero: 'Hero',
+  alert: 'Alert',
+  cards: 'Cards',
+  accordion: 'Accordion',
+  prose: 'Prose',
+  'page-heading': 'Page heading and intro',
+  form: 'Form controls',
+  footer: 'Footer'
+};
+
+export function coverageTable(coverage, blocks) {
+  const byBlock = new Map((coverage.components || []).map(component => [component.block, component]));
+  const rows = blocks.map(block => {
+    const item = byBlock.get(block);
+    if (!item) return '';
+    const status = item.status === 'alternate'
+      ? 'OGDS alternate'
+      : item.status === 'not-built'
+        ? 'USWDS fallback — not built in beta.2'
+        : 'USWDS — unchanged';
+    const ogds = item.ogds ? `<code>${escapeHtml(item.ogds)}</code>` : 'USWDS only';
+    return `<tr><th scope="row">${escapeHtml(BLOCK_LABELS[block] || block)}</th><td>${ogds}</td><td>${escapeHtml(status)}</td><td>${escapeHtml(item.note || '')}</td></tr>`;
+  }).join('');
+  return `<div class="table-wrap" role="region" aria-label="OGDS coverage on this page" tabindex="0"><table><caption>OGDS coverage on this page</caption><thead><tr><th scope="col">Area</th><th scope="col">OGDS implementation</th><th scope="col">Status</th><th scope="col">Note</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+export function buildStaticPages({root, registry, issues, buildInfo, manifest, lock, coverageTables = {}}) {
   const pages = [];
   const issueCards = issues.map(issue => issueCard(issue, registry)).join('');
   const groups = [...new Set(registry.components.map(component => component.group))];
@@ -214,7 +243,8 @@ export function buildStaticPages({root, registry, issues, buildInfo, manifest, l
       sourceLock: sourceLockBlock(lock)
     }),
     'preferences.html': template(root, 'preferences'),
-    'demo.html': template(root, 'demo')
+    'demo.html': fill(template(root, 'demo'), {coverageTable: coverageTables.demo || ''}),
+    'demo/forms.html': fill(template(root, 'demo-forms'), {coverageTable: coverageTables.forms || ''})
   };
 
   const current = {
@@ -226,7 +256,8 @@ export function buildStaticPages({root, registry, issues, buildInfo, manifest, l
     'compare.html': 'components',
     'guide.html': 'methodology',
     'preferences.html': 'experiments',
-    'demo.html': 'demo'
+    'demo.html': 'demo',
+    'demo/forms.html': 'demo'
   };
   const titles = {
     'index.html': 'USWDS Futures Lab',
@@ -237,7 +268,8 @@ export function buildStaticPages({root, registry, issues, buildInfo, manifest, l
     'compare.html': 'Compare components',
     'guide.html': 'Methodology and governance',
     'preferences.html': 'User preferences panel',
-    'demo.html': 'Landing-page comparison'
+    'demo.html': 'Landing-page comparison',
+    'demo/forms.html': 'Forms comparison'
   };
   const descriptions = {
     'index.html': 'Independent, evidence-first experiments for USWDS components and community ideas.',
@@ -248,11 +280,14 @@ export function buildStaticPages({root, registry, issues, buildInfo, manifest, l
     'compare.html': 'Compare a pinned USWDS baseline with a labelled experimental proposal.',
     'guide.html': 'Methodology, provenance, governance, and limitations for the USWDS Futures Lab.',
     'preferences.html': 'A proposed user preferences panel for appearance, text size, contrast, and motion.',
-    'demo.html': 'A full landing-page comparison of USWDS 3.14.0 with a USWDS + OGDS Elements hybrid.'
+    'demo.html': 'A full landing-page comparison of USWDS 3.14.0 with a USWDS + OGDS Elements hybrid.',
+    'demo/forms.html': 'A secondary form comparison using USWDS controls inside the OGDS hybrid shell.'
   };
   const scripts = {
     'components.html': [{src: 'assets/filters.js', type: 'module'}],
     'compare.html': [{src: 'assets/compare.js', type: 'module'}],
+    'demo.html': [{src: 'assets/demo.js', type: 'module'}],
+    'demo/forms.html': [{src: 'assets/demo.js', type: 'module'}],
     'experiments.html': [{src: 'assets/filters.js', type: 'module'}],
     'ideas.html': [{src: 'assets/filters.js', type: 'module'}]
   };
@@ -266,6 +301,7 @@ export function buildStaticPages({root, registry, issues, buildInfo, manifest, l
         description: descriptions[route],
         current: current[route],
         content,
+        base: route === 'demo/forms.html' ? '../' : '',
         scripts: scripts[route] || []
       })
     });

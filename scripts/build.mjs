@@ -4,10 +4,10 @@ import {createHash} from 'node:crypto';
 import {buildSync} from 'esbuild';
 import {fileURLToPath} from 'node:url';
 import {fixtureHtml} from './components.mjs';
-import {landingHtml} from './landing.mjs';
+import {contentPageHtml, readContent} from './content-page.mjs';
 import {renderPage} from './layout.mjs';
 import {renderMarkdown, escapeHtml} from './markdown.mjs';
-import {buildStaticPages, buildComponentPages, buildExperimentPages, buildDocPages} from './pages.mjs';
+import {buildStaticPages, buildComponentPages, buildExperimentPages, buildDocPages, coverageTable} from './pages.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
@@ -37,6 +37,7 @@ const ogdsReady = ogdsVersion === '1.0.0-beta.2' && exists(ogdsEntry) && exists(
 
 const pkg = readJson(packageFile);
 const registry = readJson(path.join(root, 'data', 'registry.json'));
+const coverage = readJson(path.join(root, 'data', 'coverage.json'));
 const issues = readJson(path.join(root, 'data', 'issues.json'));
 const review = readJson(path.join(root, 'data', 'review.json'));
 if (!exists(lockFile)) throw new Error('data/sources.lock.json is missing. Run npm run sources:write after installing the pinned USWDS package.');
@@ -77,7 +78,7 @@ fs.mkdirSync(dist, {recursive: true});
 fs.cpSync(path.join(root, 'site', 'assets'), path.join(dist, 'assets'), {recursive: true});
 
 fs.mkdirSync(path.join(dist, 'data'), {recursive: true});
-for (const file of ['registry.json', 'issues.json', 'review.json', 'sources.lock.json']) {
+for (const file of ['registry.json', 'issues.json', 'review.json', 'sources.lock.json', 'coverage.json']) {
   fs.copyFileSync(path.join(root, 'data', file), path.join(dist, 'data', file));
 }
 
@@ -130,8 +131,10 @@ for (const component of registry.components) {
   }
 }
 
-for (const variant of ['uswds', 'ogds']) {
-  write(`demo/${variant}-landing.html`, landingHtml({variant, realAssets, ogdsReady}));
+for (const content of [readContent(root, 'landing'), readContent(root, 'forms')]) {
+  for (const system of ['uswds', 'ogds']) {
+    write(`demo/${system}-${content.id}.html`, contentPageHtml({content, system, realAssets, ogdsReady, coverage}));
+  }
 }
 
 const manifestPath = path.join(root, 'reports', 'latest', 'MANIFEST.json');
@@ -211,8 +214,12 @@ if (realAssets && exists(manifestPath) && Array.isArray(manifest.pages) && manif
 }
 
 const pageManifest = realAssets ? manifest : {generated: false, pages: [], succeeded: 0, failed: 0};
+const coverageTables = {
+  demo: coverageTable(coverage, ['banner', 'header', 'hero', 'alert', 'cards', 'accordion', 'prose', 'footer']),
+  forms: coverageTable(coverage, ['banner', 'header', 'page-heading', 'form', 'footer'])
+};
 const pages = [
-  ...buildStaticPages({root, registry, issues, buildInfo, manifest: pageManifest, lock}),
+  ...buildStaticPages({root, registry, issues, buildInfo, manifest: pageManifest, lock, coverageTables}),
   ...buildComponentPages({root, registry, issues, manifest: pageManifest, lock}),
   ...buildExperimentPages({root, registry, issues, manifest: pageManifest}),
   ...buildDocPages({root})
@@ -229,8 +236,11 @@ const routes = [
   'guide.html',
   'preferences.html',
   'demo.html',
+  'demo/forms.html',
   'demo/uswds-landing.html',
   'demo/ogds-landing.html',
+  'demo/uswds-forms.html',
+  'demo/ogds-forms.html',
   ...registry.components.flatMap(component => ['baseline', 'experiment'].map(variant => `fixture/${component.slug}-${variant}.html`)),
   ...registry.components.map(component => `component/${component.slug}.html`),
   ...registry.experiments.map(experiment => `experiment/${experiment.id}.html`)

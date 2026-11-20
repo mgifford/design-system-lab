@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "repository": "https://github.com/mgifford/uswds-sandbox",
+  "commit": "26d5a939476512ca08ce9a8f5b4f757a5df06198",
+  "commitDate": "2026-09-09T13:25:59Z",
+  "license": "CC0-1.0 declared in package.json; no root LICENSE file was present at the pinned commit",
+  "importedAt": "2026-11-20",
+  "note": "Curated content and page-structure adaptation only. The lab does not copy the sandbox Eleventy/Gulp build, layouts, or USWDS-specific wrappers.",
+  "pages": [
+    {
+      "source": "src/templates/landing.md",
+      "labContent": "content/pages/landing.json",
+      "adaptation": "Copy and section structure adapted; new neutral demo copy and a smaller example."
+    },
+    {
+      "source": "src/templates/forms.md",
+      "labContent": "content/pages/forms.json",
+      "adaptation": "Contact-form scenario adapted to a single no-network form with native validation."
+    }
+  ]
+}

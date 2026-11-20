@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "id": "landing",
+  "title": "Example Service — landing",
+  "description": "A demonstration service landing page used to compare USWDS with the OGDS hybrid.",
+  "sections": [
+    {
+      "type": "banner",
+      "text": "A demonstration service website",
+      "action": "Here’s how you know",
+      "panels": [
+        {
+          "heading": "Example only",
+          "body": "This is an independent comparison demo, not a government service. In production, this banner must accurately explain who operates the site."
+        },
+        {
+          "heading": "Same content, two treatments",
+          "body": "The content and interaction are shared. Only the design-system layer changes between the two panes."
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "logo": "Example Service",
+      "nav": [
+        {"label": "Services", "href": "#services"},
+        {"label": "Questions", "href": "#questions"},
+        {"label": "Contact", "href": "#contact"}
+      ],
+      "search": {"label": "Search"}
+    },
+    {
+      "type": "hero",
+      "heading": "Get the support you need",
+      "body": "Apply for services, check the status of a request, and find clear guidance for the next step.",
+      "cta": {"label": "Explore services", "href": "#services"}
+    },
+    {
+      "type": "alert",
+      "variant": "info",
+      "heading": "New: apply online",
+      "body": "You can now start an application online and return to it later. Save your reference number."
+    },
+    {
+      "type": "cards",
+      "heading": "Services",
+      "id": "services",
+      "items": [
+        {
+          "heading": "Apply for support",
+          "body": "Start a new request and find the documents you need before you apply.",
+          "cta": {"label": "Start an application", "href": "#questions"}
+        },
+        {
+          "heading": "Check your status",
+          "body": "Use your reference number to see what has been received and what happens next.",
+          "cta": {"label": "Check status", "href": "#contact"}
+        },
+        {
+          "heading": "Find guidance",
+          "body": "Read plain-language guidance about eligibility, documents, and timelines.",
+          "cta": {"label": "Read guidance", "href": "#questions"}
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "heading": "Common questions",
+      "id": "questions",
+      "items": [
+        {
+          "question": "How do I apply?",
+          "answer": "Start with the online application. Review the document checklist first, then save your reference number when you submit.",
+          "open": false
+        },
+        {
+          "question": "How long does it take?",
+          "answer": "Most requests receive an initial response within ten business days. Complex requests may take longer, and you can check the status at any time.",
+          "open": true
+        }
+      ]
+    },
+    {
+      "type": "prose",
+      "heading": "Contact",
+      "id": "contact",
+      "paragraphs": [
+        "Email example@example.gov or call 555-0100, Monday to Friday, 9 a.m. to 5 p.m.",
+        "This is sample content for an independent design-system comparison. It is not a government service."
+      ]
+    },
+    {
+      "type": "footer",
+      "link": "Example Service",
+      "text": "Independent comparison demo. No government endorsement is implied."
+    }
+  ]
+}

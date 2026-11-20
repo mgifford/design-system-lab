@@ -93,6 +93,16 @@
     ]
   },
   {
+    "route": "demo/forms.html",
+    "goal": "Review demo/forms.html for scope, evidence status, and navigation integrity",
+    "steps": [
+      "Capture the accessibility snapshot and heading outline",
+      "Use the primary navigation to reach the page and confirm the current-page state",
+      "Check that baseline and experiment claims are distinguishable",
+      "Record broken links, missing status text, or unsupported claims"
+    ]
+  },
+  {
     "route": "demo/uswds-landing.html",
     "goal": "Review demo/uswds-landing.html for scope, evidence status, and navigation integrity",
     "steps": [
@@ -105,6 +115,26 @@
   {
     "route": "demo/ogds-landing.html",
     "goal": "Review demo/ogds-landing.html for scope, evidence status, and navigation integrity",
+    "steps": [
+      "Capture the accessibility snapshot and heading outline",
+      "Use the primary navigation to reach the page and confirm the current-page state",
+      "Check that baseline and experiment claims are distinguishable",
+      "Record broken links, missing status text, or unsupported claims"
+    ]
+  },
+  {
+    "route": "demo/uswds-forms.html",
+    "goal": "Review demo/uswds-forms.html for scope, evidence status, and navigation integrity",
+    "steps": [
+      "Capture the accessibility snapshot and heading outline",
+      "Use the primary navigation to reach the page and confirm the current-page state",
+      "Check that baseline and experiment claims are distinguishable",
+      "Record broken links, missing status text, or unsupported claims"
+    ]
+  },
+  {
+    "route": "demo/ogds-forms.html",
+    "goal": "Review demo/ogds-forms.html for scope, evidence status, and navigation integrity",
     "steps": [
       "Capture the accessibility snapshot and heading outline",
       "Use the primary navigation to reach the page and confirm the current-page state",
