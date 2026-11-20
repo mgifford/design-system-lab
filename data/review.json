@@ -1,0 +1,8 @@
+{
+  "reviewStatus": "initial pilot, not a conformance assessment",
+  "reviewedAt": null,
+  "reviewer": null,
+  "acceptance": "not-reviewed",
+  "testMatrix": ["chromium", "firefox", "webkit", "forced-colors", "reduced-motion", "rtl", "no-javascript"],
+  "scope": "Comparison fixtures and isolated browser states only; not real user journeys or deployed government services"
+}

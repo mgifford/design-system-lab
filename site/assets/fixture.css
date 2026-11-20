@@ -1,0 +1,12 @@
+/* Fixture ergonomics only. Never use this file as evidence of upstream USWDS styling. */
+:root{font-family:system-ui,"Segoe UI",sans-serif;color-scheme:light}body{margin:0;padding:1.1rem;font-size:1rem;background:#fff;color:#1b1b1b}
+.fixture-label{font:600 .74rem/1.4 system-ui,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:#4d5663;margin:0 0 1.1rem}.fixture-note{font-size:.86rem;color:#444b55;border-top:1px solid #dfe1e2;padding-top:.7rem;margin-top:2rem}
+.fixture-grid{max-width:780px}.fixture-grid>*{max-width:100%}.fixture-heading{margin:0 0 1rem;font-size:1.4rem}.button-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem}
+/* Clear no-JavaScript fallback: collapsed content is readable if JS cannot initialize. */
+html:not(.js) .usa-accordion__content[hidden],html:not(.js) .usa-banner__content[hidden]{display:block!important}
+/* OFFLINE DEMO ONLY. Real USWDS CSS takes precedence when present. */
+.offline .usa-accordion__button,.offline .usa-banner__button{width:100%;font:inherit;text-align:left;padding:.8rem;border:1px solid #aeb0b5;background:#e6e6e6;color:#1b1b1b;cursor:pointer}
+.offline .usa-accordion__content,.offline .usa-banner__content{padding:1rem;border:1px solid #aeb0b5}
+.offline .usa-alert{padding:1rem;border-left:8px solid #1a4480;background:#e7f6f8;margin:1rem 0}.offline .usa-alert--warning{background:#faf3d1;border-color:#936f38}.offline .usa-alert--error{background:#f8e1de;border-color:#b50909}
+.offline .usa-banner{background:#eee;padding:.6rem}.offline .usa-banner__header{padding:.5rem}.offline .usa-button{background:#005ea2;color:#fff;border:0;padding:.75rem 1rem;font:inherit;cursor:pointer}.offline .usa-input{padding:.6rem;width:100%;max-width:28rem}.offline .usa-label{display:block;margin:.7rem 0 .2rem;font-weight:700}
+html:not(.js) .js-only{display:none}

@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "project": "USWDS Futures Lab",
+  "sources": {
+    "uswds": {
+      "name": "USWDS",
+      "repository": "https://github.com/uswds/uswds",
+      "release": "v3.14.0",
+      "package": "@uswds/uswds",
+      "version": "3.14.0",
+      "kind": "released-baseline"
+    },
+    "uswdsElements": {
+      "name": "USWDS Elements",
+      "repository": "https://github.com/uswds/uswds-elements",
+      "kind": "research-link-only"
+    },
+    "ogds": {
+      "name": "Open Government Design System",
+      "repository": "https://github.com/open-government-design-system/ogds-elements",
+      "kind": "research-link-only",
+      "integration": "not-yet-implemented",
+      "licensingReviewRequired": true
+    }
+  },
+  "components": [
+    {
+      "slug": "accordion",
+      "name": "Accordion",
+      "group": "Disclosure",
+      "summary": "Expand and collapse supporting information without losing keyboard access.",
+      "reference": "https://designsystem.digital.gov/components/accordion/",
+      "accessibility": "https://designsystem.digital.gov/components/accordion/accessibility-tests/",
+      "experiment": "Theme-aware disclosure controls",
+      "issues": [
+        4577,
+        5817,
+        5861
+      ]
+    },
+    {
+      "slug": "alert",
+      "name": "Alert",
+      "group": "Messaging",
+      "summary": "Communicate status, warnings and errors with meaning beyond color.",
+      "reference": "https://designsystem.digital.gov/components/alert/",
+      "accessibility": "https://designsystem.digital.gov/components/alert/accessibility-tests/",
+      "experiment": "Dark-mode semantic alerts",
+      "issues": [
+        5069,
+        4407
+      ]
+    },
+    {
+      "slug": "banner",
+      "name": "Banner",
+      "group": "Identity",
+      "summary": "Distinguish a government-service identity pattern from ordinary site content.",
+      "reference": "https://designsystem.digital.gov/components/banner/",
+      "accessibility": "https://designsystem.digital.gov/components/banner/accessibility-tests/",
+      "experiment": "Theme-aware banner and logical layout",
+      "issues": [
+        5336,
+        6030
+      ]
+    },
+    {
+      "slug": "form",
+      "name": "Form controls",
+      "group": "Forms",
+      "summary": "Labels, required controls, validation and legible focus states.",
+      "reference": "https://designsystem.digital.gov/components/form/",
+      "accessibility": "https://designsystem.digital.gov/components/radio-buttons/accessibility-tests/",
+      "experiment": "Native validation and theme-safe focus",
+      "issues": [
+        6068,
+        6080
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "accordion-expand",
+      "component": "accordion",
+      "intent": "Use keyboard to open disclosure and confirm its state is exposed",
+      "interaction": "keyboard"
+    },
+    {
+      "id": "alert-read",
+      "component": "alert",
+      "intent": "Read alert without relying on color alone",
+      "interaction": "read"
+    },
+    {
+      "id": "banner-disclose",
+      "component": "banner",
+      "intent": "Expand the informational banner",
+      "interaction": "keyboard"
+    },
+    {
+      "id": "form-required",
+      "component": "form",
+      "intent": "Submit required fields and inspect native feedback",
+      "interaction": "form"
+    }
+  ]
+}

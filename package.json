@@ -1,0 +1,26 @@
+{
+  "name": "uswds-futures-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "description": "Evidence-first, independently maintained USWDS component experiments and comparison lab",
+  "engines": {"node": ">=22"},
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:strict": "node scripts/build.mjs --require-uswds",
+    "dev": "node scripts/build.mjs && node scripts/serve.mjs",
+    "serve": "node scripts/serve.mjs",
+    "test:unit": "node --test tests/unit/*.test.mjs",
+    "test:browser": "playwright test",
+    "evidence": "node scripts/collect-evidence.mjs",
+    "validate": "node scripts/validate.mjs",
+    "check": "npm run test:unit && npm run validate"
+  },
+  "dependencies": {"@uswds/uswds": "3.14.0"},
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@guidepup/virtual-screen-reader": "0.32.1",
+    "jsdom": "26.1.0"
+  }
+}

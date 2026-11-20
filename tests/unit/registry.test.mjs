@@ -1,0 +1,8 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {componentMarkup,fixtureHtml} from '../../scripts/components.mjs';
+const registry=JSON.parse(fs.readFileSync('data/registry.json'));const issues=JSON.parse(fs.readFileSync('data/issues.json'));
+test('each curated component has a stable fixture with valid controlling references',()=>{for(const c of registry.components){assert.match(c.slug,/^[a-z-]+$/);const html=componentMarkup(c.slug);assert.ok(html.includes('<h1'),'missing heading '+c.slug);for(const m of html.matchAll(/aria-controls="([^"]+)"/g))assert.ok(html.includes(`id="${m[1]}"`),'unresolved aria-controls '+m[1])}});
+test('baseline fixtures never ship the experiment stylesheet',()=>{for(const c of registry.components){const base=fixtureHtml({component:c.slug,variant:'baseline',realAssets:true});const exp=fixtureHtml({component:c.slug,variant:'experiment',realAssets:true});assert.ok(!base.includes('experiment.css'));assert.ok(exp.includes('experiment.css'));assert.ok(base.includes('uswds.min.css'))}});
+test('all related issue links are present and correct',()=>{const nums=new Set(issues.map(i=>i.number));for(const c of registry.components)for(const num of c.issues)assert.ok(nums.has(num),`missing #${num}`);for(const i of issues)assert.equal(i.url,`https://github.com/uswds/uswds/issues/${i.number}`)});
+test('real fixture never presents offline simulation as USWDS assets',()=>{const html=fixtureHtml({component:'accordion',variant:'baseline',realAssets:false});assert.ok(html.includes('OFFLINE ILLUSTRATION'));assert.ok(html.includes('class="offline"'))});
