@@ -132,9 +132,9 @@ Human decisions are recorded in one table, [`docs/EXPERIMENT-DECISIONS.md`](docs
 - **Fixture conditions** — appearance, motion, contrast, text size, WCAG text spacing, direction, language, fixed viewport width (Fit/Actual), and preview source, applied identically to both panes.
 - **Evaluator display** — separate controls for the tool itself, stored under `uswds-lab-prefs`. Fixtures ignore stored preferences unless opened with `?prefs=1`, so tool settings do not leak into the component under test.
 - **Honest browser conditions** — forced colours and increased contrast are captured with Playwright browser emulation and labelled as such. No CSS filter or class is presented as operating-system emulation.
-- **Alert state model** — twelve declared states, including success, emergency, no heading, link, long content, Arabic, dynamically inserted, dynamically updated, and multiple. Each state is reproducible, axe-scanned, and captured.
+- **Component state models** — Alert has twelve declared states (success, emergency, no heading, link, long content, Arabic, dynamically inserted, dynamically updated, multiple); Accordion has collapsed, mixed, and expanded; Banner has collapsed and expanded. Each state is reproducible, axe-scanned, and captured.
 - **Evidence classification** — per-state axe counts and a fixed/introduced/common comparison. A disappearing violation is a candidate fix, not proof; removed content is not a fix.
-- **Manual tests** — eleven alert tests based on the USWDS checklist plus dynamic status-message guidance, with local pass/fail/blocked records, required justification for "not applicable", and JSON/Markdown export. Nothing is submitted automatically.
+- **Manual tests** — 21 tests across Alert, Accordion, and Banner based on the USWDS checklists plus dynamic status-message guidance, with local pass/fail/blocked records, required justification for "not applicable", and JSON/Markdown export. Nothing is submitted automatically.
 - **Reproducible URLs** — a versioned, validated parameter schema, invalid-value reporting, copy-link, and named presets stored in the browser.
 - **Cost and stability** — three cold-context runs per fixture at 1280 × 850 with 4× CPU throttling; transfer bytes, request counts, DOM size, and timing observations. Hard byte/request/DOM budgets; timing warnings only. No performance score.
 
@@ -171,10 +171,10 @@ CI uses `npm ci` with the committed lockfile. The workflow has not been executed
 
 ### Local verification
 
-- `npm run test:unit` — 34 passing, including evaluation URL validation, state/fixture consistency, pane sizing, pixel-diff math, finding classification, and performance budget math.
+- `npm run test:unit` — 35 passing, including evaluation URL validation, state/fixture consistency, pane sizing, pixel-diff math, finding classification, and performance budget math.
 - `npm run build:strict` — 33 lab routes, 30 documentation pages, 10 fixtures.
-- `LAB_BROWSER_CHANNEL=chrome npx playwright test --project=chromium` — **97 passing**.
-- `npm run evidence` (Chrome channel) — **33/33 routes, 96 Guidepup state transcripts, 24 state-level axe scans, 64 matched capture pairs, 10 performance routes (30 runs, 0 hard budget failures), 0 failed**.
+- `LAB_BROWSER_CHANNEL=chrome npx playwright test --project=chromium` — **98 passing**.
+- `npm run evidence` (Chrome channel) — **33/33 routes, 96 Guidepup state transcripts, 34 state-level axe scans, 76 matched capture pairs, 10 performance routes (30 runs, 0 hard budget failures), 0 failed**.
 - `npm run validate` — 5 components, 4 experiments, 14 issues, 5 scenarios, 33 routes, 33 MCP scenarios, evidence run complete.
 
 WebKit ran locally: **69 passing, 1 skipped** (the axe scan is Chromium-only by design). Firefox could not launch in the authoring sandbox because it could not create its profile folder; that is recorded as a blocked check, not a pass. CI currently runs Chromium only.

@@ -33,7 +33,7 @@ test('evaluation params normalize valid values', () => {
 test('invalid evaluation params fall back and are reported', () => {
   const {config, ignored} = normalizeEvaluationParams('component=nope&state=nope&view=hack&theme=neon&width=9999&capture=nope', registry);
   assert.equal(config.component, 'accordion');
-  assert.equal(config.state, 'default');
+  assert.equal(config.state, 'collapsed');
   assert.equal(config.view, 'split');
   assert.equal(config.theme, 'system');
   assert.equal(config.width, '1280');
@@ -58,14 +58,14 @@ test('pane sizing and split normalize and reject out-of-range values', () => {
 test('state falls back when it belongs to another component', () => {
   const {config, ignored} = normalizeEvaluationParams('component=accordion&state=emergency', registry);
   assert.equal(config.component, 'accordion');
-  assert.equal(config.state, 'default');
+  assert.equal(config.state, 'collapsed');
   assert.ok(ignored.includes('state'));
 });
 
-test('fixture params omit defaults and preserve the legacy order', () => {
+test('fixture params include the selected state and preserve parameter order', () => {
   const {config} = normalizeEvaluationParams('component=banner&theme=dark&direction=rtl', registry);
-  assert.equal(fixtureParams(config).toString(), 'theme=dark&dir=rtl');
-  assert.equal(fixtureUrl(config, 'baseline'), 'fixture/banner-baseline.html?theme=dark&dir=rtl');
+  assert.equal(fixtureParams(config).toString(), 'state=collapsed&theme=dark&dir=rtl');
+  assert.equal(fixtureUrl(config, 'baseline'), 'fixture/banner-baseline.html?state=collapsed&theme=dark&dir=rtl');
   const alert = normalizeEvaluationParams('component=alert&state=warning&theme=dark', registry).config;
   assert.equal(fixtureParams(alert).toString(), 'state=warning&theme=dark');
 });
@@ -92,6 +92,18 @@ test('alert states are declared and match both generated fixtures', () => {
     for (const variant of ['baseline', 'experiment']) {
       const html = fixtureHtml({component: 'alert', variant, realAssets: true});
       assert.match(html, new RegExp(`data-state="${state.id}"`), `missing ${state.id} marker in alert-${variant} source`);
+    }
+  }
+});
+
+test('accordion and banner state maps cover every declared state', () => {
+  for (const slug of ['accordion', 'banner']) {
+    const declared = statesFor(registry, slug).map(state => state.id).sort();
+    for (const variant of ['baseline', 'experiment']) {
+      const html = fixtureHtml({component: slug, variant, realAssets: true});
+      const match = html.match(/data-states="([^"]+)"/);
+      assert.ok(match, `missing data-states marker in ${slug}-${variant}`);
+      assert.deepEqual(match[1].split(/\s+/).sort(), declared);
     }
   }
 });

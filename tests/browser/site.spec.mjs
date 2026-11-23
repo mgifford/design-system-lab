@@ -220,7 +220,7 @@ test('comparison: query parameters select an experiment state', async ({page}) =
   await expect(page.locator('#component')).toHaveValue('banner');
   await expect(page.locator('#direction')).toHaveValue('rtl');
   await expect(page.locator('#theme')).toHaveValue('dark');
-  await expect(page.locator('#before')).toHaveAttribute('src', /banner-baseline\.html\?theme=dark&dir=rtl/);
+  await expect(page.locator('#before')).toHaveAttribute('src', /banner-baseline\.html\?state=collapsed&theme=dark&dir=rtl/);
 });
 
 test('no JavaScript: accordion content is readable and dead buttons are hidden', async ({browser}) => {

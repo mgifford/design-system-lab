@@ -14,7 +14,7 @@ test('evaluation: workspace is first-class and registry-driven', async ({page}) 
   await expect(page.locator('#eval-title')).toHaveText('Accordion');
   await expect(page.locator('#component option')).toHaveCount(5);
   await expect(page.locator('#view option')).toHaveCount(4);
-  await expect(page.locator('#state option').first()).toHaveText('Initial rendering');
+  await expect(page.locator('#state option').first()).toHaveText('Both collapsed');
   await expect(page.locator('#eval-evidence')).toContainText(/Evidence run|No automated evidence/);
   await expect(page.locator('#eval-accessibility')).toHaveAttribute('href', /designsystem\.digital\.gov/);
 });
@@ -41,7 +41,7 @@ test('evaluation: URL conditions apply to fixtures and controls', async ({page})
 test('evaluation: invalid parameters fall back and are reported', async ({page}) => {
   await goto(page, `${base}?component=nope&state=nope&view=hack&theme=neon&width=9999&capture=nope`);
   await expect(page.locator('#component')).toHaveValue('accordion');
-  await expect(page.locator('#state')).toHaveValue('default');
+  await expect(page.locator('#state')).toHaveValue('collapsed');
   await expect(page.locator('#view')).toHaveValue('split');
   await expect(page.locator('#theme')).toHaveValue('system');
   await expect(page.locator('#width')).toHaveValue('1280');
@@ -49,6 +49,33 @@ test('evaluation: invalid parameters fall back and are reported', async ({page})
   await expect(page.locator('#param-status')).toContainText('Ignored invalid value');
   await expect(page.locator('#param-status')).toContainText('component');
   await expect(page.locator('#param-status')).toContainText('capture');
+});
+
+test('evaluation: accordion and banner states are reproducible in both panes', async ({page}) => {
+  await goto(page, `${base}?component=accordion&state=collapsed`);
+  await expect(page.locator('#before')).toHaveAttribute('src', /state=collapsed/);
+  const baseline = page.frameLocator('#before');
+  const experiment = page.frameLocator('#after');
+  for (const frame of [baseline, experiment]) {
+    await expect(frame.getByRole('button', {name: 'Who can apply?'})).toHaveAttribute('aria-expanded', 'false');
+    await expect(frame.locator('#faq-eligibility')).toBeHidden();
+    await expect(frame.getByRole('button', {name: 'Which documents do I need?'})).toHaveAttribute('aria-expanded', 'false');
+  }
+  await page.locator('#state').selectOption('expanded');
+  for (const frame of [baseline, experiment]) {
+    await expect(frame.getByRole('button', {name: 'Who can apply?'})).toHaveAttribute('aria-expanded', 'true');
+    await expect(frame.locator('#faq-eligibility')).toBeVisible();
+    await expect(frame.getByRole('button', {name: 'Which documents do I need?'})).toHaveAttribute('aria-expanded', 'true');
+  }
+
+  await page.locator('#component').selectOption('banner');
+  await page.locator('#state').selectOption('expanded');
+  await expect(page.locator('#before')).toHaveAttribute('src', /state=expanded/);
+  await expect(page.frameLocator('#before').getByRole('button', {name: 'How this banner works'})).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.frameLocator('#after').locator('#banner-info')).toBeVisible();
+  await page.locator('#state').selectOption('collapsed');
+  await expect(page.frameLocator('#before').getByRole('button', {name: 'How this banner works'})).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.frameLocator('#before').locator('#banner-info')).toBeHidden();
 });
 
 test('evaluation: every declared alert state is selectable and reproducible', async ({page}) => {
