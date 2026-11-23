@@ -364,9 +364,24 @@
       ],
       "states": [
         {
-          "id": "default",
-          "label": "Initial rendering",
-          "description": "The fixture default. Component-specific states are not modelled yet; use the keyboard and manual-test guidance."
+          "id": "empty",
+          "label": "Empty",
+          "description": "No required values entered; native constraints are unmet."
+        },
+        {
+          "id": "invalid",
+          "label": "Invalid submission",
+          "description": "Submitted empty; the browser blocks submission and moves focus to the first invalid control."
+        },
+        {
+          "id": "filled",
+          "label": "Filled, not submitted",
+          "description": "Required values are entered but the form has not been submitted."
+        },
+        {
+          "id": "valid",
+          "label": "Valid submission",
+          "description": "Required values are entered and submitted locally; the status region confirms nothing was sent."
         }
       ]
     },
@@ -423,9 +438,24 @@
       ],
       "states": [
         {
-          "id": "default",
-          "label": "Initial rendering",
-          "description": "The fixture default. Component-specific states are not modelled yet; use the keyboard and manual-test guidance."
+          "id": "empty",
+          "label": "Empty",
+          "description": "No contact preference selected."
+        },
+        {
+          "id": "invalid",
+          "label": "Invalid submission",
+          "description": "Submitted with no selection; the browser blocks submission and reports the required group."
+        },
+        {
+          "id": "selected",
+          "label": "Selected, not submitted",
+          "description": "A contact preference is selected but the form has not been submitted."
+        },
+        {
+          "id": "valid",
+          "label": "Valid submission",
+          "description": "A contact preference is selected and submitted locally; the status region confirms nothing was sent."
         }
       ]
     }

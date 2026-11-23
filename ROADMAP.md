@@ -29,10 +29,11 @@
 - [x] Add a keyboard focus inspector for live panes.
 - [x] Declare component states in the registry and model twelve Alert states, including dynamic insert/update and Arabic content.
 - [x] Add Accordion (collapsed, mixed, expanded) and Banner (collapsed, expanded) state models, with state maps applied after USWDS initialization.
+- [x] Add Form (empty, invalid, filled, valid) and Radio validation (empty, invalid, selected, valid) state actions, including native validation and local status states.
 - [x] Run axe on every declared state and classify baseline-only, experiment-only, and shared findings.
 - [x] Add eleven Alert manual tests based on the USWDS checklist, local result recording, required justification for not applicable, and JSON/Markdown export.
 - [x] Add experiment filtering by user preference and automated coverage, with manual-test counts.
-- [x] Add 28 evaluation browser tests and evaluation-specific unit tests.
+- [x] Add 29 evaluation browser tests and evaluation-specific unit tests.
 - [x] Add cold-context fixture performance evidence with hard byte/request/DOM budgets, timing warnings, and a workspace cost panel.
 
 ## P0: verify in CI and real environments

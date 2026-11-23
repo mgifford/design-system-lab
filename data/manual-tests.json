@@ -400,6 +400,196 @@
       "requiresAssistiveTechnology": false,
       "conditional": false,
       "notes": "The fixture stylesheet handles this fallback; production implementations must do the same."
+    },
+    {
+      "id": "form-labels",
+      "component": "form",
+      "title": "Every control has a visible label, hint, and group name",
+      "requirement": "WCAG 1.3.1 Info and Relationships, 3.3.2 Labels or Instructions",
+      "source": "https://designsystem.digital.gov/components/form-controls/",
+      "purpose": "Check that a person can identify each control and the required radio group without guessing from placeholder text.",
+      "preconditions": "Open the form fixture. Do not submit it yet.",
+      "steps": [
+        "Read each visible label and hint.",
+        "Check the radio group legend and each option label.",
+        "Check that required status is stated in text, not only color.",
+        "Compare the accessible name of each control with its visible label."
+      ],
+      "expected": "Every control has a visible, meaningful label; hints are associated; the group has a legend; required status is in text.",
+      "requiresAssistiveTechnology": false,
+      "conditional": false,
+      "notes": "Automated name checks can confirm an association but not whether the wording is clear."
+    },
+    {
+      "id": "form-invalid",
+      "component": "form",
+      "title": "Invalid submission identifies the problem and moves focus",
+      "requirement": "WCAG 3.3.1 Error Identification, 3.3.3 Error Suggestion, 2.4.3 Focus Order",
+      "source": "https://designsystem.digital.gov/components/form-controls/",
+      "purpose": "Check the native validation experience when required fields are empty.",
+      "preconditions": "Open the form in the empty state. Use a browser that shows native validation messages.",
+      "steps": [
+        "Submit the empty form.",
+        "Observe which control receives focus.",
+        "Read the browser error message.",
+        "Correct the fields one at a time and resubmit."
+      ],
+      "expected": "The first invalid control receives focus, the message identifies the problem in plain language, and correcting the values allows submission.",
+      "requiresAssistiveTechnology": false,
+      "conditional": false,
+      "notes": "Native messages are browser-controlled; record the browser and OS."
+    },
+    {
+      "id": "form-invalid-sr",
+      "component": "form",
+      "title": "Screen reader communicates the invalid field and error guidance",
+      "requirement": "WCAG 3.3.1 Error Identification, 4.1.2 Name, Role, Value",
+      "source": "https://designsystem.digital.gov/components/form-controls/",
+      "purpose": "Determine what a screen-reader user hears after an empty submit and whether the error is discoverable.",
+      "preconditions": "Use a real screen reader. Open the form empty.",
+      "steps": [
+        "Submit the form with the keyboard.",
+        "Record the spoken message and focus location.",
+        "Navigate back to the radio group and text input.",
+        "Correct the fields and submit again."
+      ],
+      "expected": "The error and the affected controls are announced understandably, focus moves predictably, and the successful result is announced.",
+      "requiresAssistiveTechnology": true,
+      "conditional": false,
+      "notes": "Native validation speech differs by browser and screen reader; record both."
+    },
+    {
+      "id": "form-valid",
+      "component": "form",
+      "title": "Valid submission shows a status without sending data",
+      "requirement": "WCAG 4.1.3 Status Messages, 3.3.1 Error Identification",
+      "source": "https://designsystem.digital.gov/components/form-controls/",
+      "purpose": "Check that a successful local submission is announced and that nothing is sent over the network.",
+      "preconditions": "Open the form. Use the browser network panel or an offline connection.",
+      "steps": [
+        "Complete the required radio and reference field.",
+        "Submit the form.",
+        "Listen for the status announcement.",
+        "Check the network panel for requests."
+      ],
+      "expected": "A local status message is visible and announced, and no network request carries the entered data.",
+      "requiresAssistiveTechnology": true,
+      "conditional": false,
+      "notes": "The fixture is local-only by design; production forms need separate privacy testing."
+    },
+    {
+      "id": "form-no-js",
+      "component": "form",
+      "title": "Native validation still works without JavaScript",
+      "requirement": "Progressive enhancement / WCAG 3.3.1 Error Identification",
+      "source": "https://designsystem.digital.gov/components/form-controls/",
+      "purpose": "Check that the form does not depend on the lab script to block invalid submission.",
+      "preconditions": "Disable JavaScript and open the form fixture.",
+      "steps": [
+        "Submit the empty form.",
+        "Observe the native validation message and focus.",
+        "Complete the required fields.",
+        "Submit again and check that no data is sent."
+      ],
+      "expected": "Native constraint validation still blocks invalid submission and permits valid submission without JavaScript.",
+      "requiresAssistiveTechnology": false,
+      "conditional": false,
+      "notes": "The fixture uses native required attributes; no custom error script is needed."
+    },
+    {
+      "id": "radio-group-name",
+      "component": "radio-validation",
+      "title": "Radio group has a legend and each option has a label",
+      "requirement": "WCAG 1.3.1 Info and Relationships, 3.3.2 Labels or Instructions",
+      "source": "https://designsystem.digital.gov/components/radio-buttons/accessibility-tests/",
+      "purpose": "Check that the question and the options are announced as one group.",
+      "preconditions": "Open the radio-validation fixture read-only.",
+      "steps": [
+        "Read the group legend.",
+        "Read each option label.",
+        "Check that the options share one group name.",
+        "Compare the accessible names with the visible text."
+      ],
+      "expected": "The legend names the question, each option has a distinct label, and the group is announced together.",
+      "requiresAssistiveTechnology": true,
+      "conditional": false,
+      "notes": "A visual group without a fieldset/legend may look correct but be ambiguous to a screen reader."
+    },
+    {
+      "id": "radio-keyboard",
+      "component": "radio-validation",
+      "title": "Radio group is one tab stop and arrow keys change selection",
+      "requirement": "WCAG 2.1.1 Keyboard, 4.1.2 Name, Role, Value",
+      "source": "https://designsystem.digital.gov/components/radio-buttons/accessibility-tests/",
+      "purpose": "Confirm native radio keyboard behavior is preserved.",
+      "preconditions": "Open the fixture. Clear any selection.",
+      "steps": [
+        "Tab into the group and count the tab stops.",
+        "Press Arrow Down and Arrow Up.",
+        "Press Space on the focused option.",
+        "Tab out of the group."
+      ],
+      "expected": "The group is one tab stop, arrows move and select within the group, Space selects, and Tab leaves the group.",
+      "requiresAssistiveTechnology": false,
+      "conditional": false,
+      "notes": "Do not add custom arrow-key handlers on top of native radios."
+    },
+    {
+      "id": "radio-invalid",
+      "component": "radio-validation",
+      "title": "Empty required radio submission is blocked with a clear message",
+      "requirement": "WCAG 3.3.1 Error Identification, 3.3.3 Error Suggestion, 2.4.3 Focus Order",
+      "source": "https://designsystem.digital.gov/components/radio-buttons/accessibility-tests/",
+      "purpose": "Check native required-group validation and focus placement.",
+      "preconditions": "Open the fixture with no option selected.",
+      "steps": [
+        "Submit the form.",
+        "Observe focus and the native message.",
+        "Select an option and submit again.",
+        "Record the exact message and focus target."
+      ],
+      "expected": "Submission is blocked, the first radio or group receives focus, the message explains the required choice, and selecting an option allows submission.",
+      "requiresAssistiveTechnology": false,
+      "conditional": false,
+      "notes": "The native message is browser-controlled; record the browser and OS."
+    },
+    {
+      "id": "radio-valid",
+      "component": "radio-validation",
+      "title": "Valid radio submission shows a local status",
+      "requirement": "WCAG 4.1.3 Status Messages",
+      "source": "https://designsystem.digital.gov/components/radio-buttons/accessibility-tests/",
+      "purpose": "Check that a successful local choice is announced without moving focus unexpectedly.",
+      "preconditions": "Open the fixture. Select one option.",
+      "steps": [
+        "Submit the form with the keyboard.",
+        "Listen for the status message.",
+        "Check the focus location.",
+        "Check the network panel for requests."
+      ],
+      "expected": "A local confirmation is announced politely, focus remains predictable, and nothing is sent.",
+      "requiresAssistiveTechnology": true,
+      "conditional": false,
+      "notes": "The status region is outside the radio group and uses role=status."
+    },
+    {
+      "id": "radio-no-js",
+      "component": "radio-validation",
+      "title": "Required radio validation works without JavaScript",
+      "requirement": "Progressive enhancement / WCAG 3.3.1 Error Identification",
+      "source": "https://designsystem.digital.gov/components/radio-buttons/accessibility-tests/",
+      "purpose": "Confirm the required group does not depend on the lab script.",
+      "preconditions": "Disable JavaScript and open the radio fixture.",
+      "steps": [
+        "Submit without a selection.",
+        "Observe the native message and focus.",
+        "Select an option and submit.",
+        "Check that no data is sent."
+      ],
+      "expected": "Native required validation blocks the empty submission and permits the selected submission without JavaScript.",
+      "requiresAssistiveTechnology": false,
+      "conditional": false,
+      "notes": "The reset button and status are script-assisted; the native constraint remains the fallback."
     }
   ]
 }

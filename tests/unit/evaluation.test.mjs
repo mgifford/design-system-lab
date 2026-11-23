@@ -108,6 +108,21 @@ test('accordion and banner state maps cover every declared state', () => {
   }
 });
 
+test('form and radio state action maps cover every declared state', () => {
+  for (const slug of ['form', 'radio-validation']) {
+    const declared = statesFor(registry, slug).map(state => state.id).sort();
+    for (const variant of ['baseline', 'experiment']) {
+      const html = fixtureHtml({component: slug, variant, realAssets: true});
+      const states = html.match(/data-states="([^"]+)"/);
+      const actions = html.match(/data-state-actions='([^']+)'/);
+      assert.ok(states, `missing data-states marker in ${slug}-${variant}`);
+      assert.ok(actions, `missing data-state-actions marker in ${slug}-${variant}`);
+      assert.deepEqual(states[1].split(/\s+/).sort(), declared);
+      assert.deepEqual(Object.keys(JSON.parse(actions[1])).sort(), declared);
+    }
+  }
+});
+
 test('experiments are filtered by component', () => {
   assert.equal(experimentsFor(registry, 'alert')[0].id, 'dark-mode');
   assert.equal(experimentsFor(registry, 'radio-validation')[0].id, 'radio-validation');

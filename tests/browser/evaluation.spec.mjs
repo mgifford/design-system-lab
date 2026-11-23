@@ -78,6 +78,37 @@ test('evaluation: accordion and banner states are reproducible in both panes', a
   await expect(page.frameLocator('#before').locator('#banner-info')).toBeHidden();
 });
 
+test('evaluation: form and radio states are reproducible in both panes', async ({page}) => {
+  await goto(page, `${base}?component=form&state=invalid`);
+  await expect(page.locator('#before')).toHaveAttribute('src', /state=invalid/);
+  for (const frame of [page.frameLocator('#before'), page.frameLocator('#after')]) {
+    expect(await frame.locator('#application').evaluate(form => form.checkValidity())).toBe(false);
+    await expect(frame.locator('#form-status')).toHaveText('');
+  }
+  await page.locator('#state').selectOption('filled');
+  for (const frame of [page.frameLocator('#before'), page.frameLocator('#after')]) {
+    await expect(frame.locator('#new')).toBeChecked();
+    await expect(frame.locator('#reference')).toHaveValue('Sample reference');
+    expect(await frame.locator('#application').evaluate(form => form.checkValidity())).toBe(true);
+    await expect(frame.locator('#form-status')).toHaveText('');
+  }
+  await page.locator('#state').selectOption('valid');
+  for (const frame of [page.frameLocator('#before'), page.frameLocator('#after')]) {
+    await expect(frame.locator('#form-status')).toContainText('validated locally');
+  }
+
+  await page.locator('#component').selectOption('radio-validation');
+  await page.locator('#state').selectOption('selected');
+  for (const frame of [page.frameLocator('#before'), page.frameLocator('#after')]) {
+    await expect(frame.locator('#contact-email')).toBeChecked();
+    await expect(frame.locator('#radio-validation-status')).toHaveText('');
+  }
+  await page.locator('#state').selectOption('valid');
+  for (const frame of [page.frameLocator('#before'), page.frameLocator('#after')]) {
+    await expect(frame.locator('#radio-validation-status')).toContainText('validated locally');
+  }
+});
+
 test('evaluation: every declared alert state is selectable and reproducible', async ({page}) => {
   await goto(page, `${base}?component=alert&state=info`);
   const states = await page.locator('#state option').evaluateAll(options => options.map(option => option.value));
@@ -392,7 +423,7 @@ test('evaluation: entry points from component, experiment, and evidence pages', 
   await expect(page.locator('#experiment-list .card:visible')).toHaveCount(1);
   await page.locator('#experiment-concern').selectOption('all');
   await page.locator('#experiment-manual').selectOption('defined');
-  await expect(page.locator('#experiment-list .card:visible')).toHaveCount(2);
+  await expect(page.locator('#experiment-list .card:visible')).toHaveCount(3);
 });
 
 test('evaluation: performance evidence is present or an explicit gap', async ({page}) => {

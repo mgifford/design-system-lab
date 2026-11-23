@@ -33,7 +33,7 @@ const body = {
 <p>Test logical spacing and expansion in both left-to-right and right-to-left layouts.</p>
 <p class="fixture-note" lang="ar" dir="rtl">معلومات الخدمة — نموذج لاختبار الاتجاه من اليمين إلى اليسار. <span lang="en" dir="ltr">(Sample Arabic for direction testing; native-language review pending.)</span></p>`,
   form: `<h1 class="fixture-heading">Request information</h1><p>Use this fixture to investigate native validation, focus visibility and radio control positioning.</p>
-<form id="application" class="usa-form" data-local-validation data-status-target="form-status">
+<form id="application" class="usa-form" data-local-validation data-status-target="form-status" data-states="empty invalid filled valid" data-state-actions='{"empty":"none","invalid":"submit","filled":"fill","valid":"fill-submit"}'>
  <fieldset class="usa-fieldset"><legend class="usa-legend">Request type <span class="fixture-required">(required)</span></legend>
  <div class="usa-radio"><input class="usa-radio__input" id="new" name="request" value="new" type="radio" required><label class="usa-radio__label" for="new">New application</label></div>
  <div class="usa-radio"><input class="usa-radio__input" id="change" name="request" value="change" type="radio" required><label class="usa-radio__label" for="change">Update an existing application</label></div>
@@ -42,7 +42,7 @@ const body = {
  <p id="form-status" role="status" aria-live="polite"></p>`,
   'radio-validation': `<h1 class="fixture-heading">Contact preference</h1>
 <p>This reproduction checks native validation and focus placement for a required radio group. It does not change upstream radio positioning.</p>
-<form id="radio-validation-form" class="usa-form" data-local-validation data-status-target="radio-validation-status">
+<form id="radio-validation-form" class="usa-form" data-local-validation data-status-target="radio-validation-status" data-states="empty invalid selected valid" data-state-actions='{"empty":"none","invalid":"submit","selected":"check","valid":"fill-submit"}'>
  <fieldset class="usa-fieldset"><legend class="usa-legend">How should we contact you? <span class="fixture-required">(required)</span></legend>
  <p class="fixture-hint" id="contact-hint">Choose one option. The browser will block an empty submission.</p>
  <div class="usa-radio"><input class="usa-radio__input" id="contact-email" name="contact" value="email" type="radio" required><label class="usa-radio__label" for="contact-email">Email</label></div>
