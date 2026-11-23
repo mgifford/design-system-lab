@@ -38,7 +38,7 @@
 
 ## P0: verify in CI and real environments
 
-- [ ] Run the automated VoiceOver workflow on a macOS runner and review the spoken-phrase logs and traces.
+- [x] Run the automated VoiceOver workflow on a macOS runner and review the spoken-phrase logs and traces (run `45289287525`, 5/5 passing).
 
 - [ ] Run the GitHub Actions workflows on a real runner and confirm Pages deployment under the final repository subpath.
 - [x] Run Playwright in WebKit locally (59 passing, 1 axe skip).

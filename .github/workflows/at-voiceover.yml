@@ -2,8 +2,6 @@ name: Automated VoiceOver evidence
 
 on:
   workflow_dispatch:
-  push:
-    branches: [feat/guidepup-voiceover]
   schedule:
     - cron: '0 9 * * 1'
 

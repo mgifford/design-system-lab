@@ -40,7 +40,7 @@ node scripts/guidepup-setup.mjs install voiceover
 npm run test:at:voiceover
 ```
 
-`@guidepup/setup` may request administrator access and macOS Accessibility/Screen Recording permissions. This is expected: it configures the real screen reader. The local sandbox for this project cannot grant those permissions, so the workflow is verified on a macOS runner rather than claimed from a sandbox run.
+`@guidepup/setup` may request administrator access and macOS Accessibility/Screen Recording permissions. This is expected: it configures the real screen reader. The local sandbox for this project cannot grant those permissions, so the workflow is verified on a macOS runner rather than claimed from a sandbox run. Run `45289287525` passed all five tests on `macos-latest` (4.8 minutes of screen-reader tests); the generated phrase attachments must still be read as automated observations.
 
 Node 22 does not provide `Error.isError`, which the setup CLI uses. `scripts/guidepup-setup.mjs` polyfills it only for that CLI; project code remains on the declared Node engine.
 

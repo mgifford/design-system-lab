@@ -183,7 +183,7 @@ CI uses `npm ci` with the committed lockfile. The workflow has not been executed
 - `npm run build:strict` — 33 lab routes, 31 documentation pages, 10 fixtures.
 - `LAB_BROWSER_CHANNEL=chrome npx playwright test --project=chromium` — **99 passing**.
 - `npm run evidence` (Chrome channel) — **33/33 routes, 96 Guidepup state transcripts, 50 state-level axe scans, 100 matched capture pairs, 10 performance routes (30 runs, 0 hard budget failures), 0 failed**.
-- Automated VoiceOver suite added (`npm run test:at:voiceover`) for macOS runners. It could not be executed in the authoring sandbox because `@guidepup/setup` requires administrator/TCC permissions; the dedicated workflow is the verification path.
+- Automated VoiceOver workflow (macOS) — **5/5 passing** in run `45289287525` (4.8 minutes of tests). It is not part of the PR gate. The authoring sandbox could not grant the administrator/TCC permissions required by `@guidepup/setup`; the macOS workflow is the verification path.
 - `npm run validate` — 5 components, 4 experiments, 14 issues, 5 scenarios, 33 routes, 33 MCP scenarios, evidence run complete.
 
 WebKit ran locally: **69 passing, 1 skipped** (the axe scan is Chromium-only by design). Firefox could not launch in the authoring sandbox because it could not create its profile folder; that is recorded as a blocked check, not a pass. CI currently runs Chromium only.
