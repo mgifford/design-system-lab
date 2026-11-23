@@ -294,6 +294,7 @@ test('evaluation: entry points from component, experiment, and evidence pages', 
   await expect(page.locator('#experiment-list .card:visible')).toHaveCount(3);
   await page.locator('#experiment-evidence').selectOption('complete');
   await expect(page.locator('#experiment-count')).toBeVisible();
+  await page.locator('#experiment-evidence').selectOption('all');
   await page.locator('#experiment-preference').selectOption('all');
   await page.locator('#experiment-concern').selectOption('screen-reader');
   await expect(page.locator('#experiment-list .card:visible')).toHaveCount(1);
