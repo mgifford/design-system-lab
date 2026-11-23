@@ -21,6 +21,8 @@ On November 23, 2026, the same agent added the evaluation workspace: shared URL/
 
 On the same day, the agent added a native fixture performance sample (cold-context runs, transfer/request/DOM budgets, timing warnings) and a cost-and-stability panel. It did not add a performance score, did not run Lighthouse or sitespeed.io, and did not claim field or energy measurements.
 
+The same pass added a separate Guidepup automation suite for real macOS VoiceOver and a `workflow_dispatch`/weekly workflow. The authoring sandbox could not grant the administrator/TCC permissions required by `@guidepup/setup`, so local execution is blocked and the workflow is the verification path. This is automated AT evidence, not human screen-reader testing.
+
 The agent did not record any manual test result, did not mark a state or experiment reviewed, and did not submit anything upstream. Manual results are intentionally absent from published evidence until a person performs the tests.
 
 ## Human review status

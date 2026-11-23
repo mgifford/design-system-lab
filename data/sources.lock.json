@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "verifiedAt": "2026-11-20",
+  "verifiedAt": "2026-11-23",
   "baseline": {
     "project": "USWDS",
     "repository": "https://github.com/uswds/uswds",
@@ -11,7 +11,7 @@
     "releaseDate": "2026-08-18T20:08:42Z",
     "packageLock": {
       "path": "package-lock.json",
-      "sha256": "fb1b4c3fbe6c4cf9182a988a5d3c2ccfa711322fc96e35d1ad402aae520b1b89"
+      "sha256": "957979b260b11e7f0871e1ae2545e69a530686069d929e0065622052958417d1"
     },
     "assets": {
       "css": {

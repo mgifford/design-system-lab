@@ -12,7 +12,8 @@
 - Evaluation tool display is separated from fixture conditions. Fixtures ignore stored lab preferences unless opened with `?prefs=1`, so a reviewer's tool setting cannot silently alter the component under test.
 - Forced colours and increased contrast are only labelled as browser-emulation captures. The live contrast control is explicitly described as fixture CSS, not browser preference emulation.
 - Alert declares twelve reproducible states. Axe runs on each state, and the evidence interface classifies baseline-only, experiment-only, and shared findings.
-- Manual test definitions cite the USWDS alert accessibility checklist and relevant WCAG requirements. A person must record a result; "not applicable" requires a justification; results stay local and are never submitted automatically.
+- A separate macOS workflow automates real VoiceOver through Guidepup for Alert, Accordion, and Banner. Its phrase logs are labelled automated AT; they do not complete a manual test and do not replace human screen-reader testing.
+- Manual test definitions cite the USWDS component accessibility checklists and relevant WCAG requirements. A person must record a result; "not applicable" requires a justification; results stay local and are never submitted automatically.
 - RTL fixtures are tested for direction, language, a mixed-direction sample, logical border placement, and keyboard operation.
 - No-JavaScript fixture content stays readable and dead disclosure buttons are removed from the visual and accessibility tree.
 - Forced colors and reduced motion are exercised through browser emulation and recorded as emulation, not real-device testing.

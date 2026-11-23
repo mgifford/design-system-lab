@@ -5,6 +5,7 @@
 - `@uswds/uswds` v3.14.0: primarily United States public domain / CC0, with separate licenses covering included third-party code, fonts, and icons. See <https://github.com/uswds/uswds/blob/develop/LICENSE.md> and the installed package's `LICENSE.md`. The build copies distributed CSS, JS, image, and font assets and keeps the package license file.
 - Playwright and `@playwright/test` (1.64.1): Apache-2.0. Development and testing only.
 - `@guidepup/virtual-screen-reader` (0.32.1): MIT. Development and testing only.
+- `@guidepup/guidepup` (0.40.0), `@guidepup/playwright` (0.21.0), and `@guidepup/setup` (0.28.0): MIT. Development and automated real screen-reader testing only; no Guidepup source is redistributed.
 - `jsdom` (26.1.0): MIT. Development and testing only.
 - `marked` (18.2.1): MIT. Build-time Markdown rendering only.
 - `@axe-core/playwright` (4.14.0): MPL-2.0. Development and testing only. The build does not redistribute axe-core.

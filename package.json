@@ -29,7 +29,9 @@
     "sources:latest": "node scripts/check-releases.mjs --latest",
     "premcp:check": "npm run build:strict",
     "mcp:sync": "node scripts/sync-mcp.mjs",
-    "mcp:check": "node scripts/sync-mcp.mjs --check"
+    "mcp:check": "node scripts/sync-mcp.mjs --check",
+    "pretest:at:voiceover": "npm run build:strict",
+    "test:at:voiceover": "playwright test --config=playwright.guidepup.config.mjs --project=voiceover"
   },
   "dependencies": {
     "@ogds/elements": "1.0.0-beta.2",
@@ -37,6 +39,9 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",
+    "@guidepup/guidepup": "0.40.0",
+    "@guidepup/playwright": "0.21.0",
+    "@guidepup/setup": "0.28.0",
     "@guidepup/virtual-screen-reader": "0.32.1",
     "@playwright/mcp": "0.0.86",
     "@playwright/test": "1.64.1",

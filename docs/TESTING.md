@@ -19,8 +19,9 @@ npm run validate              # schema, sources, routes, evidence
 3. **Behavior tests** cover the accordion, banner, form, radio validation, preferences panel, evaluation workspace, dark mode, RTL, no-JavaScript, reduced motion, and forced colors. The evaluation suite adds URL validation, the four comparison modes, pane sizing and the split slider, Accordion and Banner state maps, keyboard sliders, captured conditions, focus inspection, manual-result recording and export, presets, 320 CSS-pixel layout, and forced-colours visibility.
 4. **Axe scans** record computable WCAG 2.0/2.1/2.2 A/AA issues per route. A zero count is not conformance.
 5. **Evidence collection** captures Guidepup virtual transcripts, state transcripts, screenshots, initial-state and state-level axe observations, matched baseline/experiment captures, and a small cold-context performance sample into `reports/latest`.
-6. **Validation** checks the registry, source lock, docs, routes, MCP scenarios, and evidence manifest.
-7. **Link checking** walks the built HTML and fails on a missing local page, stylesheet, script, or screenshot.
+6. **Automated real screen reader** (`tests/guidepup`, separate macOS workflow) drives VoiceOver through Guidepup and uploads spoken-phrase logs. It is automated AT evidence, not a human session, and is not part of the PR gate.
+7. **Validation** checks the registry, source lock, docs, routes, MCP scenarios, and evidence manifest.
+8. **Link checking** walks the built HTML and fails on a missing local page, stylesheet, script, or screenshot.
 
 ## Browser policy
 
@@ -29,7 +30,8 @@ Playwright's configuration names Chromium, Firefox, and WebKit. CI runs Chromium
 ## Accessibility testing boundaries
 
 - Automated scans catch only a subset of WCAG issues.
-- Guidepup is a virtual screen reader over a DOM snapshot, not NVDA, JAWS, or VoiceOver.
+- Guidepup Virtual Screen Reader is a DOM simulation, not NVDA, JAWS, or VoiceOver.
+- Guidepup automation of real VoiceOver is stronger evidence than the virtual reader but is still scripted AT, not a human session.
 - Forced-colors emulation is not Windows High Contrast Mode on a real device.
 - Real screen-reader, speech-input, and user testing remain human responsibilities.
 

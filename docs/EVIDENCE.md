@@ -44,6 +44,10 @@ Captured images live under `pairs/<component>/<state>--<condition>--<side>.png` 
 
 The build copies captures into `dist/evidence/latest` and the evaluation workspace decodes them in the browser for pixel comparison. A missing pair is displayed as a coverage gap. Pixel counts are visual measurements, never accessibility scores.
 
+## Automated real screen-reader evidence
+
+A separate macOS workflow (`at-voiceover.yml`) automates the real VoiceOver screen reader with Guidepup and uploads JSON spoken-phrase logs plus Playwright traces/reports. This is **not** part of the main evidence run: it needs an OS desktop, takes longer, and can be flaky. It is automated AT evidence, not human testing, and the published static build does not claim a fresh VoiceOver run. See [AT-EVIDENCE.md](AT-EVIDENCE.md).
+
 ## Manual results
 
 `data/manual-tests.json` contains definitions only. The evaluation workspace stores results in the reviewer's browser and exports JSON or Markdown. Published evidence records zero completed manual tests; a human must perform the test and attach the export to the review record. The decision log remains the approval surface.

@@ -37,6 +37,14 @@ npm run build:strict
 npm run validate
 ```
 
+On macOS, after `npx guidepup setup` and `node scripts/guidepup-setup.mjs install voiceover`, the separate automated VoiceOver suite is:
+
+```bash
+npm run test:at:voiceover
+```
+
+This configures and automates the real VoiceOver screen reader. It is not a human session. See [docs/AT-EVIDENCE.md](docs/AT-EVIDENCE.md).
+
 Then:
 
 ```bash
@@ -158,7 +166,7 @@ The workspace is not a conformance tool. It never shows an aggregate accessibili
 
 The build publishes evidence only from the current `reports/latest` run. `dist/evidence` is deleted first, so a previous run cannot leak in.
 
-**Guidepup is a virtual screen reader over a DOM snapshot. It is not NVDA, JAWS, or VoiceOver.** Axe runs on the initial route and on declared component states; it is not a WCAG conformance determination. Screenshots and captures are evidence for human inspection, not a design verdict. Published evidence records zero completed manual tests unless a person exports and attaches their records.
+The main evidence run uses the **Guidepup Virtual Screen Reader** over a DOM snapshot. It is not NVDA, JAWS, or VoiceOver. A separate macOS workflow automates the **real VoiceOver screen reader**; its phrase logs are automated AT artifacts, not human testing and not published as part of every build. Axe runs on the initial route and on declared component states; it is not a WCAG conformance determination. Screenshots and captures are evidence for human inspection, not a design verdict. Published evidence records zero completed manual tests unless a person exports and attaches their records.
 
 ## GitHub Pages and CI
 
@@ -172,9 +180,10 @@ CI uses `npm ci` with the committed lockfile. The workflow has not been executed
 ### Local verification
 
 - `npm run test:unit` — 36 passing, including evaluation URL validation, state/fixture consistency, pane sizing, pixel-diff math, finding classification, and performance budget math.
-- `npm run build:strict` — 33 lab routes, 30 documentation pages, 10 fixtures.
+- `npm run build:strict` — 33 lab routes, 31 documentation pages, 10 fixtures.
 - `LAB_BROWSER_CHANNEL=chrome npx playwright test --project=chromium` — **99 passing**.
 - `npm run evidence` (Chrome channel) — **33/33 routes, 96 Guidepup state transcripts, 50 state-level axe scans, 100 matched capture pairs, 10 performance routes (30 runs, 0 hard budget failures), 0 failed**.
+- Automated VoiceOver suite added (`npm run test:at:voiceover`) for macOS runners. It could not be executed in the authoring sandbox because `@guidepup/setup` requires administrator/TCC permissions; the dedicated workflow is the verification path.
 - `npm run validate` — 5 components, 4 experiments, 14 issues, 5 scenarios, 33 routes, 33 MCP scenarios, evidence run complete.
 
 WebKit ran locally: **69 passing, 1 skipped** (the axe scan is Chromium-only by design). Firefox could not launch in the authoring sandbox because it could not create its profile folder; that is recorded as a blocked check, not a pass. CI currently runs Chromium only.
@@ -192,6 +201,7 @@ scripts/              build, evidence, validation, sources, scaffold, MCP sync
 site/assets/          shell CSS, experiment CSS, fixture CSS/JS, preferences
 templates/pages/      shared page fragments rendered by the build
 tests/browser/        deterministic Playwright tests and helpers
+tests/guidepup/       automated real VoiceOver tests (separate macOS workflow)
 tests/unit/           registry, source-lock, and Markdown tests
 reports/templates/    human evidence and decision templates
 reports/latest/       generated current evidence (gitignored)

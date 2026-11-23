@@ -1,0 +1,45 @@
+name: Automated VoiceOver evidence
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  voiceover:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build the lab
+        run: npm run build:strict
+      - name: Install WebKit
+        run: npx playwright install webkit
+      - name: Cache Guidepup screen-reader assets
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/guidepup
+          key: guidepup-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Configure macOS for VoiceOver automation
+        run: node scripts/guidepup-setup.mjs setup --ci
+      - name: Install VoiceOver assets
+        run: node scripts/guidepup-setup.mjs install voiceover
+      - name: Run automated VoiceOver tests
+        run: npm run test:at:voiceover
+      - name: Upload VoiceOver transcripts and traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: voiceover-evidence-${{ github.run_id }}
+          if-no-files-found: warn
+          path: |
+            test-results/guidepup
+            playwright-report/guidepup
