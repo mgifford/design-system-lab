@@ -54,6 +54,10 @@ The reveal divider and onion overlay set both iframes `inert` and `aria-hidden` 
 
 Difference mode compares matched Playwright captures in the browser and reports changed pixels, a percentage, and a bounding box. It explicitly does not report an accessibility score. Antialiasing, font rendering, and encoding affect the count. A missing capture pair is a coverage gap.
 
+## Performance budgets are narrow and observable
+
+The collector records transfer bytes, request counts, DOM size, and a small timing sample for each fixture pair. Byte, request, and DOM limits are hard checks; timing thresholds are warnings because local runs are noisy. The lab does not compute an aggregate performance score, use Lighthouse’s accessibility score, or claim field Web Vitals or energy impact. Lighthouse CI and sitespeed.io are deferred until there is a specific question they answer better than the native sample.
+
 ## Manual results are local and human-owned
 
 Manual test definitions live in `data/manual-tests.json` without results. The evaluation workspace stores a reviewer's records in their browser and exports JSON or Markdown. Published evidence records zero completed manual tests. No result is auto-submitted, auto-committed, or inferred from Guidepup simulation.

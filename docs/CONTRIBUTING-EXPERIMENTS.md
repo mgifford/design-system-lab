@@ -44,7 +44,7 @@ An experiment that changes a component should be evaluable, not only viewable.
 2. If a state needs an action to reach it, set `"interaction": "activate"` and make the action local-only. Evidence collection and screenshot capture will perform it.
 3. Add component-specific human tests to `data/manual-tests.json`. Cite the official USWDS accessibility tests and the WCAG requirement. Never add a result to the definition file.
 4. Add deterministic Playwright coverage for the state, the keyboard path, and any visible state change. Do not treat a Guidepup transcript as real assistive-technology testing.
-5. Run `npm run evidence` so state-level axe and matched captures are generated, then inspect `compare.html` for the component and state.
+5. Run `npm run evidence` so state-level axe, matched captures, and fixture performance evidence are generated, then inspect `compare.html` for the component and state. Review any hard performance budget failure in `data/performance-budgets.json`; do not raise a ceiling just to make a change pass.
 6. Update the evaluation guide only if the shared model changes; link to it instead of duplicating the instructions.
 
 A component with only an initial state is explicitly marked as not yet modelled. Do not invent states that the fixture cannot reproduce.

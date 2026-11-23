@@ -160,6 +160,7 @@ function evidenceSummary(manifest, buildInfo, manualTests = []) {
   const failed = manifest.pages.filter(page => page.result !== 'collected-not-reviewed');
   const stateScans = manifest.pages.flatMap(page => page.axeStates || []);
   const comparisonPairs = manifest.comparison?.pairs?.length || 0;
+  const performance = manifest.performance || null;
   const rows = manifest.pages.map(page => {
     const report = page.report ? `<a href="evidence/latest/${escapeHtml(page.report)}">Open evidence</a>` : 'Not generated';
     const axe = Number.isFinite(page.axeViolations) ? String(page.axeViolations) : 'not recorded';
@@ -177,7 +178,8 @@ function evidenceSummary(manifest, buildInfo, manualTests = []) {
     <tbody>${rows}</tbody>
   </table></div>
   <p class="small">Axe counts are recorded for investigation. A zero count is not a conformance claim. See the <a href="evidence/latest/COVERAGE.html">coverage matrix</a> for states that were and were not collected.</p>
-  <div class="callout"><strong>Evaluation workspace:</strong> <a href="compare.html">compare the baseline and experiment under user preferences</a>. Comparison captures: ${comparisonPairs} matched pair(s); state-level axe scans: ${stateScans.length}. Manual test definitions: ${manualTests.length}; this published run records <strong>0</strong> manual tests as completed. Human records stay local until a person exports and attaches them.</div>`;
+  <div class="callout"><strong>Evaluation workspace:</strong> <a href="compare.html">compare the baseline and experiment under user preferences</a>. Comparison captures: ${comparisonPairs} matched pair(s); state-level axe scans: ${stateScans.length}. Manual test definitions: ${manualTests.length}; this published run records <strong>0</strong> manual tests as completed. Human records stay local until a person exports and attaches them.</div>
+  <div class="callout"><strong>Performance evidence:</strong> ${performance?.routes ? `${performance.routes} fixture routes, ${performance.runs} runs, ${performance.budgetFailures} hard budget failure(s), ${performance.timingWarnings} timing warning(s).` : performance?.error ? `collection failed: ${escapeHtml(performance.error)}` : 'no performance summary in this run.'} <a href="evidence/latest/performance.json">Open the raw performance JSON</a> · <a href="docs/PERFORMANCE.html">Read the performance method</a></div>`;
 }
 
 const BLOCK_LABELS = {

@@ -136,6 +136,7 @@ Human decisions are recorded in one table, [`docs/EXPERIMENT-DECISIONS.md`](docs
 - **Evidence classification** — per-state axe counts and a fixed/introduced/common comparison. A disappearing violation is a candidate fix, not proof; removed content is not a fix.
 - **Manual tests** — eleven alert tests based on the USWDS checklist plus dynamic status-message guidance, with local pass/fail/blocked records, required justification for "not applicable", and JSON/Markdown export. Nothing is submitted automatically.
 - **Reproducible URLs** — a versioned, validated parameter schema, invalid-value reporting, copy-link, and named presets stored in the browser.
+- **Cost and stability** — three cold-context runs per fixture at 1280 × 850 with 4× CPU throttling; transfer bytes, request counts, DOM size, and timing observations. Hard byte/request/DOM budgets; timing warnings only. No performance score.
 
 The workspace is not a conformance tool. It never shows an aggregate accessibility score, and a missing run or capture is displayed as a gap.
 
@@ -150,9 +151,10 @@ The workspace is not a conformance tool. It never shows an aggregate accessibili
 5. Captures state-specific transcripts for disclosures, forms, dark appearance, RTL, and declared component states where applicable.
 6. Runs axe on every declared state of a component, after any required activation, and records the violations by state.
 7. Captures matched baseline/experiment screenshots at 900 × 900 for light, dark, forced-colours, and increased-contrast conditions (all four for every registered component).
-8. Writes `SUMMARY.md`, `COVERAGE.md`, and a final `MANIFEST.json`.
-9. Copies the run to `reports/runs/<run-id>`.
-10. Fails when any route cannot be collected; missing output is never a pass.
+8. Measures three cold-context performance runs per baseline/experiment fixture (1280 × 850, light, 4× CPU throttling) and evaluates hard byte/request/DOM budgets plus warning-only timing thresholds.
+9. Writes `SUMMARY.md`, `COVERAGE.md`, `performance.json`, and a final `MANIFEST.json`.
+10. Copies the run to `reports/runs/<run-id>`.
+11. Fails when any route cannot be collected; missing output is never a pass.
 
 The build publishes evidence only from the current `reports/latest` run. `dist/evidence` is deleted first, so a previous run cannot leak in.
 
@@ -169,10 +171,10 @@ CI uses `npm ci` with the committed lockfile. The workflow has not been executed
 
 ### Local verification
 
-- `npm run test:unit` — 28 passing, including evaluation URL validation, state/fixture consistency, pane sizing, pixel-diff math, and finding classification.
-- `npm run build:strict` — 33 lab routes, 29 documentation pages, 10 fixtures.
-- `LAB_BROWSER_CHANNEL=chrome npx playwright test --project=chromium` — **96 passing**.
-- `npm run evidence` (Chrome channel) — **33/33 routes, 96 Guidepup state transcripts, 24 state-level axe scans, 64 matched capture pairs, 0 failed**.
+- `npm run test:unit` — 34 passing, including evaluation URL validation, state/fixture consistency, pane sizing, pixel-diff math, finding classification, and performance budget math.
+- `npm run build:strict` — 33 lab routes, 30 documentation pages, 10 fixtures.
+- `LAB_BROWSER_CHANNEL=chrome npx playwright test --project=chromium` — **97 passing**.
+- `npm run evidence` (Chrome channel) — **33/33 routes, 96 Guidepup state transcripts, 24 state-level axe scans, 64 matched capture pairs, 10 performance routes (30 runs, 0 hard budget failures), 0 failed**.
 - `npm run validate` — 5 components, 4 experiments, 14 issues, 5 scenarios, 33 routes, 33 MCP scenarios, evidence run complete.
 
 WebKit ran locally: **69 passing, 1 skipped** (the axe scan is Chromium-only by design). Firefox could not launch in the authoring sandbox because it could not create its profile folder; that is recorded as a blocked check, not a pass. CI currently runs Chromium only.
@@ -180,12 +182,12 @@ WebKit ran locally: **69 passing, 1 skipped** (the axe scan is Chromium-only by 
 ## Repository layout
 
 ```text
-data/                 registry (including states and evaluation metadata), manual tests,
+data/                 registry (including states and evaluation metadata), manual tests, performance budgets,
                        issue catalogue, review metadata, source lock, coverage map
 content/              shared page content and the pinned sandbox content lock
 renderers/            USWDS and OGDS block renderers
 experiments/          experiment docs (README, IMPLEMENTATION, TEST-PLAN)
-docs/                 architecture, testing, evidence, evaluation guide, design decisions, guides
+docs/                 architecture, testing, evidence, evaluation and performance guides, design decisions, guides
 scripts/              build, evidence, validation, sources, scaffold, MCP sync
 site/assets/          shell CSS, experiment CSS, fixture CSS/JS, preferences
 templates/pages/      shared page fragments rendered by the build
@@ -194,6 +196,8 @@ tests/unit/           registry, source-lock, and Markdown tests
 reports/templates/    human evidence and decision templates
 reports/latest/       generated current evidence (gitignored)
 ```
+
+`docs/PERFORMANCE.md` explains the performance method and budget policy.
 
 `data/registry.json` is the canonical registry. Component pages, experiment pages, fixture routes, the evaluation workspace, MCP scenarios, and validation derive from it. `experiments/<id>/experiment.json` is intentionally not duplicated; the registry is the single source of truth.
 

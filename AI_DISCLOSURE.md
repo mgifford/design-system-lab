@@ -19,6 +19,8 @@ AI assistance was used for issue research, code generation, test scaffolding, ev
 
 On November 23, 2026, the same agent added the evaluation workspace: shared URL/state configuration, evaluator-versus-fixture preference separation, four comparison modes, browser-emulated capture pairs, per-state axe observations, state-level finding classification, the twelve-state Alert pilot, and local-only manual test recording. It also added unit and browser tests, documentation, and the evidence-collection changes.
 
+On the same day, the agent added a native fixture performance sample (cold-context runs, transfer/request/DOM budgets, timing warnings) and a cost-and-stability panel. It did not add a performance score, did not run Lighthouse or sitespeed.io, and did not claim field or energy measurements.
+
 The agent did not record any manual test result, did not mark a state or experiment reviewed, and did not submit anything upstream. Manual results are intentionally absent from published evidence until a person performs the tests.
 
 ## Human review status

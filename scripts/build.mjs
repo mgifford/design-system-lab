@@ -79,7 +79,7 @@ fs.mkdirSync(dist, {recursive: true});
 fs.cpSync(path.join(root, 'site', 'assets'), path.join(dist, 'assets'), {recursive: true});
 
 fs.mkdirSync(path.join(dist, 'data'), {recursive: true});
-for (const file of ['registry.json', 'issues.json', 'review.json', 'sources.lock.json', 'coverage.json', 'manual-tests.json']) {
+for (const file of ['registry.json', 'issues.json', 'review.json', 'sources.lock.json', 'coverage.json', 'manual-tests.json', 'performance-budgets.json']) {
   fs.copyFileSync(path.join(root, 'data', file), path.join(dist, 'data', file));
 }
 
@@ -174,7 +174,8 @@ if (realAssets && exists(manifestPath) && Array.isArray(manifest.pages) && manif
     failed: manifest.failed,
     pages: manifest.pages,
     coverage: manifest.coverage || null,
-    comparison: manifest.comparison || null
+    comparison: manifest.comparison || null,
+    performance: manifest.performance || null
   };
   const evidenceDir = path.join(dist, 'evidence', 'latest');
   fs.mkdirSync(evidenceDir, {recursive: true});

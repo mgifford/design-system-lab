@@ -52,6 +52,7 @@ if (ogdsDependency) {
 
 const coverage = readRequired('data/coverage.json', 'coverage map');
 const manualTestsFile = readRequired('data/manual-tests.json', 'manual accessibility tests');
+const performanceBudgets = readRequired('data/performance-budgets.json', 'performance budgets');
 const sandboxLock = readRequired('content/sandbox.lock.json', 'sandbox content lock');
 const contentPages = ['landing', 'forms'].map(id => readRequired(`content/pages/${id}.json`, `content page ${id}`)).filter(Boolean);
 if (coverage) {
@@ -141,6 +142,11 @@ for (const component of registry?.components || []) {
 }
 
 if (manualTestsFile && manualTestsFile.schemaVersion !== 1) add(`manual-tests schemaVersion must be 1; found ${manualTestsFile.schemaVersion}`);
+if (performanceBudgets) {
+  if (performanceBudgets.schemaVersion !== 1) add(`performance-budgets schemaVersion must be 1; found ${performanceBudgets.schemaVersion}`);
+  if (!performanceBudgets.default?.transferSize || !performanceBudgets.default?.requests) add('performance budgets must define default transferSize and requests limits');
+  if (!Number.isFinite(performanceBudgets.default?.domElements)) add('performance budgets must define a default domElements limit');
+}
 const manualTests = manualTestsFile?.tests || [];
 const manualIds = new Set();
 for (const test of manualTests) {
@@ -301,6 +307,17 @@ if (evidence?.generated) {
       else add(message);
     }
   }
+  if (evidence.performance) {
+    if (evidence.performance.error) warn(`performance collection failed: ${evidence.performance.error}`);
+    if (!exists(path.join(root, 'dist', 'evidence', 'latest', 'performance.json'))) add('performance evidence is missing from dist');
+    if (Number(evidence.performance.budgetFailures) > 0) {
+      const message = `performance evidence reports ${evidence.performance.budgetFailures} hard budget failure(s): ${(evidence.performance.failedRoutes || []).join(', ')}`;
+      if (allowEvidenceFailures) warn(message);
+      else add(message);
+    }
+  } else if (evidence.generated) {
+    warn('evidence run has no performance summary; run npm run evidence and rebuild');
+  }
   const alertStates = registry?.components?.find(component => component.slug === 'alert')?.states?.length || 0;
   if (alertStates > 1 && !(evidence.comparison?.pairs || []).some(pair => pair.component === 'alert')) {
     warn('alert declares evaluation states but the evidence run has no matched comparison captures');
@@ -320,6 +337,7 @@ for (const relative of [
   'docs/TESTING.md',
   'docs/EVIDENCE.md',
   'docs/EVALUATION-GUIDE.md',
+  'docs/PERFORMANCE.md',
   'docs/DESIGN-DECISIONS.md',
   'docs/EXPERIMENT-DECISIONS.md',
   'docs/OGDS-PERMISSION.md',

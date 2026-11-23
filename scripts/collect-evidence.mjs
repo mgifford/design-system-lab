@@ -17,6 +17,7 @@ import {chromium} from '@playwright/test';
 import {JSDOM, VirtualConsole} from 'jsdom';
 import {virtual} from '@guidepup/virtual-screen-reader';
 import AxeBuilder from '@axe-core/playwright';
+import {collectPerformance} from './performance.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const latest = path.join(root, 'reports', 'latest');
@@ -589,6 +590,17 @@ try {
     manifest.comparison = {pairs: [], error: error.message, capturedAt: new Date().toISOString()};
     console.error(`COMPARISON CAPTURE FAILED: ${error.stack || error.message}`);
   }
+
+  console.log('collecting fixture performance evidence...');
+  try {
+    const performanceEvidence = await collectPerformance(browser, origin, routes, {root, runs: Number(process.env.PERF_RUNS) || 3});
+    write('performance.json', `${JSON.stringify(performanceEvidence, null, 2)}\n`);
+    manifest.performance = performanceEvidence.summary;
+    console.log(`performance: ${performanceEvidence.summary.routes} routes, ${performanceEvidence.summary.runs} runs, ${performanceEvidence.summary.budgetFailures} budget failure(s), ${performanceEvidence.summary.timingWarnings} timing warning(s)`);
+  } catch (error) {
+    manifest.performance = {error: error.message, generatedAt: new Date().toISOString()};
+    console.error(`PERFORMANCE COLLECTION FAILED: ${error.stack || error.message}`);
+  }
 } catch (error) {
   manifest.status = 'failed';
   manifest.error = error.message;
@@ -609,7 +621,8 @@ manifest.coverage = {
   states: manifest.pages.reduce((total, page) => total + page.states.length, 0),
   withAxe: manifest.pages.filter(page => Number.isFinite(page.axeViolations)).length,
   withScreenshots: manifest.pages.reduce((total, page) => total + page.screenshots.length, 0),
-  comparisonPairs: manifest.comparison?.pairs?.length || 0
+  comparisonPairs: manifest.comparison?.pairs?.length || 0,
+  performanceRoutes: manifest.performance?.routes || 0
 };
 writeManifest();
 
@@ -626,6 +639,7 @@ const summary = [
   `- Browser: ${manifest.browser}`,
   `- Collected: ${manifest.succeeded} of ${manifest.pages.length} routes`,
   `- Matched comparison captures: ${manifest.comparison?.pairs?.length || 0} pair(s) at ${manifest.comparison?.viewport || 'not recorded'}`,
+  `- Performance evidence: ${manifest.performance?.routes || 0} fixture routes, ${manifest.performance?.runs || 0} runs, ${manifest.performance?.budgetFailures || 0} hard budget failure(s), ${manifest.performance?.timingWarnings || 0} timing warning(s)`,
   '',
   '| Page | Status | Axe | Evidence |',
   '|---|---|---|---|',
@@ -673,6 +687,12 @@ const coverage = [
   '- The comparison page transcript excludes iframe documents. Fixture routes are collected separately.',
   '- Dark appearance is a visual state; Guidepup speech does not change with CSS.',
   '- Captured screenshots use a fixed 900 × 900 viewport, default text, LTR, and default motion.',
+  '',
+  '## Performance evidence',
+  '',
+  manifest.performance?.routes
+    ? `- ${manifest.performance.routes} fixture routes, ${manifest.performance.runs} runs, ${manifest.performance.comparisons} baseline/experiment comparisons.\n- Hard budget failures: ${manifest.performance.budgetFailures}. Timing warnings: ${manifest.performance.timingWarnings}.\n- Conditions: 1280x850, light colour scheme, 4x CPU throttling, new browser context per run, localhost without network shaping.\n- Timing metrics are warnings only; byte, request, and DOM limits are hard checks. This is not a Lighthouse/Web Vitals field score.${manifest.performance.failedRoutes?.length ? `\n- Budget-failed routes: ${manifest.performance.failedRoutes.map(esc).join(', ')}` : ''}`
+    : `No performance evidence was collected${manifest.performance?.error ? `: ${esc(manifest.performance.error)}` : '.'}`,
   '',
   '## Comparison captures',
   '',

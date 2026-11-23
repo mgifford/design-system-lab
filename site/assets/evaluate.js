@@ -36,7 +36,9 @@ const app = {
   diffRequest: 0,
   focus: {on: false, frames: new WeakSet(), scroll: new WeakSet()},
   manualResults: {},
-  syncScroll: true
+  syncScroll: true,
+  performance: undefined,
+  performanceRequest: 0
 };
 
 async function loadJson(relative) {
@@ -207,6 +209,7 @@ function applyConfig(next, {message = ''} = {}) {
   updateHeader();
   updatePreview();
   renderEvidence();
+  renderPerformance();
   renderManualTests();
   renderSavedPresets();
   if (app.ignored.length) status('param-status', `Ignored invalid value(s): ${app.ignored.join(', ')}. Safe defaults were used.`, true);
@@ -608,6 +611,113 @@ function buildAxeComparison(componentSlug) {
   });
 }
 
+async function loadPerformance() {
+  if (app.performance !== undefined) return app.performance;
+  try {
+    const response = await fetch('evidence/latest/performance.json');
+    app.performance = response.ok ? await response.json() : null;
+  } catch {
+    app.performance = null;
+  }
+  return app.performance;
+}
+
+function formatBytes(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return 'not recorded';
+  return number >= 1024 ? `${(number / 1024).toFixed(1)} kB` : `${number} B`;
+}
+
+function formatNumber(value, unit = '') {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return 'not recorded';
+  return `${Number.isInteger(number) ? number : number.toFixed(2)}${unit}`;
+}
+
+function deltaCell(delta, unit = '') {
+  const sign = delta > 0 ? '+' : '';
+  return `${sign}${unit === 'bytes' ? formatBytes(delta) : formatNumber(delta, unit)}`;
+}
+
+function budgetLabel(entry) {
+  if (!entry) return 'No entry';
+  const failures = entry.budgets.filter(check => check.status === 'fail');
+  const warnings = entry.budgets.filter(check => check.status === 'warn');
+  if (failures.length) return `Hard budget failed (${failures.length})`;
+  if (warnings.length) return `Within hard budgets; ${warnings.length} timing warning(s)`;
+  return 'Within budgets';
+}
+
+async function renderPerformance() {
+  const container = $('performance-summary');
+  if (!container) return;
+  const request = ++app.performanceRequest;
+  const data = await loadPerformance();
+  if (request !== app.performanceRequest) return;
+  if (!data?.entries?.length) {
+    container.innerHTML = '<div class="callout warning"><strong>No performance evidence is published in this build.</strong> Missing performance data is a coverage gap, not a pass. Run <code>npm run evidence</code> and rebuild.</div>';
+    return;
+  }
+  const baseline = data.entries.find(entry => entry.component === app.config.component && entry.variant === 'baseline');
+  const experimentEntry = data.entries.find(entry => entry.component === app.config.component && entry.variant === 'experiment');
+  const comparison = data.comparison?.find(entry => entry.component === app.config.component);
+  if (!baseline || !experimentEntry || !comparison) {
+    container.innerHTML = `<div class="callout warning"><strong>No performance pair for ${esc(component().name)} in this run.</strong> This is a coverage gap, not a pass.</div>`;
+    return;
+  }
+  const rows = [
+    ['Total transfer', 'total', 'bytes'],
+    ['CSS', 'css', 'bytes'],
+    ['JavaScript', 'javascript', 'bytes'],
+    ['Fonts', 'font', 'bytes'],
+    ['Requests', null, 'requests'],
+    ['DOM elements', null, 'dom']
+  ].map(([label, group, kind]) => {
+    let before;
+    let after;
+    let delta;
+    if (kind === 'bytes') {
+      before = baseline.aggregate.transferSize[group].median;
+      after = experimentEntry.aggregate.transferSize[group].median;
+      delta = comparison.costs.transferSize[group].bytes;
+    } else if (kind === 'requests') {
+      before = baseline.aggregate.requests.total.median;
+      after = experimentEntry.aggregate.requests.total.median;
+      delta = comparison.costs.requests.total.requests;
+    } else {
+      before = baseline.aggregate.domElements.median;
+      after = experimentEntry.aggregate.domElements.median;
+      delta = comparison.costs.domElements.elements;
+    }
+    const percent = kind === 'bytes' ? comparison.costs.transferSize[group].percent : null;
+    return `<tr><th scope="row">${esc(label)}</th><td>${kind === 'bytes' ? formatBytes(before) : formatNumber(before)}</td><td>${kind === 'bytes' ? formatBytes(after) : formatNumber(after)}</td><td>${deltaCell(delta, kind === 'bytes' ? 'bytes' : '')}${percent === null ? '' : ` (${percent > 0 ? '+' : ''}${percent}%)`}</td></tr>`;
+  }).join('');
+  const timingRows = ['largestContentfulPaint', 'firstContentfulPaint', 'cumulativeLayoutShift', 'totalBlockingTime', 'load'].map(key => {
+    const before = baseline.aggregate.timings[key];
+    const after = experimentEntry.aggregate.timings[key];
+    const label = {
+      largestContentfulPaint: 'Largest Contentful Paint',
+      firstContentfulPaint: 'First Contentful Paint',
+      cumulativeLayoutShift: 'Cumulative Layout Shift',
+      totalBlockingTime: 'Total Blocking Time',
+      load: 'Load event'
+    }[key];
+    const format = value => key === 'cumulativeLayoutShift' ? formatNumber(value) : formatNumber(value, ' ms');
+    return `<tr><th scope="row">${esc(label)}</th><td>${format(before.median)} <span class="small">(${format(before.min)}–${format(before.max)})</span></td><td>${format(after.median)} <span class="small">(${format(after.min)}–${format(after.max)})</span></td><td>${format(after.median - before.median)}</td></tr>`;
+  }).join('');
+  const failures = [...baseline.budgets, ...experimentEntry.budgets].filter(check => check.status === 'fail');
+  const warnings = [...baseline.budgets, ...experimentEntry.budgets].filter(check => check.status === 'warn');
+  const links = $('performance-links');
+  if (links) links.innerHTML = '<a href="evidence/latest/performance.json">Open the raw performance JSON</a> · <a href="evidence.html">Open the evidence index</a> · <a href="data/performance-budgets.json">Review the budgets</a>';
+  container.innerHTML = `<p class="small">${esc(data.conditions?.note || '')} ${data.conditions?.runs || 3} runs per route; median shown with min–max.</p>
+  <div class="table-wrap" tabindex="0"><table><caption>Resource cost: baseline vs experiment (median)</caption><thead><tr><th scope="col">Metric</th><th scope="col">Baseline</th><th scope="col">Experiment</th><th scope="col">Change</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <p class="small"><strong>Baseline:</strong> ${esc(budgetLabel(baseline))}. <strong>Experiment:</strong> ${esc(budgetLabel(experimentEntry))}.</p>
+  ${failures.length ? `<div class="callout warning"><strong>Hard budget failure.</strong><ul class="clean">${failures.map(check => `<li>${esc(check.route)}: ${esc(check.metric)} ${formatNumber(check.actual)} exceeds ${formatNumber(check.limit)}</li>`).join('')}</ul></div>` : '<p class="small">No hard byte, request, or DOM budget failures in this pair.</p>'}
+  <div class="table-wrap" tabindex="0"><table><caption>Timing observations: baseline vs experiment (warning only)</caption><thead><tr><th scope="col">Metric</th><th scope="col">Baseline median (range)</th><th scope="col">Experiment median (range)</th><th scope="col">Change</th></tr></thead><tbody>${timingRows}</tbody></table></div>
+  ${warnings.length ? `<p class="small">${warnings.length} timing warning(s) recorded. They are not failures: local timing is noisy.</p>` : ''}
+  <p class="small">These measurements describe the fixture page under the stated conditions. They are not a Lighthouse score, a field Web Vitals sample, or an accessibility metric.</p>`;
+}
+
 function manualStorageKey() {
   return MANUAL_KEY;
 }
@@ -1000,6 +1110,7 @@ function renderInitial() {
   updateHeader();
   updatePreview();
   renderEvidence();
+  renderPerformance();
   renderManualTests();
   renderSavedPresets();
   if (app.ignored.length) status('param-status', `Ignored invalid value(s): ${app.ignored.join(', ')}. Safe defaults were used.`, true);

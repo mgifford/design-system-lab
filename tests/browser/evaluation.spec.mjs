@@ -368,6 +368,18 @@ test('evaluation: entry points from component, experiment, and evidence pages', 
   await expect(page.locator('#experiment-list .card:visible')).toHaveCount(2);
 });
 
+test('evaluation: performance evidence is present or an explicit gap', async ({page}) => {
+  await goto(page, `${base}?component=alert&state=warning`);
+  const summary = page.locator('#performance-summary');
+  await expect(summary).not.toBeEmpty();
+  const text = await summary.textContent();
+  expect(text).toMatch(/No performance evidence|No performance pair|Resource cost/);
+  if (/Resource cost/.test(text)) {
+    await expect(summary).toContainText('Total transfer');
+    await expect(summary).toContainText('not a Lighthouse score');
+  }
+});
+
 test('evaluation: evidence never reports a missing run as passing', async ({page}) => {
   await goto(page, `${base}?component=alert`);
   const text = await page.locator('#eval-evidence').textContent();
