@@ -62,6 +62,71 @@ test('evaluation: every declared alert state is selectable and reproducible', as
   }
 });
 
+test('evaluation: side-by-side panes share the available width by default', async ({page}) => {
+  await goto(page, `${base}?component=alert&state=warning`);
+  await expect(page.locator('#sizing')).toHaveValue('split');
+  await expect(page.locator('#width')).toBeDisabled();
+  await expect(page.locator('#pane-size-note')).toContainText('share the available width');
+  const widths = await page.evaluate(() => [document.getElementById('before').getBoundingClientRect().width, document.getElementById('after').getBoundingClientRect().width]);
+  expect(widths[0]).toBeGreaterThan(100);
+  expect(widths[1]).toBeGreaterThan(100);
+  expect(widths[0]).toBeLessThan(1200);
+  expect(widths[1]).toBeLessThan(1200);
+  expect(Math.abs(widths[0] - widths[1])).toBeLessThan(3);
+  const overflow = await page.locator('#stage').evaluate(element => element.scrollWidth - element.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+  await expect(page.locator('#pane-size-before')).toContainText('viewport');
+  await expect(page.locator('#pane-size-after')).toContainText('viewport');
+});
+
+test('evaluation: split slider is keyboard operable and changes both pane widths', async ({page}) => {
+  await goto(page, `${base}?component=alert&state=warning`);
+  const before = await page.locator('#before').evaluate(element => element.getBoundingClientRect().width);
+  const slider = page.locator('#split');
+  await slider.focus();
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('ArrowRight');
+  await expect(page.locator('#split-output')).toContainText('65% baseline / 35% experiment');
+  const widths = await page.evaluate(() => [document.getElementById('before').getBoundingClientRect().width, document.getElementById('after').getBoundingClientRect().width]);
+  expect(widths[0]).toBeGreaterThan(widths[1]);
+  expect(widths[0]).toBeGreaterThan(before);
+  expect(page.url()).toContain('split=65');
+});
+
+test('evaluation: actual sizing warns about overflow and offers split width', async ({page}) => {
+  await goto(page, `${base}?component=alert&state=warning&sizing=actual&width=1280`);
+  await expect(page.locator('#sizing')).toHaveValue('actual');
+  await expect(page.locator('#width')).toBeEnabled();
+  await expect(page.locator('#pane-overflow-note')).toBeVisible();
+  await expect(page.locator('#pane-overflow-note')).toContainText('switch to split width');
+  await page.locator('#use-split').click();
+  await expect(page.locator('#sizing')).toHaveValue('split');
+  await expect(page.locator('#pane-overflow-note')).toBeHidden();
+  await expect(page.locator('#width')).toBeDisabled();
+});
+
+test('evaluation: fit sizing scales the fixed viewport and says so', async ({page}) => {
+  await goto(page, `${base}?component=alert&state=warning&sizing=fit&width=1280`);
+  await expect(page.locator('#sizing')).toHaveValue('fit');
+  await expect(page.locator('#width')).toBeEnabled();
+  const transform = await page.locator('#before').evaluate(element => getComputedStyle(element).transform);
+  expect(transform).not.toBe('none');
+  await expect(page.locator('#pane-size-before')).toContainText('% scale');
+  await expect(page.locator('#pane-size-note')).toContainText('scaled');
+  await page.locator('#sizing').selectOption('actual');
+  expect(await page.locator('#before').evaluate(element => getComputedStyle(element).transform)).toBe('none');
+});
+
+test('evaluation: sizing and split survive URL round-trips', async ({page}) => {
+  await goto(page, `${base}?component=alert&state=warning&sizing=actual&split=65`);
+  await expect(page.locator('#sizing')).toHaveValue('actual');
+  await expect(page.locator('#split')).toHaveValue('65');
+  await expect(page.locator('#split-output')).toContainText('65% baseline / 35% experiment');
+  expect(page.url()).toContain('sizing=actual');
+  expect(page.url()).toContain('split=65');
+});
+
 test('evaluation: four comparison modes expose the right controls', async ({page}) => {
   await goto(page, `${base}?component=alert&state=info`);
   const view = page.locator('#view');

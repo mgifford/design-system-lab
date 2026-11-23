@@ -43,6 +43,18 @@ test('invalid evaluation params fall back and are reported', () => {
   }
 });
 
+test('pane sizing and split normalize and reject out-of-range values', () => {
+  const valid = normalizeEvaluationParams('component=alert&sizing=fit&split=70', registry);
+  assert.equal(valid.ignored.includes('split'), false);
+  assert.equal(valid.config.sizing, 'fit');
+  assert.equal(valid.config.split, '70');
+  const invalid = normalizeEvaluationParams('component=alert&sizing=nope&split=95', registry);
+  assert.equal(invalid.config.sizing, 'split');
+  assert.equal(invalid.config.split, '50');
+  assert.ok(invalid.ignored.includes('sizing'));
+  assert.ok(invalid.ignored.includes('split'));
+});
+
 test('state falls back when it belongs to another component', () => {
   const {config, ignored} = normalizeEvaluationParams('component=accordion&state=emergency', registry);
   assert.equal(config.component, 'accordion');
@@ -59,9 +71,11 @@ test('fixture params omit defaults and preserve the legacy order', () => {
 });
 
 test('evaluation links are versioned and round-trip', () => {
-  const {config} = normalizeEvaluationParams('component=alert&state=error&view=onion&width=768&capture=dark&render=captured', registry);
+  const {config} = normalizeEvaluationParams('component=alert&state=error&view=onion&width=768&capture=dark&render=captured&sizing=fit&split=60', registry);
   const url = evaluationUrl(config, 'compare.html');
   assert.match(url, new RegExp(`^compare\\.html\\?v=${EVALUATION_SCHEMA_VERSION}&`));
+  assert.match(url, /sizing=fit/);
+  assert.match(url, /split=60/);
   const parsed = new URL(url, 'https://example.test/');
   const again = normalizeEvaluationParams(parsed.search, registry).config;
   assert.deepEqual(again, config);

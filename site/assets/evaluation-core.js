@@ -13,6 +13,12 @@ export const VIEW_MODES = [
   {value: 'difference', label: 'Pixel difference'}
 ];
 
+export const SIZINGS = [
+  {value: 'split', label: 'Split available width (both panes visible, reflowed)'},
+  {value: 'fit', label: 'Fit the fixed viewport into each pane (scaled)'},
+  {value: 'actual', label: 'Actual fixed viewport (horizontal scroll)'}
+];
+
 export const THEMES = [
   {value: 'system', label: 'Follow fixture system preference'},
   {value: 'light', label: 'Explicit light (experiment only)'},
@@ -75,7 +81,7 @@ export const PRESETS = [
     id: 'default',
     label: 'Default',
     description: 'Light/system appearance, default text, 1280 px, LTR, live fixtures.',
-    config: {view: 'split', theme: 'system', motion: 'system', contrast: 'normal', textSize: 'default', spacing: 'default', direction: 'ltr', language: 'en', width: '1280', render: 'live', capture: 'light'}
+    config: {view: 'split', sizing: 'split', split: '50', theme: 'system', motion: 'system', contrast: 'normal', textSize: 'default', spacing: 'default', direction: 'ltr', language: 'en', width: '1280', render: 'live', capture: 'light'}
   },
   {
     id: 'dark',
@@ -102,10 +108,16 @@ export const PRESETS = [
     config: {textSize: '200'}
   },
   {
+    id: 'desktop',
+    label: 'Fixed 1280 viewport',
+    description: 'Actual 1280 CSS px panes with a horizontal-scroll warning when they do not fit.',
+    config: {width: '1280', sizing: 'actual'}
+  },
+  {
     id: 'narrow',
     label: 'Narrow viewport',
-    description: '320 CSS pixels, the WCAG reflow width.',
-    config: {width: '320'}
+    description: '320 CSS pixels, the WCAG reflow width. Uses actual-size panes so the fixed width is applied.',
+    config: {width: '320', sizing: 'actual'}
   },
   {
     id: 'rtl',
@@ -139,6 +151,8 @@ const DEFAULT_CONFIG = {
   direction: 'ltr',
   language: 'en',
   width: '1280',
+  sizing: 'split',
+  split: '50',
   motion: 'system',
   contrast: 'normal',
   textSize: 'default',
@@ -158,8 +172,19 @@ const valueSet = {
   textSize: values(TEXT_SIZES),
   spacing: values(SPACINGS),
   render: values(RENDERS),
-  capture: values(CAPTURE_CONDITIONS)
+  capture: values(CAPTURE_CONDITIONS),
+  sizing: values(SIZINGS)
 };
+
+function readSplit(raw, ignored) {
+  if (raw === null || raw === '') return DEFAULT_CONFIG.split;
+  const number = Number(raw);
+  if (!Number.isInteger(number) || number < 20 || number > 80) {
+    ignored.push('split');
+    return DEFAULT_CONFIG.split;
+  }
+  return String(number);
+}
 
 function readWidth(raw, ignored) {
   if (raw === null || raw === '') return DEFAULT_CONFIG.width;
@@ -225,6 +250,8 @@ export function normalizeEvaluationParams(search, registry) {
     spacing: pick('spacing', valueSet.spacing, DEFAULT_CONFIG.spacing),
     render: pick('render', valueSet.render, DEFAULT_CONFIG.render),
     capture: pick('capture', valueSet.capture, DEFAULT_CONFIG.capture),
+    sizing: pick('sizing', valueSet.sizing, DEFAULT_CONFIG.sizing),
+    split: readSplit(params.get('split'), ignored),
     width: readWidth(params.get('width'), ignored)
   };
   return {config, ignored};
