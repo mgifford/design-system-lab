@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "note": "Initial ceilings for this lab, not performance targets or a Lighthouse score. Byte, request, and DOM limits are hard budget checks; timing limits are warnings because local timing is noisy. Update only through a reviewed change with a measured rationale.",
+  "default": {
+    "transferSize": {
+      "total": 720000,
+      "html": 12000,
+      "css": 600000,
+      "javascript": 110000,
+      "font": 60000,
+      "image": 10000,
+      "other": 2000
+    },
+    "requests": {
+      "total": 16,
+      "html": 1,
+      "css": 4,
+      "javascript": 2,
+      "font": 2,
+      "image": 4,
+      "other": 2
+    },
+    "domElements": 500,
+    "timings": {
+      "firstContentfulPaint": 2000,
+      "largestContentfulPaint": 2500,
+      "cumulativeLayoutShift": 0.1,
+      "totalBlockingTime": 300,
+      "load": 3000
+    }
+  },
+  "routes": {}
+}

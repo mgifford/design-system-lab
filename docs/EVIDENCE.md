@@ -24,6 +24,7 @@ reports/latest/
   MANIFEST.json
   SUMMARY.md
   COVERAGE.md
+  performance.json
   <route>.md
   guidepup/<route>/<state>.md
   screenshots/<route>-<state>.png
@@ -32,6 +33,10 @@ reports/runs/<run-id>/
 ```
 
 The build publishes `reports/latest` under `dist/evidence/latest` and renders each Markdown file as semantic HTML. The Evidence page links to the summary, coverage matrix, per-route reports, and screenshots.
+
+## Performance evidence
+
+`performance.json` records three cold-context runs per fixture route at 1280 × 850, light colour scheme, localhost, and 4× CPU throttling. It includes Resource Timing bytes/requests by group, DOM count, navigation/paint timings, LCP/CLS/long tasks, and an approximate TBT. The median and min–max are shown; hard byte/request/DOM budgets are in `data/performance-budgets.json`; timing thresholds are warnings only. This is not a Lighthouse score, a field Web Vitals sample, or an accessibility metric. See [PERFORMANCE.md](PERFORMANCE.md).
 
 ## Captures and conditions
 

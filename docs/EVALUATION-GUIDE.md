@@ -22,6 +22,7 @@ Automated output in this workspace is observation. Nothing here establishes WCAG
 | Preview | Two independently addressable fixtures, or matched screenshots for browser-level conditions |
 | Keyboard focus inspector | Reports the focused element's role, accessible name, and exposed state in each live pane |
 | Evidence | Current run, per-route axe counts, state-level axe and regression classification, captured pairs, limitations |
+| Cost and stability | Transfer size, request count, DOM size, budget status, and timing observations for the fixture pair |
 | Manual tests | Component-specific human test instructions and local result recording |
 | Save and share | Versioned URL plus browser-local named presets |
 
@@ -123,6 +124,8 @@ The evidence section shows:
 - baseline and experiment collection status and initial-state axe counts;
 - state-level axe counts and a classification of **only baseline** (candidate fix), **only experiment** (introduced), and **both**;
 - captured pair count;
+- transfer size, requests, DOM elements, and hard performance budget status;
+- timing medians and ranges (warnings, not pass/fail);
 - local manual-test completion;
 - known limitations.
 
@@ -155,7 +158,7 @@ Guidepup transcripts are a virtual screen reader over a DOM snapshot. They suppo
 2. Add matching `data-state` wrappers in `scripts/components.mjs`. Interactive states also need a local-only action.
 3. Add component-specific human tests to `data/manual-tests.json`, citing the official USWDS accessibility tests and the relevant WCAG requirement.
 4. Add deterministic Playwright checks for the new state and interactions.
-5. Run `npm run check`, `npm run test:browser:chromium`, then `npm run evidence`. Captures for every registered component and state are generated automatically under all four browser conditions.
+5. Run `npm run check`, `npm run test:browser:chromium`, then `npm run evidence`. Captures for every registered component and state are generated automatically under all four browser conditions. Performance evidence is collected for every baseline/experiment fixture pair with three cold-context runs and 4× CPU throttling; hard byte/request/DOM budgets are in `data/performance-budgets.json`.
 6. Update the experiment documentation and the human decision log. Do not mark a manual test complete on someone else's behalf.
 
 ## What this workspace does not do

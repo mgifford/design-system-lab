@@ -30,7 +30,8 @@
 - [x] Run axe on every declared state and classify baseline-only, experiment-only, and shared findings.
 - [x] Add eleven Alert manual tests based on the USWDS checklist, local result recording, required justification for not applicable, and JSON/Markdown export.
 - [x] Add experiment filtering by user preference and automated coverage, with manual-test counts.
-- [x] Add 21 evaluation browser tests and evaluation-specific unit tests.
+- [x] Add 22 evaluation browser tests and evaluation-specific unit tests.
+- [x] Add cold-context fixture performance evidence with hard byte/request/DOM budgets, timing warnings, and a workspace cost panel.
 
 ## P0: verify in CI and real environments
 
@@ -58,7 +59,7 @@
 - [ ] Extend semantic tokens to header, footer, navigation, cards, tables, and the upstream alert icon.
 - [ ] Replace remaining `!important` overrides where upstream specificity allows.
 - [x] Add a visual-difference mode with normalized screenshot comparison (matched Playwright captures, browser-side diff).
-- [ ] Measure CSS/JS size and initialization flash; separate observation from energy claims.
+- [x] Measure transfer size, request counts, DOM size, and basic timing observations; energy and initialization-flash claims remain out of scope.
 - [ ] Review the preferences panel’s storage contract and cross-tab behavior.
 
 ## P2: deepen the community experiments

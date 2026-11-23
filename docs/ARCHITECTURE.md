@@ -4,6 +4,7 @@
 
 - `data/registry.json` is the canonical registry for components, experiments, scenarios, categories, statuses, and each component's evaluation states. The site, fixtures, evaluation options, route expectations, and validation read it.
 - `data/manual-tests.json` holds human test definitions only. It never contains results; results live in the reviewer's browser and are exported manually.
+- `data/performance-budgets.json` holds the hard byte/request/DOM ceilings and warning timing thresholds used by the performance collector.
 - `data/sources.lock.json` records the immutable baseline: release tag, commit, package version, package-lock SHA-256, and USWDS CSS/JS SHA-256.
 - `data/issues.json` is the curated issue history. It is hand-verified and records a `lastVerified` date. It is not an automatic issue export.
 - `experiments/<id>/` contains proposal, implementation, test-plan, and decision documents. There is no separate `experiment.json`; duplicating registry metadata in each folder would create two sources of truth.
@@ -15,7 +16,7 @@
 2. It recreates `dist/` and copies only `site/assets`, `data/*.json`, and the official USWDS distribution.
 3. It generates ten fixtures (five components × baseline/experiment), ten static pages, five component pages, four experiment pages, six landing/forms-demo pages, and documentation pages. Shared landing and forms content comes from `content/pages/*.json`; `renderers/uswds.mjs` and `renderers/ogds.mjs` render the same blocks, and `data/coverage.json` decides where OGDS is used. The OGDS hybrid bundles `@ogds/elements@1.0.0-beta.2` and its token CSS into `dist/vendor/ogds`; the left pane never loads them.
 4. It publishes evidence only from the current `reports/latest` run. `dist/evidence` is deleted first, so a previous run cannot leak in. Evidence includes matched baseline/experiment captures under `dist/evidence/latest/pairs/` and per-state axe observations in `data/evidence.json`.
-5. It copies `data/manual-tests.json` for the workspace and builds `dist/data/evidence.json` with run provenance, per-route and per-state axe observations, and capture metadata.
+5. It copies `data/manual-tests.json` and `data/performance-budgets.json` for the workspace and builds `dist/data/evidence.json` with run provenance, per-route and per-state axe observations, capture metadata, and the performance summary.
 6. It writes `dist/data/routes.json` for 33 lab routes. Each generated comparison page records a content hash so the left and right renderers can be checked for content parity. Documentation (`docs/**`) and evidence artifacts (`evidence/**`) are published but are not lab routes; they do not receive their own Guidepup transcript.
 
 ## Page generation
@@ -35,6 +36,9 @@ Markdown is rendered at build time. Raw `<` in source is escaped before parsing;
 - Difference mode loads matched captures from the evidence run and draws a highlighted diff on a canvas. If a pair is missing, the interface states that it is a coverage gap.
 - Manual tests render from `data/manual-tests.json`, store results in `localStorage`, and export JSON or Markdown. Nothing is submitted.
 - The evidence section reads `data/evidence.json`, which contains the current run only. It classifies per-state axe findings but does not compute a score.
+- The cost and stability section lazily reads `evidence/latest/performance.json`. Hard byte/request/DOM budgets are shown as pass/fail; timing metrics are shown as medians with ranges and are warnings only.
+
+Performance evidence is produced by `scripts/performance.mjs`, called by the collector. It uses three cold-context runs per fixture at 1280 × 850, light colour scheme, localhost, and 4× CPU throttling, and writes `performance.json` plus a summary in the manifest.
 
 Captures are produced by `scripts/collect-evidence.mjs` in one browser engine at a fixed 900 × 900 viewport. Forced-colours and increased-contrast conditions use Playwright browser emulation. The UI labels them as captures, not live emulation.
 
