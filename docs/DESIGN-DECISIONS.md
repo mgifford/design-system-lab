@@ -42,6 +42,10 @@ Live fixture appearance, motion, text size, spacing, and contrast are authored C
 
 Each component declares its evaluation states in `data/registry.json`. Fixtures mark the same ids with `data-state`, and validation fails if a declared state is not reproducible. Alert is the first complete state model. A state can declare `interaction: "activate"` so evidence collection and capture know how to reach it. This avoids a second state registry in test code.
 
+## Side-by-side shares the available width
+
+Two iframes cannot both be 1280 CSS pixels wide on a laptop. Side-by-side therefore defaults to splitting the available container width and reflowing each fixture at its rendered width, with a keyboard/pointer slider for the baseline/experiment share. This is a real viewport, not a scaled screenshot. Reviewers who need the fixed viewport choose **Fit** (scaled, with a percentage badge) or **Actual** (fixed width with an explicit overflow warning and a one-click switch to split). The UI must say which of these is happening; never present a scaled or clipped pane as if it were fully visible at the selected width.
+
 ## Reveal and onion are visual only
 
 The reveal divider and onion overlay set both iframes `inert` and `aria-hidden` so focus cannot enter a covered or clipped pane. Users are directed to side-by-side mode or the independent pages for keyboard and assistive-technology testing. The viewer does not mirror input.

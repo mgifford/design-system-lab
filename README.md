@@ -128,8 +128,8 @@ Human decisions are recorded in one table, [`docs/EXPERIMENT-DECISIONS.md`](docs
 
 [`compare.html`](https://mgifford.github.io/design-system-lab/compare.html) is the lab's main evaluation surface. It is reachable from the primary navigation, component pages, experiment pages, and the evidence page. The full guide is [`docs/EVALUATION-GUIDE.md`](docs/EVALUATION-GUIDE.md).
 
-- **Four comparison modes** — side by side (live iframes with synchronized scrolling), reveal slider, onion skin, and pixel difference from matched Playwright captures. Reveal and onion are marked visual-only; side-by-side and the independent links carry keyboard interaction.
-- **Fixture conditions** — appearance, motion, contrast, text size, WCAG text spacing, direction, language, viewport width, and preview source, applied identically to both panes.
+- **Four comparison modes** — side by side (live iframes that share the available width, with a keyboard/pointer baseline-experiment slider), reveal slider, onion skin, and pixel difference from matched Playwright captures. Reveal and onion are marked visual-only; side-by-side and the independent links carry keyboard interaction. Fit mode scales the fixed viewport and labels the percentage; Actual mode keeps the fixed viewport and shows an explicit horizontal-overflow warning.
+- **Fixture conditions** — appearance, motion, contrast, text size, WCAG text spacing, direction, language, fixed viewport width (Fit/Actual), and preview source, applied identically to both panes.
 - **Evaluator display** — separate controls for the tool itself, stored under `uswds-lab-prefs`. Fixtures ignore stored preferences unless opened with `?prefs=1`, so tool settings do not leak into the component under test.
 - **Honest browser conditions** — forced colours and increased contrast are captured with Playwright browser emulation and labelled as such. No CSS filter or class is presented as operating-system emulation.
 - **Alert state model** — twelve declared states, including success, emergency, no heading, link, long content, Arabic, dynamically inserted, dynamically updated, and multiple. Each state is reproducible, axe-scanned, and captured.
@@ -171,9 +171,9 @@ CI uses `npm ci` with the committed lockfile. The workflow has not been executed
 
 ### Local verification
 
-- `npm run test:unit` — 33 passing, including evaluation URL validation, state/fixture consistency, pixel-diff math, finding classification, and performance budget math.
+- `npm run test:unit` — 34 passing, including evaluation URL validation, state/fixture consistency, pane sizing, pixel-diff math, finding classification, and performance budget math.
 - `npm run build:strict` — 33 lab routes, 30 documentation pages, 10 fixtures.
-- `LAB_BROWSER_CHANNEL=chrome npx playwright test --project=chromium` — **92 passing**.
+- `LAB_BROWSER_CHANNEL=chrome npx playwright test --project=chromium` — **97 passing**.
 - `npm run evidence` (Chrome channel) — **33/33 routes, 96 Guidepup state transcripts, 24 state-level axe scans, 64 matched capture pairs, 10 performance routes (30 runs, 0 hard budget failures), 0 failed**.
 - `npm run validate` — 5 components, 4 experiments, 14 issues, 5 scenarios, 33 routes, 33 MCP scenarios, evidence run complete.
 

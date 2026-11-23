@@ -113,3 +113,17 @@
   .eval-layout { grid-template-columns: minmax(0, 1fr) 26rem; }
   .eval-sidebar .eval-controls { margin-top: 0; }
 }
+
+/* Side-by-side pane layout: panes share the stage by default. */
+.eval-panes { align-items: start; }
+.pane-viewport { width: 100%; overflow: hidden; position: relative; background: #fff; }
+.pane-viewport iframe { display: block; border: 0; }
+.pane-divider { width: 3px; align-self: stretch; min-height: 600px; background: var(--focus); border-radius: 2px; }
+.pane-size { display: block; font-size: .76rem; font-style: normal; font-weight: 500; color: var(--muted); }
+.eval-stage[data-sizing="actual"] .pane-divider { display: none; }
+.eval-stage[data-view="reveal"] .pane-divider, .eval-stage[data-view="onion"] .pane-divider { display: none; }
+.eval-stage[data-render="captured"] .pane-divider { display: none; }
+.eval-stage[data-view="reveal"] .pane-viewport, .eval-stage[data-view="onion"] .pane-viewport { height: 600px; }
+.eval-stage[data-view="reveal"] .pane-viewport iframe, .eval-stage[data-view="onion"] .pane-viewport iframe { height: 600px; }
+.link-button { font: inherit; color: inherit; background: none; border: 0; padding: 0; text-decoration: underline; text-underline-offset: .15em; cursor: pointer; }
+.link-button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }

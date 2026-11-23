@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {renderPage} from './layout.mjs';
 import {escapeHtml, renderMarkdown, renderMarkdownFile, stripFirstHeading} from './markdown.mjs';
-import {optionsHtml, presetButtons, initialEvaluationInfo, PREFERENCE_LABELS, CONCERN_LABELS, VIEW_MODES, THEMES, DIRECTIONS, LANGUAGES, MOTIONS, CONTRASTS, TEXT_SIZES, SPACINGS, WIDTHS, RENDERS, CAPTURE_CONDITIONS} from './evaluation.mjs';
+import {optionsHtml, presetButtons, initialEvaluationInfo, PREFERENCE_LABELS, CONCERN_LABELS, SIZINGS, VIEW_MODES, THEMES, DIRECTIONS, LANGUAGES, MOTIONS, CONTRASTS, TEXT_SIZES, SPACINGS, WIDTHS, RENDERS, CAPTURE_CONDITIONS} from './evaluation.mjs';
 
 const read = (root, relative) => fs.readFileSync(path.join(root, relative), 'utf8');
 const template = (root, name) => read(root, `templates/pages/${name}.html`);
@@ -272,6 +272,7 @@ export function buildStaticPages({root, registry, issues, buildInfo, manifest, l
       textSizeOptions: optionsHtml(TEXT_SIZES, 'default'),
       spacingOptions: optionsHtml(SPACINGS, 'default'),
       widthOptions: optionsHtml(WIDTHS, '1280'),
+      sizingOptions: optionsHtml(SIZINGS, 'split'),
       renderOptions: optionsHtml(RENDERS, 'live'),
       captureOptions: optionsHtml(CAPTURE_CONDITIONS, 'light'),
       presetButtons: presetButtons()

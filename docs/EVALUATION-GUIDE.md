@@ -20,6 +20,7 @@ Automated output in this workspace is observation. Nothing here establishes WCAG
 | Fixture conditions | Appearance, motion, contrast, text size, text spacing, direction, language, viewport width, and preview source |
 | Evaluation tool display | Appearance, text size, motion, and contrast for the workspace itself. Stored separately from fixture conditions |
 | Preview | Two independently addressable fixtures, or matched screenshots for browser-level conditions |
+| Pane layout | Split the available width (default), fit a fixed viewport into each pane, or use actual size with a scroll warning; baseline/experiment share slider |
 | Keyboard focus inspector | Reports the focused element's role, accessible name, and exposed state in each live pane |
 | Evidence | Current run, per-route axe counts, state-level axe and regression classification, captured pairs, limitations |
 | Cost and stability | Transfer size, request count, DOM size, budget status, and timing observations for the fixture pair |
@@ -58,7 +59,7 @@ Do not describe a CSS approximation as operating-system emulation. Do not mark a
 
 ## Comparison modes
 
-- **Side by side** — live iframes with matched width, independent links, synchronized scrolling, and the focus inspector. Keyboard input is not mirrored between panes.
+- **Side by side** — the two live iframes share the available width by default and reflow at their rendered widths (for example ≈373 px each in a laptop-width layout), so both are visible without horizontal scrolling. A keyboard/pointer slider gives either pane more room. Choose **Fit** to scale the selected fixed viewport into each pane, or **Actual** to keep the fixed viewport and scroll, with an explicit overflow warning. Independent links, synchronized scrolling, and the focus inspector remain available. Keyboard input is not mirrored between panes.
 - **Reveal slider** — a keyboard-operable range clips one pane over the other. Visual only: both frames are removed from keyboard order. Use side-by-side mode or the independent links to interact.
 - **Onion skin** — the experiment layer fades over the baseline. Visual only, with the same keyboard caveat.
 - **Pixel difference** — matched Playwright captures are decoded in the browser and compared channel by channel. The result reports changed pixels, a percentage, and a bounding box. It never reports an accessibility score. Antialiasing, font rendering, and encoding can change the count.
@@ -101,6 +102,8 @@ compare.html?v=1&component=alert&experiment=dark-mode&state=warning
 | `experiment` | Experiment registered for that component | First matching experiment |
 | `state` | State declared for that component | First state |
 | `view` | `split`, `reveal`, `onion`, `difference` | `split` |
+| `sizing` | `split`, `fit`, `actual` | `split` |
+| `split` | Integer 20–80 (baseline share) | `50` |
 | `theme` | `system`, `light`, `dark` | `system` |
 | `direction` | `ltr`, `rtl` | `ltr` |
 | `language` | `en`, `ar` | `en` |
@@ -167,5 +170,6 @@ Guidepup transcripts are a virtual screen reader over a DOM snapshot. They suppo
 - It does not test real screen readers, speech input, switch access, or real Windows High Contrast Mode.
 - It does not replicate browser zoom or a user stylesheet.
 - It does not mirror keyboard input between panes.
+- It does not scale a split pane invisibly: split reflows at the rendered width; fit shows a percentage badge; actual shows an overflow warning.
 - It does not prove that a component is accessible because axe reports zero violations.
 - It does not replace human review, participant research, or upstream maintainer judgment.

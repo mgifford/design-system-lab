@@ -32,7 +32,7 @@ Markdown is rendered at build time. Raw `<` in source is escaped before parsing;
 - `site/assets/evaluation-core.js` is DOM-free shared logic: allowed values, URL normalization, fixture URLs, capture lookup keys, finding classification, manual-result summaries, and the pixel-difference function. Node tests import the same module.
 - Fixture conditions are appended to each iframe URL. Fixtures apply only query parameters; stored lab preferences require an explicit `?prefs=1` opt-in used by the preferences-panel preview.
 - The evaluation tool display reuses `site/assets/prefs.js` and `uswds-lab-prefs`, so it is independent of fixture conditions.
-- Side-by-side, reveal, and onion use live iframes. Reveal and onion remove both frames from keyboard order and are labelled visual-only.
+- Side-by-side uses live iframes that share the available container width by default, with a keyboard/pointer baseline/experiment split slider. Fit scales a fixed viewport into each pane and labels the percentage; Actual keeps the fixed viewport, scrolls horizontally, and shows an explicit overflow warning with a switch back to split. Reveal and onion use live iframes but remove both frames from keyboard order and are labelled visual-only.
 - Difference mode loads matched captures from the evidence run and draws a highlighted diff on a canvas. If a pair is missing, the interface states that it is a coverage gap.
 - Manual tests render from `data/manual-tests.json`, store results in `localStorage`, and export JSON or Markdown. Nothing is submitted.
 - The evidence section reads `data/evidence.json`, which contains the current run only. It classifies per-state axe findings but does not compute a score.

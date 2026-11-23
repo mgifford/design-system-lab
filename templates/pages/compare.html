@@ -14,17 +14,19 @@
   <h2 class="section-title" id="preview-title">Preview</h2>
   <p class="small" id="preview-conditions">Live preview requires JavaScript. The direct fixture links below open the baseline and experiment independently.</p>
   <p class="small" id="pane-size-note"></p>
+  <p class="state-panel warning-text" id="pane-overflow-note" hidden>Actual-size panes do not fit here. Scroll horizontally or <button type="button" class="link-button" id="use-split">switch to split width</button> to see both.</p>
   <p class="state-panel" id="capture-note" hidden></p>
   <div class="eval-stage" id="stage" data-view="split" data-render="live">
     <div class="eval-live" id="live-stage">
       <div class="eval-panes" id="frames">
         <div class="eval-pane">
-          <div class="pane-label"><span>Baseline: USWDS 3.14.0</span><a href="fixture/accordion-baseline.html" target="_blank" rel="noopener">Open independently</a></div>
-          <iframe title="USWDS baseline component under test" id="before" src="fixture/accordion-baseline.html"></iframe>
+          <div class="pane-label"><span>Baseline: USWDS 3.14.0 <em class="pane-size" id="pane-size-before"></em></span><a href="fixture/accordion-baseline.html" target="_blank" rel="noopener">Open independently</a></div>
+          <div class="pane-viewport" id="viewport-before"><iframe title="USWDS baseline component under test" id="before" src="fixture/accordion-baseline.html"></iframe></div>
         </div>
+        <div class="pane-divider" id="pane-divider" aria-hidden="true"></div>
         <div class="eval-pane">
-          <div class="pane-label"><span>Experiment: lab prototype</span><a href="fixture/accordion-experiment.html" target="_blank" rel="noopener">Open independently</a></div>
-          <iframe title="Experimental component under test" id="after" src="fixture/accordion-experiment.html"></iframe>
+          <div class="pane-label"><span>Experiment: lab prototype <em class="pane-size" id="pane-size-after"></em></span><a href="fixture/accordion-experiment.html" target="_blank" rel="noopener">Open independently</a></div>
+          <div class="pane-viewport" id="viewport-after"><iframe title="Experimental component under test" id="after" src="fixture/accordion-experiment.html"></iframe></div>
         </div>
       </div>
     </div>
@@ -110,6 +112,22 @@
   </fieldset>
 
   <fieldset class="eval-group">
+    <legend>Pane layout (side-by-side only)</legend>
+    <div class="eval-grid">
+      <div class="field">
+        <label for="sizing">Pane sizing</label>
+        <select id="sizing" name="sizing">{{sizingOptions}}</select>
+      </div>
+      <div class="field" id="split-field">
+        <label for="split">Baseline share</label>
+        <input id="split" name="split" type="range" min="20" max="80" step="5" value="50">
+        <output id="split-output" for="split">50% baseline / 50% experiment</output>
+      </div>
+    </div>
+    <p class="small" id="layout-help">Both panes share the available width by default and reflow at their rendered width. Use the slider to give one pane more room. The fixed viewport setting applies only to Fit and Actual sizing.</p>
+  </fieldset>
+
+  <fieldset class="eval-group">
     <legend>Fixture conditions (the components under test)</legend>
     <div class="eval-grid">
       <div class="field">
@@ -141,7 +159,7 @@
         <select id="language" name="language">{{languageOptions}}</select>
       </div>
       <div class="field">
-        <label for="width">Viewport width</label>
+        <label for="width">Fixed viewport width (Fit/Actual only)</label>
         <select id="width" name="width">{{widthOptions}}<option value="custom">Custom width</option></select>
       </div>
       <div class="field" id="width-custom-field" hidden>

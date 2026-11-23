@@ -21,6 +21,7 @@
 
 - [x] Promote comparison into a first-class Evaluate workspace linked from the primary navigation, component pages, experiment pages, and evidence.
 - [x] Add side-by-side, reveal-slider, onion-skin, and matched-screenshot pixel-difference modes.
+- [x] Make side-by-side share the available width with a pane-share slider, plus explicit Fit (scaled) and Actual (overflow warning) modes.
 - [x] Separate evaluation-tool display preferences from fixture conditions; fixtures ignore stored tool preferences unless `?prefs=1` is explicit.
 - [x] Add validated, versioned evaluation URLs with copy-link and browser-local named presets.
 - [x] Add fixture conditions for appearance, motion, contrast, 200% text, WCAG text spacing, direction, language, and viewport width.
@@ -30,7 +31,7 @@
 - [x] Run axe on every declared state and classify baseline-only, experiment-only, and shared findings.
 - [x] Add eleven Alert manual tests based on the USWDS checklist, local result recording, required justification for not applicable, and JSON/Markdown export.
 - [x] Add experiment filtering by user preference and automated coverage, with manual-test counts.
-- [x] Add 22 evaluation browser tests and evaluation-specific unit tests.
+- [x] Add 26 evaluation browser tests and evaluation-specific unit tests.
 - [x] Add cold-context fixture performance evidence with hard byte/request/DOM budgets, timing warnings, and a workspace cost panel.
 
 ## P0: verify in CI and real environments

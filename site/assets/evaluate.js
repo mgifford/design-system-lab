@@ -102,6 +102,8 @@ function currentControlConfig() {
     textSize: $('textSize').value,
     spacing: $('spacing').value,
     width,
+    sizing: $('sizing').value,
+    split: $('split').value,
     render: $('render').value,
     capture: $('capture').value
   };
@@ -142,7 +144,7 @@ function syncControls() {
   const states = statesFor(app.registry, app.config.component).map(item => ({value: item.id, label: item.label}));
   setOptions($('state'), states, app.config.state);
   if ($('state').value !== app.config.state) $('state').value = states[0].value;
-  for (const key of ['view', 'theme', 'direction', 'language', 'motion', 'contrast', 'textSize', 'spacing', 'render', 'capture']) {
+  for (const key of ['view', 'sizing', 'theme', 'direction', 'language', 'motion', 'contrast', 'textSize', 'spacing', 'render', 'capture']) {
     const control = $(key);
     if (control && [...control.options].some(option => option.value === app.config[key])) control.value = app.config[key];
   }
@@ -155,13 +157,23 @@ function syncControls() {
     $('width-custom-field').hidden = false;
     $('width-custom').value = app.config.width;
   }
+  $('split').value = app.config.split;
+  $('split-output').value = `${app.config.split}% baseline / ${100 - Number(app.config.split)}% experiment`;
   const captureRelevant = app.config.render === 'captured' || app.config.view === 'difference';
   $('capture-field').hidden = !captureRelevant;
   const locked = app.config.render === 'captured' || app.config.view === 'difference';
   for (const key of ['theme', 'motion', 'contrast', 'textSize', 'spacing', 'direction', 'language', 'width']) {
     $(key).disabled = locked;
   }
-  $('width-custom').disabled = locked;
+  const layoutSplit = app.config.view === 'split' && app.config.render === 'live';
+  $('sizing').disabled = locked || app.config.view !== 'split';
+  $('split-field').hidden = !layoutSplit;
+  const widthUnused = layoutSplit && app.config.sizing === 'split';
+  $('width').disabled = locked || widthUnused;
+  $('width-custom').disabled = locked || widthUnused;
+  $('layout-help').textContent = layoutSplit
+    ? 'Both panes share the available width by default and reflow at their rendered width. Use the slider to give one pane more room. The fixed viewport setting applies only to Fit and Actual sizing.'
+    : 'Pane sizing applies to side-by-side live panes only. Reveal, onion, and captured comparisons use the fixed viewport width or the capture matrix.';
 }
 
 function updateHeader() {
@@ -235,6 +247,75 @@ function applyOnion(value) {
   $('opacity-output').value = `${value}%`;
 }
 
+function applyPaneLayout() {
+  const config = app.config;
+  const frames = $('frames');
+  const stage = $('stage');
+  const divider = $('pane-divider');
+  const split = Number(config.split) / 100;
+  const width = widthPx();
+  const gap = 16;
+  const dividerWidth = 3;
+  const setLabel = (id, text) => { const node = $(id); if (node) node.textContent = text; };
+  const setViewport = (id, height) => { const node = $(id); if (node) node.style.height = `${height}px`; };
+  stage.dataset.sizing = config.sizing;
+  if (config.view !== 'split' || config.render !== 'live') {
+    divider.hidden = true;
+    $('pane-overflow-note').hidden = true;
+    for (const id of ['before', 'after']) {
+      $(id).style.transform = 'none';
+      $(id).style.width = `${width}px`;
+      setViewport(`viewport-${id}`, 600);
+      setLabel(`pane-size-${id}`, '');
+    }
+    frames.style.width = config.view === 'split' ? `${width * 2 + gap}px` : `${width}px`;
+    frames.style.gridTemplateColumns = 'none';
+    $('pane-size-note').textContent = config.view === 'split'
+      ? 'This comparison uses the fixed viewport width. Switch the preview source to live and use split sizing to fit both panes.'
+      : 'Reveal and onion use the fixed viewport width. If the pane does not fit, scroll horizontally or open the fixtures independently.';
+    return;
+  }
+  const style = getComputedStyle(stage);
+  const available = Math.max(0, stage.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight));
+  stage.dataset.sizing = config.sizing;
+  if (config.sizing === 'actual') {
+    divider.hidden = true;
+    frames.style.width = `${width * 2 + gap}px`;
+    frames.style.gridTemplateColumns = `repeat(2, ${width}px)`;
+    for (const id of ['before', 'after']) {
+      $(id).style.transform = 'none';
+      $(id).style.width = `${width}px`;
+      $(id).title = `${id === 'before' ? 'USWDS baseline' : 'Experimental'} component, actual ${width} CSS px`;
+      setViewport(`viewport-${id}`, 600);
+      setLabel(`pane-size-${id}`, `actual ${width} px`);
+    }
+    const overflow = frames.scrollWidth > stage.clientWidth + 1;
+    $('pane-overflow-note').hidden = !overflow;
+    $('pane-size-note').textContent = `Actual size: each pane is ${width} CSS px. ${overflow ? 'The comparison area scrolls horizontally; switch to split width to see both.' : 'Both panes fit at this width.'}`;
+    return;
+  }
+  divider.hidden = false;
+  const usable = Math.max(0, available - gap * 2 - dividerWidth);
+  const baselineWidth = Math.round(usable * split);
+  const experimentWidth = Math.max(0, usable - baselineWidth);
+  frames.style.width = '100%';
+  frames.style.gridTemplateColumns = `${baselineWidth}px ${dividerWidth}px ${experimentWidth}px`;
+  $('pane-overflow-note').hidden = true;
+  for (const [id, paneWidth] of [['before', baselineWidth], ['after', experimentWidth]]) {
+    const scale = config.sizing === 'fit' ? Math.min(1, paneWidth / width) : 1;
+    const renderedWidth = config.sizing === 'split' ? paneWidth : width;
+    $(id).style.width = `${renderedWidth}px`;
+    $(id).style.transform = scale < 1 ? `scale(${scale})` : 'none';
+    $(id).style.transformOrigin = 'top left';
+    $(id).title = `${id === 'before' ? 'USWDS baseline' : 'Experimental'} component, ${config.sizing === 'split' ? `reflowed at ${paneWidth} CSS px` : `${width} CSS px shown at ${Math.round(scale * 100)}%`}`;
+    setViewport(`viewport-${id}`, Math.round(600 * scale));
+    setLabel(`pane-size-${id}`, config.sizing === 'split' ? `≈${paneWidth} px viewport` : `${width} px · ${Math.round(scale * 100)}% scale`);
+  }
+  $('pane-size-note').textContent = config.sizing === 'split'
+    ? `Both panes share the available width: baseline ${config.split}%, experiment ${100 - Number(config.split)}%. Each reflows at about ${baselineWidth} / ${experimentWidth} CSS px. The fixed viewport setting is not used in this mode.`
+    : `Fixed ${width} CSS px viewport scaled into the pane: baseline ${config.split}%, experiment ${100 - Number(config.split)}%. Text is visually scaled; use Actual size for full-size interaction.`;
+}
+
 function updatePreview() {
   const config = app.config;
   const live = config.render === 'live' && config.view !== 'difference';
@@ -258,15 +339,11 @@ function updatePreview() {
     `spacing: ${config.spacing}`,
     `motion: ${config.motion}`,
     `contrast: ${config.contrast}`,
-    `width: ${config.width} CSS px`
+    config.view === 'split' && config.sizing === 'split' ? 'pane width: split container' : `fixed width: ${config.width} CSS px`
   ].join(' · ');
   $('preview-conditions').textContent = live
     ? `Live fixtures · ${conditions}.`
     : `Captured screenshots at ${config.capture} · fixed 900 × 900 viewport, default text, LTR, default motion. ${conditions} do not apply to the captures.`;
-  $('pane-size-note').textContent = live && config.view === 'split'
-    ? `Each pane is ${config.width} CSS px wide. Side-by-side needs ${Number(config.width) * 2 + 16} px plus this page's layout; the comparison area scrolls horizontally when it does not fit. Use reveal or onion mode for an aligned overlay, or the independent links for full-window testing.`
-    : '';
-
   if (live) {
     const before = fixtureUrl(config, 'baseline');
     const after = fixtureUrl(config, 'experiment');
@@ -274,15 +351,6 @@ function updatePreview() {
     $('after').src = after;
     $('open-before').href = before;
     $('open-after').href = after;
-    for (const [id, width] of [['before', widthPx()], ['after', widthPx()]]) {
-      $(id).style.width = '100%';
-      const pane = $(id).closest('.eval-pane');
-      if (pane) pane.style.width = `${width}px`;
-      $(id).title = `${id === 'before' ? 'USWDS baseline' : 'Experimental'} component, ${width} CSS pixels wide`;
-    }
-    const frames = $('frames');
-    frames.style.width = config.view === 'split' ? `${widthPx() * 2 + 16}px` : `${widthPx()}px`;
-    frames.style.gridTemplateColumns = config.view === 'split' ? `repeat(2, ${widthPx()}px)` : 'none';
     const visualOnly = ['onion', 'reveal'].includes(config.view);
     for (const id of ['before', 'after']) {
       if (visualOnly) {
@@ -294,8 +362,12 @@ function updatePreview() {
       }
     }
     $('capture-note').hidden = true;
+    $('pane-overflow-note').hidden = true;
+    applyPaneLayout();
     bindFrameInspection();
   } else {
+    $('pane-overflow-note').hidden = true;
+    $('pane-divider').hidden = true;
     $('capture-note').hidden = config.render !== 'captured';
     if (config.render === 'captured') {
       $('capture-note').textContent = 'Captured screenshots use matched Playwright browser conditions. They are not live emulation; fixture controls are locked because the capture matrix is fixed (900 × 900, default text, LTR, default motion).';
@@ -892,7 +964,7 @@ function applyEvaluatorPrefs() {
 }
 
 function bindControls() {
-  for (const key of ['component', 'experiment', 'state', 'view', 'theme', 'direction', 'language', 'motion', 'contrast', 'textSize', 'spacing', 'render', 'capture', 'width']) {
+  for (const key of ['component', 'experiment', 'state', 'view', 'sizing', 'theme', 'direction', 'language', 'motion', 'contrast', 'textSize', 'spacing', 'render', 'capture', 'width']) {
     const control = $(key);
     if (!control) continue;
     control.addEventListener('change', () => {
@@ -909,6 +981,20 @@ function bindControls() {
   $('width-custom').addEventListener('change', () => applyConfig(currentControlConfig()));
   $('sync-scroll').addEventListener('change', event => {
     app.syncScroll = event.target.checked;
+  });
+  $('split').addEventListener('input', event => {
+    app.config = {...app.config, split: String(event.target.value)};
+    $('split-output').value = `${app.config.split}% baseline / ${100 - Number(app.config.split)}% experiment`;
+    history.replaceState(null, '', evaluationUrl(app.config, location.pathname));
+    applyPaneLayout();
+  });
+  $('use-split').addEventListener('click', () => {
+    applyConfig({...app.config, sizing: 'split'}, {message: 'Switched to split width so both panes are visible.'});
+  });
+  let resizeFrame;
+  window.addEventListener('resize', () => {
+    cancelAnimationFrame(resizeFrame);
+    resizeFrame = requestAnimationFrame(() => applyPaneLayout());
   });
   $('reveal').addEventListener('input', event => applyReveal(Number(event.target.value)));
   $('opacity').addEventListener('input', event => applyOnion(Number(event.target.value)));
@@ -1060,6 +1146,7 @@ async function main() {
     bindEvaluatorDisplay();
     bindManualActions();
     renderInitial();
+    requestAnimationFrame(() => applyPaneLayout());
     history.replaceState(null, '', evaluationUrl(app.config, location.pathname));
   } catch (error) {
     const banner = $('param-status');
