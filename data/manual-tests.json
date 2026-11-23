@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "note": "Human test definitions. Do not record a pass without a person performing the test. Guidepup simulation is not a real screen-reader session.",
+  "tests": [
+    {
+      "id": "alert-color-alone",
+      "component": "alert",
+      "title": "Color alone is not used to convey meaning",
+      "requirement": "WCAG 1.4.1 Use of Color",
+      "source": "https://designsystem.digital.gov/components/alert/accessibility-tests/",
+      "purpose": "Confirm that a person can tell which kind of message this is without seeing the variant color or icon.",
+      "preconditions": "Open each alert variant. Hide or ignore color, for example with a grayscale filter or by reading the text only.",
+      "steps": [
+        "Open the informational, success, warning, error, and emergency states.",
+        "Read only the heading and body text.",
+        "Decide whether the meaning is still clear.",
+        "Repeat without the colored border and icon visible."
+      ],
+      "expected": "The heading and text communicate the message type and urgency without relying on color, icon shape, or position alone.",
+      "requiresAssistiveTechnology": false,
+      "conditional": false,
+      "notes": "The baseline may pass this check while the experimental theme changes border and background colors. Record which pane you tested."
+    },
+    {
+      "id": "alert-contrast",
+      "component": "alert",
+      "title": "Alert text and boundaries meet contrast requirements",
+      "requirement": "WCAG 1.4.3 Contrast (Minimum), 1.4.11 Non-text Contrast",
+      "source": "https://designsystem.digital.gov/components/alert/accessibility-tests/",
+      "purpose": "Measure the rendered text against its background and the alert boundary against the page.",
+      "preconditions": "Use a contrast analyzer or the browser developer tools on the rendered page. Record the tool and metric.",
+      "steps": [
+        "Measure heading and body text against the alert background in light mode.",
+        "Repeat in dark mode if the experimental theme supports it.",
+        "Measure the alert boundary and icon against the adjacent background.",
+        "Record the measured ratios, not a pass/fail estimate."
+      ],
+      "expected": "Body text reaches at least 4.5:1 and large text at least 3:1 under WCAG 2.x. Non-text boundaries reach 3:1 where they carry meaning.",
+      "requiresAssistiveTechnology": false,
+      "conditional": false,
+      "notes": "WCAG 2.x ratios and APCA scores are different metrics. State which one was used; do not compare them as equivalent."
+    },
+    {
+      "id": "alert-headings",
+      "component": "alert",
+      "title": "Alert headings and labels are clear and descriptive",
+      "requirement": "WCAG 2.4.6 Headings and Labels",
+      "source": "https://designsystem.digital.gov/components/alert/accessibility-tests/",
+      "purpose": "Check that a heading announces the consequence, not only the severity word.",
+      "preconditions": "Read the alert in page context.",
+      "steps": [
+        "Read each heading without the body text.",
+        "Ask whether the heading describes the problem or outcome.",
+        "Check that the heading level fits the surrounding page outline."
+      ],
+      "expected": "Each heading is understandable on its own and does not mislead about the outcome.",
+      "requiresAssistiveTechnology": false,
+      "conditional": false,
+      "notes": "Heading quality depends on the implementation's content and cannot be decided by an automated scanner."
+    },
+    {
+      "id": "alert-consistency",
+      "component": "alert",
+      "title": "Each alert variant has a consistent meaning across the site",
+      "requirement": "WCAG 3.2.4 Consistent Identification",
+      "source": "https://designsystem.digital.gov/components/alert/accessibility-tests/",
+      "purpose": "Confirm that the same visual and semantic treatment is not reused for a different meaning elsewhere.",
+      "preconditions": "Review more than one page that uses alerts.",
+      "steps": [
+        "Compare the warning, error, and success treatments across pages.",
+        "Check that no other element copies the same icon, color, and heading pattern for a different purpose.",
+        "Record any reuse that changes the meaning."
+      ],
+      "expected": "A warning always reads as a warning, and the treatment is not reused for unrelated content.",
+      "requiresAssistiveTechnology": false,
+      "conditional": true,
+      "notes": "This test needs the wider implementation, not the single lab fixture."
+    },
+    {
+      "id": "alert-reflow",
+      "component": "alert",
+      "title": "Alert remains readable and functional at 400% zoom",
+      "requirement": "WCAG 1.4.10 Reflow",
+      "source": "https://designsystem.digital.gov/components/alert/accessibility-tests/",
+      "purpose": "Check that zooming does not clip the alert or push controls out of the viewport.",
+      "preconditions": "Use real browser zoom at 400% in a 1280 CSS-pixel viewport, or the equivalent 320 CSS-pixel layout.",
+      "steps": [
+        "Zoom the browser to 400%.",
+        "Read the full alert and any links in it.",
+        "Check that no content requires two-dimensional scrolling.",
+        "Record the browser, operating system, and actual zoom level."
+      ],
+      "expected": "The alert wraps and remains readable without horizontal scrolling, clipped text, or lost controls.",
+      "requiresAssistiveTechnology": false,
+      "conditional": false,
+      "notes": "A CSS text-size change is not browser zoom. Do not mark this passed from the lab's text-size control alone."
+    },
+    {
+      "id": "alert-text-spacing",
+      "component": "alert",
+      "title": "Content survives the WCAG text-spacing overrides",
+      "requirement": "WCAG 1.4.12 Text Spacing",
+      "source": "https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html",
+      "purpose": "Check that increased line, paragraph, letter, and word spacing does not clip or overlap the alert.",
+      "preconditions": "Apply the WCAG 1.4.12 values: line-height 1.5, paragraph spacing 2em, letter spacing 0.12em, word spacing 0.16em.",
+      "steps": [
+        "Open the alert with the spacing preset or a user stylesheet.",
+        "Read every line and link.",
+        "Check for clipping, overlap, and hidden controls.",
+        "Repeat with long content and a narrow viewport."
+      ],
+      "expected": "All text remains visible and usable; no content overlaps or is cut off.",
+      "requiresAssistiveTechnology": false,
+      "conditional": false,
+      "notes": "The lab's spacing preset applies these values. Record that this is a CSS override, not a user stylesheet."
+    },
+    {
+      "id": "alert-sequence",
+      "component": "alert",
+      "title": "Screen reader reads the alert in a logical order",
+      "requirement": "WCAG 1.3.2 Meaningful Sequence",
+      "source": "https://designsystem.digital.gov/components/alert/accessibility-tests/",
+      "purpose": "Check that the announced order matches the visual and logical reading order.",
+      "preconditions": "Use a real screen reader: NVDA, JAWS, or VoiceOver.",
+      "steps": [
+        "Navigate to the alert with the screen reader's reading commands.",
+        "Listen to the heading, body, and any link.",
+        "Compare the spoken order with the visual order."
+      ],
+      "expected": "The heading is announced before its explanatory text, and links are announced in context.",
+      "requiresAssistiveTechnology": true,
+      "conditional": false,
+      "notes": "Guidepup transcripts can help investigate but do not count as this test."
+    },
+    {
+      "id": "alert-region",
+      "component": "alert",
+      "title": "Screen reader communicates the alert region or role",
+      "requirement": "WCAG 1.3.6 Identify Purpose, 4.1.2 Name, Role, Value",
+      "source": "https://designsystem.digital.gov/components/alert/accessibility-tests/",
+      "purpose": "Check what role, if any, is announced for static and status alerts.",
+      "preconditions": "Use a real screen reader.",
+      "steps": [
+        "Navigate to a static informational alert.",
+        "Record whether a region, status, alert, or no role is announced.",
+        "Repeat for an error alert.",
+        "Confirm that a decorative wrapper is not announced as a landmark."
+      ],
+      "expected": "The announced role matches the intended behaviour: static content is not falsely announced as an urgent alert, and status changes use an appropriate live role.",
+      "requiresAssistiveTechnology": true,
+      "conditional": false,
+      "notes": "Do not add role=alert to content that is already present on page load."
+    },
+    {
+      "id": "alert-role-values",
+      "component": "alert",
+      "title": "Role values are announced for time-sensitive alerts",
+      "requirement": "WCAG 4.1.2 Name, Role, Value",
+      "source": "https://designsystem.digital.gov/components/alert/accessibility-tests/",
+      "purpose": "Check whether an alert that must interrupt is exposed with role=alert, and whether the interruption is justified.",
+      "preconditions": "Use a real screen reader. Trigger the alert yourself.",
+      "steps": [
+        "Trigger the dynamic or urgent alert.",
+        "Listen for the announcement and the role.",
+        "Decide whether interrupting the user was necessary.",
+        "Record the exact spoken output."
+      ],
+      "expected": "The role is announced and the level of interruption matches the urgency. Non-urgent messages do not use role=alert.",
+      "requiresAssistiveTechnology": true,
+      "conditional": true,
+      "notes": "Assertive live regions can interrupt. Use them only for urgent changes."
+    },
+    {
+      "id": "alert-status-announced",
+      "component": "alert",
+      "title": "Status alerts are announced without moving focus",
+      "requirement": "WCAG 4.1.3 Status Messages",
+      "source": "https://designsystem.digital.gov/components/alert/accessibility-tests/",
+      "purpose": "Confirm that a status message is announced politely and focus stays where the person left it.",
+      "preconditions": "Use a real screen reader. Place focus on the button that triggers the message.",
+      "steps": [
+        "Activate the button that inserts the status alert.",
+        "Listen for the announcement.",
+        "Check where focus is after the announcement.",
+        "Repeat with a second update."
+      ],
+      "expected": "The status is announced without stealing focus, and the updated text is announced when it changes.",
+      "requiresAssistiveTechnology": true,
+      "conditional": false,
+      "notes": "This is a human test. The virtual screen reader transcript is supporting evidence only."
+    },
+    {
+      "id": "alert-dynamic-insert",
+      "component": "alert",
+      "title": "A newly inserted alert is understandable and not unnecessarily disruptive",
+      "requirement": "WCAG 4.1.3 Status Messages",
+      "source": "https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html",
+      "purpose": "Determine whether a newly displayed alert is announced appropriately.",
+      "preconditions": "Use a real screen reader. Start with the alert absent.",
+      "steps": [
+        "Open the fixture using a real screen reader.",
+        "Navigate to the trigger control.",
+        "Trigger the action that causes the alert to appear.",
+        "Listen to the announcement.",
+        "Determine whether the message is understandable.",
+        "Check whether existing speech is unnecessarily interrupted.",
+        "Record the result."
+      ],
+      "expected": "The announcement communicates the intended message without unnecessary interruption, and the person can continue the task.",
+      "requiresAssistiveTechnology": true,
+      "conditional": false,
+      "notes": "Record the screen reader, browser, operating system, and exact announcement."
+    }
+  ]
+}

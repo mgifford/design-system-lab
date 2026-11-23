@@ -37,7 +37,7 @@ export function applyPrefs(prefs) {
   else delete root.dataset.motion;
 }
 
-function savePrefs(prefs) {
+export function savePrefs(prefs) {
   try {
     localStorage.setItem(KEY, JSON.stringify(prefs));
     return true;
@@ -46,7 +46,7 @@ function savePrefs(prefs) {
   }
 }
 
-function clearPrefs() {
+export function clearPrefs() {
   try {
     localStorage.removeItem(KEY);
     return true;

@@ -49,7 +49,18 @@ if (document.getElementById('experiment-filters')) {
     filter: (item, form) => {
       const type = form.querySelector('#experiment-type').value;
       const status = form.querySelector('#experiment-status').value;
-      return (type === 'all' || item.dataset.type === type) && (status === 'all' || item.dataset.status === status);
+      const preference = form.querySelector('#experiment-preference').value;
+      const evidence = form.querySelector('#experiment-evidence').value;
+      const concern = form.querySelector('#experiment-concern').value;
+      const manual = form.querySelector('#experiment-manual').value;
+      const preferences = (item.dataset.preferences || '').split(/\s+/).filter(Boolean);
+      const concerns = (item.dataset.concerns || '').split(/\s+/).filter(Boolean);
+      return (type === 'all' || item.dataset.type === type)
+        && (status === 'all' || item.dataset.status === status)
+        && (preference === 'all' || preferences.includes(preference))
+        && (evidence === 'all' || item.dataset.automated === evidence)
+        && (concern === 'all' || concerns.includes(concern))
+        && (manual === 'all' || item.dataset.manual === manual);
     }
   });
 }

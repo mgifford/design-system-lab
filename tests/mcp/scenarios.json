@@ -52,14 +52,18 @@
   },
   {
     "route": "compare.html",
-    "goal": "Explore comparison controls and independently test each component pane",
+    "goal": "Evaluate a component against its experiment across states, preferences, comparison modes, evidence, and manual tests",
     "steps": [
-      "Capture the accessibility snapshot",
-      "Select each registered component",
-      "Change theme from system to dark to light",
-      "Select RTL then narrow mobile width",
-      "Open each frame independently",
-      "Record any unavailable or mislabeled controls"
+      "Capture the accessibility snapshot and heading outline",
+      "Select Alert and the warning state",
+      "Change appearance, motion, text size, direction, and width; confirm the fixture panes reload",
+      "Switch between side-by-side, reveal, onion, and pixel-difference modes",
+      "Operate the reveal and opacity sliders with the keyboard",
+      "Open the forced-colours capture and confirm the interface labels it as browser emulation",
+      "Start the focus inspector and Tab through a live pane",
+      "Record and export one manual test result, then clear it",
+      "Copy the evaluation link and reload it in a new tab",
+      "Confirm evidence gaps and axe counts are not presented as conformance"
     ]
   },
   {

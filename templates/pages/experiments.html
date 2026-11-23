@@ -17,6 +17,37 @@
       {{statusOptions}}
     </select>
   </div>
+  <div class="field">
+    <label for="experiment-preference">User preference</label>
+    <select id="experiment-preference" name="preference">
+      <option value="all">All preferences</option>
+      {{preferenceOptions}}
+    </select>
+  </div>
+  <div class="field">
+    <label for="experiment-evidence">Automated evidence</label>
+    <select id="experiment-evidence" name="evidence">
+      <option value="all">Any coverage</option>
+      <option value="complete">Complete fixture coverage</option>
+      <option value="partial">Partial coverage</option>
+      <option value="none">No fixture evidence</option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="experiment-concern">Accessibility concern</label>
+    <select id="experiment-concern" name="concern">
+      <option value="all">All concerns</option>
+      {{concernOptions}}
+    </select>
+  </div>
+  <div class="field">
+    <label for="experiment-manual">Manual tests</label>
+    <select id="experiment-manual" name="manual">
+      <option value="all">Any manual coverage</option>
+      <option value="defined">Definitions present</option>
+      <option value="none">No definitions yet</option>
+    </select>
+  </div>
 </form>
 
 <p class="small" id="experiment-count" aria-live="polite">{{count}} experiments</p>

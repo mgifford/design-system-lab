@@ -1,38 +1,257 @@
-<p class="eyebrow">Reproducible browser fixtures</p>
-<h1>Compare a released component with an experiment</h1>
-<p class="lead">Both panes use the same authored fixture and pinned USWDS assets. The right pane adds proposed styles; it is <strong>not OGDS</strong>. Open each side independently for keyboard and assistive-technology testing. The comparison viewport scrolls horizontally if the selected widths do not fit.</p>
+{{initialInfo}}
 
-<form class="controls" id="controls">
-  <div class="field"><label for="component">Component</label><select id="component" name="component">{{componentOptions}}</select></div>
-  <div class="field"><label for="theme">Experimental theme</label><select id="theme"><option value="system">System preference</option><option value="light">Light</option><option value="dark">Dark</option></select></div>
-  <div class="field"><label for="direction">Writing direction</label><select id="direction"><option value="ltr">Left to right</option><option value="rtl">Right to left</option></select></div>
-  <div class="field"><label for="width">Viewport</label><select id="width"><option value="desktop">Desktop</option><option value="tablet">Tablet</option><option value="mobile" selected>Mobile</option></select></div>
-  <div class="field"><label for="view">View</label><select id="view"><option value="split">Side by side</option><option value="onion">Onion overlay</option></select></div>
-  <div class="field" id="onion-control" hidden><label for="opacity">Overlay opacity</label><input id="opacity" type="range" min="0" max="100" value="50"><output id="opacity-output" for="opacity">50%</output></div>
-</form>
+<div class="callout warning" id="no-js-note">
+  <strong>The interactive evaluation workspace requires JavaScript.</strong>
+  The explanations, direct fixture links, evidence summary, and manual test instructions remain usable. Use <a href="component/accordion.html">the component directory</a>,
+  <a href="fixture/accordion-baseline.html">the baseline fixture</a>, or
+  <a href="fixture/accordion-experiment.html">the experimental fixture</a> directly.
+  Automated and manual evidence are separate from this preview.
+</div>
 
-<div class="callout" id="asset-banner" role="status">{{assetState}}</div>
-<p id="difference-note" class="small">Choose a component to see the registered experimental treatment.</p>
-<p id="onion-note" class="state-panel" hidden><strong>Onion mode is visual only.</strong> Both iframes are removed from keyboard order so focus cannot land in a covered pane. Use the “Open independently” links for keyboard testing.</p>
+<div class="eval-layout">
 
-<section aria-label="Comparison results">
-  <div class="compare-stage" id="stage" data-view="split" tabindex="0">
-    <div class="comparison" id="frames">
-      <div class="compare-pane">
-        <div class="pane-label"><span>Baseline: USWDS 3.14.0</span><a id="open-before" href="fixture/accordion-baseline.html" target="_blank" rel="noopener">Open independently</a></div>
-        <iframe title="USWDS baseline component" id="before" src="fixture/accordion-baseline.html"></iframe>
-      </div>
-      <div class="compare-pane">
-        <div class="pane-label"><span>Experiment: proposed theme layer</span><a id="open-after" href="fixture/accordion-experiment.html" target="_blank" rel="noopener">Open independently</a></div>
-        <iframe title="Experimental component" id="after" src="fixture/accordion-experiment.html"></iframe>
+<section aria-labelledby="preview-title">
+  <h2 class="section-title" id="preview-title">Preview</h2>
+  <p class="small" id="preview-conditions">Live preview requires JavaScript. The direct fixture links below open the baseline and experiment independently.</p>
+  <p class="small" id="pane-size-note"></p>
+  <p class="state-panel" id="capture-note" hidden></p>
+  <div class="eval-stage" id="stage" data-view="split" data-render="live">
+    <div class="eval-live" id="live-stage">
+      <div class="eval-panes" id="frames">
+        <div class="eval-pane">
+          <div class="pane-label"><span>Baseline: USWDS 3.14.0</span><a href="fixture/accordion-baseline.html" target="_blank" rel="noopener">Open independently</a></div>
+          <iframe title="USWDS baseline component under test" id="before" src="fixture/accordion-baseline.html"></iframe>
+        </div>
+        <div class="eval-pane">
+          <div class="pane-label"><span>Experiment: lab prototype</span><a href="fixture/accordion-experiment.html" target="_blank" rel="noopener">Open independently</a></div>
+          <iframe title="Experimental component under test" id="after" src="fixture/accordion-experiment.html"></iframe>
+        </div>
       </div>
     </div>
+
+    <div class="eval-captured" id="captured-stage" hidden>
+      <div class="captured-panes" id="captured-panes">
+        <figure class="captured-pane" id="captured-baseline-figure">
+          <figcaption>Baseline screenshot</figcaption>
+          <img id="capture-before" alt="" hidden>
+        </figure>
+        <figure class="captured-pane" id="captured-experiment-figure">
+          <figcaption>Experiment screenshot</figcaption>
+          <img id="capture-after" alt="" hidden>
+        </figure>
+      </div>
+      <p class="small" id="capture-meta"></p>
+      <p class="callout warning" id="capture-missing" hidden></p>
+    </div>
+
+    <div class="eval-difference" id="difference-panel" hidden>
+      <p class="small" id="diff-summary" role="status" aria-live="polite">Choose a captured condition to compare screenshots.</p>
+      <div class="eval-diff-controls">
+        <div class="field">
+          <label for="diff-threshold">Difference threshold (0–64)</label>
+          <input id="diff-threshold" type="range" min="0" max="64" value="16">
+          <output id="diff-threshold-output" for="diff-threshold">16</output>
+        </div>
+        <div class="field">
+          <label for="diff-intensity">Difference intensity</label>
+          <input id="diff-intensity" type="range" min="0" max="100" value="100">
+          <output id="diff-intensity-output" for="diff-intensity">100%</output>
+        </div>
+      </div>
+      <p class="callout" id="diff-disclaimer">Changed pixels are a visual measurement, not an accessibility score. Antialiasing, font rendering, and image encoding can change the count.</p>
+      <canvas id="diff-canvas" width="900" height="600" role="img" aria-label="Pixel difference between the baseline and experiment screenshots"></canvas>
+      <p class="small">Original captures: <a id="diff-baseline-link" href="#" target="_blank" rel="noopener">baseline image</a> · <a id="diff-experiment-link" href="#" target="_blank" rel="noopener">experiment image</a></p>
+    </div>
   </div>
+
+  <div class="eval-view-controls">
+    <div id="reveal-control" hidden>
+      <label for="reveal">Reveal position</label>
+      <input id="reveal" type="range" min="0" max="100" value="50">
+      <output id="reveal-output" for="reveal">50%</output>
+    </div>
+    <div id="onion-control" hidden>
+      <label for="opacity">Experiment opacity</label>
+      <input id="opacity" type="range" min="0" max="100" value="50">
+      <output id="opacity-output" for="opacity">50%</output>
+    </div>
+  </div>
+  <p class="small"><label><input type="checkbox" id="sync-scroll" checked> Synchronize scrolling between the live panes in side-by-side mode</label></p>
+  <p class="state-panel" id="onion-note" hidden><strong>Onion mode is visual only.</strong> Both frames are removed from keyboard order so focus cannot land in a covered document. Use side-by-side mode or the independent links for keyboard testing.</p>
+  <p class="state-panel" id="reveal-note" hidden><strong>Reveal mode is visual only.</strong> Left of the divider is the baseline; right is the experiment. The frames are clipped and removed from keyboard order. Use side-by-side mode or the independent links for interaction.</p>
+  <p class="small">Iframes are independent documents. The workspace does not mirror keyboard input between panes.</p>
 </section>
 
-<div class="state-panel"><strong>Testing note:</strong> The viewer does not mirror keyboard events. Test both panes separately using a keyboard. Forced colors and reduced motion are tested with browser emulation, not imitated by this menu. Onion mode is visual only.</div>
+<div class="eval-sidebar">
+<form class="eval-controls" id="eval-controls" aria-describedby="eval-controls-help">
+  <p class="small" id="eval-controls-help">Fixture conditions change the components under test. Evaluation tool settings change only this page. Values are validated against a fixed list; unknown values fall back and are reported.</p>
 
-<section id="component-info" aria-labelledby="info-title">
-  <h2 id="info-title" class="section-title">Component guidance and evidence</h2>
-  <p>Select a component to load its registry guidance. <a href="components.html">Browse the component directory</a> if JavaScript is unavailable.</p>
+  <fieldset class="eval-group">
+    <legend>What to evaluate</legend>
+    <div class="eval-grid">
+      <div class="field">
+        <label for="component">Component</label>
+        <select id="component" name="component">{{componentOptions}}</select>
+      </div>
+      <div class="field">
+        <label for="experiment">Experiment</label>
+        <select id="experiment" name="experiment"></select>
+      </div>
+      <div class="field">
+        <label for="state">Component state</label>
+        <select id="state" name="state"></select>
+      </div>
+      <div class="field">
+        <label for="view">Comparison mode</label>
+        <select id="view" name="view">{{viewOptions}}</select>
+      </div>
+    </div>
+    <p class="small" id="state-description"></p>
+  </fieldset>
+
+  <fieldset class="eval-group">
+    <legend>Fixture conditions (the components under test)</legend>
+    <div class="eval-grid">
+      <div class="field">
+        <label for="theme">Appearance</label>
+        <select id="theme" name="theme">{{themeOptions}}</select>
+      </div>
+      <div class="field">
+        <label for="motion">Motion</label>
+        <select id="motion" name="motion">{{motionOptions}}</select>
+      </div>
+      <div class="field">
+        <label for="contrast">Contrast</label>
+        <select id="contrast" name="contrast">{{contrastOptions}}</select>
+      </div>
+      <div class="field">
+        <label for="textSize">Text size</label>
+        <select id="textSize" name="textSize">{{textSizeOptions}}</select>
+      </div>
+      <div class="field">
+        <label for="spacing">Text spacing</label>
+        <select id="spacing" name="spacing">{{spacingOptions}}</select>
+      </div>
+      <div class="field">
+        <label for="direction">Direction</label>
+        <select id="direction" name="direction">{{directionOptions}}</select>
+      </div>
+      <div class="field">
+        <label for="language">Language</label>
+        <select id="language" name="language">{{languageOptions}}</select>
+      </div>
+      <div class="field">
+        <label for="width">Viewport width</label>
+        <select id="width" name="width">{{widthOptions}}<option value="custom">Custom width</option></select>
+      </div>
+      <div class="field" id="width-custom-field" hidden>
+        <label for="width-custom">Custom width (240–1920 CSS px)</label>
+        <input id="width-custom" name="width-custom" type="number" min="240" max="1920" step="1" inputmode="numeric">
+      </div>
+    </div>
+    <p class="small">These controls change the fixture only. They do not change this page. Dark and contrast fixture CSS are authored approximations of the experiment, not browser or operating-system emulation.</p>
+  </fieldset>
+
+  <fieldset class="eval-group">
+    <legend>Rendering source</legend>
+    <div class="eval-grid">
+      <div class="field">
+        <label for="render">Preview</label>
+        <select id="render" name="render">{{renderOptions}}</select>
+      </div>
+      <div class="field" id="capture-field" hidden>
+        <label for="capture">Screenshot condition</label>
+        <select id="capture" name="capture">{{captureOptions}}</select>
+      </div>
+    </div>
+    <p class="small" id="render-help">Forced colours and increased contrast are browser-level conditions. They are only available as matched Playwright captures, never as CSS approximations in the live preview.</p>
+  </fieldset>
+
+  <fieldset class="eval-group">
+    <legend>Evaluation tool display (this page only)</legend>
+    <div class="eval-grid">
+      <div class="field">
+        <label for="eval-theme">Tool appearance</label>
+        <select id="eval-theme"><option value="system">Follow system</option><option value="light">Light</option><option value="dark">Dark</option></select>
+      </div>
+      <div class="field">
+        <label for="eval-text-size">Tool text size</label>
+        <select id="eval-text-size"><option value="default">Default</option><option value="large">Large</option><option value="x-large">Extra large</option></select>
+      </div>
+      <div class="field">
+        <label for="eval-motion">Tool motion</label>
+        <select id="eval-motion"><option value="system">Follow system</option><option value="reduce">Reduce</option></select>
+      </div>
+      <div class="field">
+        <label for="eval-contrast">Tool contrast</label>
+        <select id="eval-contrast"><option value="default">Default</option><option value="more">More</option></select>
+      </div>
+    </div>
+    <p class="small">Stored only in this browser under <code>uswds-lab-prefs</code>. Fixtures ignore stored tool settings; they use the fixture conditions above.</p>
+    <div class="button-row"><button type="button" class="button secondary" id="eval-display-reset">Reset tool display</button></div>
+  </fieldset>
+
+  <div class="eval-presets">
+    <p class="small" id="preset-label">Testing presets (not substitutes for testing with people)</p>
+    <div class="preset-row" role="group" aria-labelledby="preset-label">{{presetButtons}}</div>
+  </div>
+
+  <div class="button-row">
+    <button type="button" class="button" id="copy-link">Copy evaluation link</button>
+    <button type="button" class="button secondary" id="fixture-reset">Reset fixture conditions</button>
+    <a class="button secondary" id="open-before" href="fixture/accordion-baseline.html" target="_blank" rel="noopener">Open baseline independently</a>
+    <a class="button secondary" id="open-after" href="fixture/accordion-experiment.html" target="_blank" rel="noopener">Open experiment independently</a>
+  </div>
+  <p id="copy-status" class="small" role="status" aria-live="polite"></p>
+  <p id="param-status" class="warning-text" role="status" aria-live="polite" hidden></p>
+</form>
+</div>
+</div>
+
+<section aria-labelledby="focus-title">
+  <h2 class="section-title" id="focus-title">Keyboard focus inspector</h2>
+  <p>Start the inspector, then press Tab inside either live pane. It reports the focused element's role, accessible name, and state without changing focus. It cannot inspect a captured screenshot or a real screen reader.</p>
+  <div class="button-row">
+    <button type="button" class="button secondary" id="focus-toggle" aria-pressed="false">Start focus inspector</button>
+  </div>
+  <dl class="focus-results">
+    <dt>Baseline</dt><dd id="focus-before">Inspector not started.</dd>
+    <dt>Experiment</dt><dd id="focus-after">Inspector not started.</dd>
+  </dl>
+  <p class="small" id="focus-status" role="status" aria-live="polite"></p>
+</section>
+
+<section aria-labelledby="evidence-title">
+  <h2 class="section-title" id="evidence-title">Evidence and known limits</h2>
+  <div id="eval-evidence">Loading evidence…</div>
+</section>
+
+<section aria-labelledby="manual-title">
+  <h2 class="section-title" id="manual-title">Manual accessibility tests</h2>
+  <p>These tests require a person. Results are stored only in this browser and are never submitted automatically. Guidepup transcripts support investigation but do not count as NVDA, JAWS, or VoiceOver testing.</p>
+  <p id="manual-summary" class="state-panel" role="status" aria-live="polite">No manual results recorded in this browser.</p>
+  <div id="manual-tests"></div>
+  <div class="button-row">
+    <button type="button" class="button secondary" id="manual-export-json">Export results as JSON</button>
+    <button type="button" class="button secondary" id="manual-export-md">Export results as Markdown</button>
+    <button type="button" class="button secondary" id="manual-reset">Clear local results</button>
+  </div>
+  <p id="manual-status" class="small" role="status" aria-live="polite"></p>
+</section>
+
+<section aria-labelledby="preset-title">
+  <h2 class="section-title" id="preset-title">Save and share this evaluation</h2>
+  <p>The URL carries every validated condition, so a colleague can reproduce the same configuration. Saved presets stay in this browser.</p>
+  <div class="eval-grid">
+    <div class="field">
+      <label for="preset-name">Preset name</label>
+      <input id="preset-name" type="text" maxlength="60" autocomplete="off">
+    </div>
+    <div class="field">
+      <span class="field-label">Preset action</span>
+      <button type="button" class="button secondary" id="preset-save">Save current configuration</button>
+    </div>
+  </div>
+  <ul class="clean" id="saved-presets"><li>No saved presets in this browser.</li></ul>
+  <p id="preset-status" class="small" role="status" aria-live="polite"></p>
 </section>

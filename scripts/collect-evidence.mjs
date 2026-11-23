@@ -10,6 +10,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import net from 'node:net';
+import {createHash} from 'node:crypto';
 import {spawn, execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {chromium} from '@playwright/test';
@@ -149,6 +150,47 @@ function virtualSpeech(html) {
   })();
 }
 
+// Complete every required control before the success-path submission. Filling
+// only the first text input (the previous behaviour) left other required
+// controls empty, so a still-invalid submit was recorded as "valid". Success is
+// now confirmed from the live status region before the state is named.
+async function completeRequiredControls(form) {
+  return form.evaluate(element => {
+    const setValue = (control, value) => {
+      control.value = value;
+      control.dispatchEvent(new Event('input', {bubbles: true}));
+      control.dispatchEvent(new Event('change', {bubbles: true}));
+    };
+    const radios = [...element.querySelectorAll('input[type="radio"]')];
+    for (const control of element.querySelectorAll('input, select, textarea')) {
+      if (control.disabled) continue;
+      if (control.type === 'radio') {
+        if (!control.required) continue;
+        const group = radios.filter(item => item.name === control.name);
+        if (group.length && !group.some(item => item.checked)) group[0].click();
+        continue;
+      }
+      if (control.type === 'checkbox') {
+        if (control.required && !control.checked) control.click();
+        continue;
+      }
+      if (!control.required) continue;
+      if (control.tagName === 'SELECT') {
+        const option = [...control.options].find(item => item.value !== '' && !item.disabled);
+        if (option) setValue(control, option.value);
+        continue;
+      }
+      if (control.type === 'email') setValue(control, 'sample@example.gov');
+      else if (control.type === 'tel') setValue(control, '555-555-5555');
+      else if (control.type === 'url') setValue(control, 'https://example.gov');
+      else if (control.type === 'number') setValue(control, '1');
+      else if (control.type === 'date') setValue(control, '2026-01-01');
+      else setValue(control, 'Sample value');
+    }
+    return element.checkValidity();
+  });
+}
+
 function writeState(route, state, transcript, extra = {}) {
   const slug = slugify(route);
   const relative = `guidepup/${slug}/${state}.md`;
@@ -250,7 +292,11 @@ function routeReport(route, entry, notes) {
 - Serious/critical: ${blocking.length}
 ${blocking.length ? blocking.map(violation => `- ${violation.id} (${violation.impact}): ${violation.help} — ${violation.nodes} node(s)`).join('\n') : '- None reported by this run.'}
 
-Axe was run on the initial route state only. A zero axe count is not a conformance claim.
+Axe was run on the initial route state and, where states are registered, on each declared state. A zero axe count is not a conformance claim.
+
+## State-level axe
+
+${entry.axeStates?.length ? `| State | Interaction | Violations |\n|---|---|---|\n${entry.axeStates.map(state => `| ${esc(state.state)} | ${esc(state.interaction)} | ${state.violationCount} |`).join('\n')}` : 'No component states are registered for this route.'}
 
 ## State transcripts
 
@@ -278,6 +324,95 @@ Pending human review. Do not infer an upstream recommendation or WCAG conformanc
 `;
 }
 
+const CAPTURE_CONDITIONS = {
+  light: {colorScheme: 'light', theme: 'light', label: 'Light browser colour scheme'},
+  dark: {colorScheme: 'dark', theme: 'dark', label: 'Dark browser colour scheme'},
+  'forced-colors': {colorScheme: 'light', theme: 'light', forcedColors: 'active', label: 'Forced colours (browser emulation)'},
+  'contrast-more': {colorScheme: 'light', theme: 'light', contrast: 'more', label: 'Increased contrast (browser emulation)'}
+};
+
+function fixtureComponent(route) {
+  const match = route.match(/^fixture\/([a-z0-9-]+)-(baseline|experiment)\.html$/);
+  if (!match) return null;
+  return registry.components.find(component => component.slug === match[1]) || null;
+}
+
+async function captureComparisonPairs(browser, origin) {
+  const pairs = [];
+  for (const component of registry.components) {
+    const states = component.states?.length ? component.states : [{id: 'default', label: 'Initial rendering'}];
+    const conditions = Object.keys(CAPTURE_CONDITIONS);
+    for (const state of states) {
+      for (const condition of conditions) {
+        const settings = CAPTURE_CONDITIONS[condition];
+        const params = new URLSearchParams({capture: '1', theme: settings.theme});
+        if (state.id !== 'default') params.set('state', state.id);
+        const context = await browser.newContext({
+          viewport: {width: 900, height: 900},
+          deviceScaleFactor: 1,
+          colorScheme: settings.colorScheme,
+          forcedColors: settings.forcedColors || 'none',
+          contrast: settings.contrast || 'no-preference',
+          reducedMotion: 'no-preference'
+        });
+        try {
+          const page = await context.newPage();
+          const response = await page.goto(`${origin}/fixture/${component.slug}-baseline.html?${params.toString()}`, {waitUntil: 'load', timeout: 30000});
+          if (!response?.ok()) throw new Error(`HTTP ${response?.status()} for ${component.slug} ${state.id} ${condition}`);
+          await page.evaluate(() => document.fonts?.ready);
+          for (const side of ['baseline', 'experiment']) {
+            if (side === 'experiment') {
+              await page.goto(`${origin}/fixture/${component.slug}-experiment.html?${params.toString()}`, {waitUntil: 'load', timeout: 30000});
+              await page.evaluate(() => document.fonts?.ready);
+            }
+            if (state.interaction === 'activate') {
+              const trigger = page.locator(`[data-state="${state.id}"] button`).first();
+              if (await trigger.count()) {
+                await trigger.click();
+                await page.waitForTimeout(150);
+              }
+            }
+            await page.waitForTimeout(60);
+            const relative = `pairs/${component.slug}/${state.id}--${condition}--${side}.png`;
+            const target = path.join(latest, relative);
+            fs.mkdirSync(path.dirname(target), {recursive: true});
+            await page.screenshot({path: target, clip: {x: 0, y: 0, width: 900, height: 900}});
+            const sha256 = createHash('sha256').update(fs.readFileSync(target)).digest('hex');
+            const existing = pairs.find(pair => pair.component === component.slug && pair.state === state.id && pair.condition === condition);
+            if (existing) {
+              existing[side] = relative;
+              existing[`${side}Sha256`] = sha256;
+            } else {
+              pairs.push({
+                component: component.slug,
+                state: state.id,
+                stateLabel: state.label,
+                condition,
+                conditionLabel: settings.label,
+                width: 900,
+                height: 900,
+                browser: browser.version(),
+                [side]: relative,
+                [`${side}Sha256`]: sha256
+              });
+            }
+          }
+        } finally {
+          await context.close();
+        }
+      }
+    }
+  }
+  return {
+    viewport: '900x900',
+    deviceScaleFactor: 1,
+    fixedConditions: 'Default text size, LTR, default line spacing, no reduced motion. Only the listed browser conditions vary.',
+    conditions: CAPTURE_CONDITIONS,
+    pairs,
+    capturedAt: new Date().toISOString()
+  };
+}
+
 async function collectRoute(browser, origin, route, entry) {
   const notes = [];
   const {page, context, errors} = await open(browser, route, {origin});
@@ -292,6 +427,36 @@ async function collectRoute(browser, origin, route, entry) {
   const initialShot = screenshotPath(route, 'initial');
   await page.screenshot({path: initialShot.target});
   entry.screenshots.push({state: 'initial', file: path.basename(initialShot.target)});
+
+  const fixture = fixtureComponent(route);
+  if (fixture?.states?.length > 1) {
+    entry.axeStates = [];
+    for (const stateDef of fixture.states) {
+      const statePage = await open(browser, withParams(route, {state: stateDef.id}), {origin});
+      try {
+        if (stateDef.interaction === 'activate') {
+          const trigger = statePage.page.locator(`[data-state="${stateDef.id}"] button`).first();
+          if (await trigger.count()) {
+            await trigger.click();
+            await statePage.page.waitForTimeout(120);
+          }
+        }
+        const stateViolations = await axe(statePage.page);
+        entry.axeStates.push({
+          state: stateDef.id,
+          label: stateDef.label,
+          interaction: stateDef.interaction || 'load',
+          violationCount: stateViolations.length,
+          violations: stateViolations
+        });
+        entry.pageErrors.push(...statePage.errors);
+      } finally {
+        await statePage.context.close();
+      }
+    }
+    const stateTotal = entry.axeStates.reduce((total, state) => total + state.violationCount, 0);
+    notes.push(`State-level axe: scanned ${entry.axeStates.length} declared state(s); ${stateTotal} violation(s) recorded across those states.`);
+  }
 
   const disclosure = page.locator('.usa-accordion__button').first();
   if (await disclosure.count()) {
@@ -329,22 +494,31 @@ async function collectRoute(browser, origin, route, entry) {
     await page.screenshot({path: invalidShot.target});
     entry.screenshots.push({state: 'invalid', file: path.basename(invalidShot.target)});
 
-    const radio = form.locator('input[type="radio"]').first();
-    if (await radio.count()) {
-      await radio.focus();
-      await page.keyboard.press('Space');
-    }
-    const text = form.locator('input[type="text"]').first();
-    if (await text.count()) await text.fill('Sample reference');
+    const preparedValid = await completeRequiredControls(form);
     await submit.click();
     await page.waitForTimeout(120);
-    const status = await page.locator('[role="status"]').last().textContent().catch(() => '');
-    notes.push(`Valid submit status: ${status?.trim() || '(none)'}`);
+    const statusTarget = await form.getAttribute('data-status-target');
+    const statusRegion = statusTarget ? page.locator(`#${statusTarget}`) : page.locator('[role="status"]').last();
+    const statusText = (await statusRegion.textContent().catch(() => ''))?.trim() || '';
+    const validityAfterFill = await form.evaluate(element => element.checkValidity());
+    const invalidAfterFill = await form.locator('[aria-invalid="true"]').count();
+    const validConfirmed = preparedValid && validityAfterFill && invalidAfterFill === 0 && Boolean(statusText);
+    notes.push(`Valid submit: checkValidity=${validityAfterFill}; aria-invalid controls=${invalidAfterFill}; status="${statusText || '(none)'}".`);
+    if (!validConfirmed) notes.push('Coverage gap: the valid submission was not confirmed by the status region. Recorded as valid-failed, not valid.');
     const validTranscript = await transcript(page);
-    entry.states.push({name: 'valid', file: writeState(route, 'valid', validTranscript, {Interaction: 'Submit with required values', Status: status?.trim() || '(none)'})});
-    const validShot = screenshotPath(route, 'valid');
+    const validState = validConfirmed ? 'valid' : 'valid-failed';
+    entry.states.push({
+      name: validState,
+      file: writeState(route, validState, validTranscript, {
+        Interaction: 'Submit after completing required controls',
+        Status: statusText || '(none)',
+        Confirmed: String(validConfirmed)
+      }),
+      confirmed: validConfirmed
+    });
+    const validShot = screenshotPath(route, validState);
     await page.screenshot({path: validShot.target});
-    entry.screenshots.push({state: 'valid', file: path.basename(validShot.target)});
+    entry.screenshots.push({state: validState, file: path.basename(validShot.target)});
   }
 
   await context.close();
@@ -406,6 +580,15 @@ try {
       console.error(`FAILED ${route}: ${error.stack || error.message}`);
     }
   }
+
+  console.log('capturing matched baseline/experiment screenshots...');
+  try {
+    manifest.comparison = await captureComparisonPairs(browser, origin);
+    console.log(`captured ${manifest.comparison.pairs.length * 2} matched screenshots across ${manifest.comparison.conditions ? Object.keys(manifest.comparison.conditions).length : 0} conditions`);
+  } catch (error) {
+    manifest.comparison = {pairs: [], error: error.message, capturedAt: new Date().toISOString()};
+    console.error(`COMPARISON CAPTURE FAILED: ${error.stack || error.message}`);
+  }
 } catch (error) {
   manifest.status = 'failed';
   manifest.error = error.message;
@@ -425,7 +608,8 @@ manifest.coverage = {
   routes: manifest.pages.length,
   states: manifest.pages.reduce((total, page) => total + page.states.length, 0),
   withAxe: manifest.pages.filter(page => Number.isFinite(page.axeViolations)).length,
-  withScreenshots: manifest.pages.reduce((total, page) => total + page.screenshots.length, 0)
+  withScreenshots: manifest.pages.reduce((total, page) => total + page.screenshots.length, 0),
+  comparisonPairs: manifest.comparison?.pairs?.length || 0
 };
 writeManifest();
 
@@ -441,6 +625,7 @@ const summary = [
   `- Git revision: ${gitSha}`,
   `- Browser: ${manifest.browser}`,
   `- Collected: ${manifest.succeeded} of ${manifest.pages.length} routes`,
+  `- Matched comparison captures: ${manifest.comparison?.pairs?.length || 0} pair(s) at ${manifest.comparison?.viewport || 'not recorded'}`,
   '',
   '| Page | Status | Axe | Evidence |',
   '|---|---|---|---|',
@@ -448,7 +633,13 @@ const summary = [
   '',
   '## Method',
   '',
-  'Playwright loaded every lab route with the pinned USWDS distribution. Guidepup traversed a jsdom snapshot; disclosure, form, dark, and RTL states were captured separately. Axe recorded violations and screenshots were captured for visual inspection.',
+  'Playwright loaded every lab route with the pinned USWDS distribution. Guidepup traversed a jsdom snapshot; disclosure, form, dark, RTL, and declared component states were captured separately. Axe recorded initial-state and state-level violations. Matched baseline/experiment screenshots were captured for pixel and overlay comparison.',
+  '',
+  '## State-level axe',
+  '',
+  manifest.pages.some(page => page.axeStates?.length)
+    ? `| Route | State | Interaction | Violations |\n|---|---|---|---|\n${manifest.pages.flatMap(page => (page.axeStates || []).map(state => `| ${esc(page.name)} | ${esc(state.state)} | ${esc(state.interaction)} | ${state.violationCount} |`)).join('\n')}`
+    : 'No component states were scanned in this run.',
   '',
   '## Not tested',
   '',
@@ -477,10 +668,17 @@ const coverage = [
   '',
   '## Gaps',
   '',
-  '- Forced colors is captured only by Playwright emulation, not on a real high-contrast device.',
+  '- Forced colours and increased contrast are captured only by Playwright browser emulation, not on a real high-contrast Windows device.',
   '- Firefox and WebKit evidence is not collected by this collector; run the browser suite separately.',
   '- The comparison page transcript excludes iframe documents. Fixture routes are collected separately.',
-  '- Dark appearance is a visual state; Guidepup speech does not change with CSS.'
+  '- Dark appearance is a visual state; Guidepup speech does not change with CSS.',
+  '- Captured screenshots use a fixed 900 × 900 viewport, default text, LTR, and default motion.',
+  '',
+  '## Comparison captures',
+  '',
+  manifest.comparison?.pairs?.length
+    ? `- ${manifest.comparison.pairs.length} matched pair(s), ${manifest.comparison.viewport}, device scale factor ${manifest.comparison.deviceScaleFactor}.\n- Conditions: ${Object.values(manifest.comparison.conditions || {}).map(condition => esc(condition.label)).join('; ')}\n- ${esc(manifest.comparison.fixedConditions || '')}`
+    : `No matched captures were produced${manifest.comparison?.error ? `: ${esc(manifest.comparison.error)}` : '.'}`
 ];
 write('COVERAGE.md', coverage.join('\n') + '\n');
 

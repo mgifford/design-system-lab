@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {renderPage} from './layout.mjs';
 import {escapeHtml, renderMarkdown, renderMarkdownFile, stripFirstHeading} from './markdown.mjs';
+import {optionsHtml, presetButtons, initialEvaluationInfo, PREFERENCE_LABELS, CONCERN_LABELS, VIEW_MODES, THEMES, DIRECTIONS, LANGUAGES, MOTIONS, CONTRASTS, TEXT_SIZES, SPACINGS, WIDTHS, RENDERS, CAPTURE_CONDITIONS} from './evaluation.mjs';
 
 const read = (root, relative) => fs.readFileSync(path.join(root, relative), 'utf8');
 const template = (root, name) => read(root, `templates/pages/${name}.html`);
@@ -69,21 +70,38 @@ export function componentCard(component, registry, base = '') {
 </article>`;
 }
 
-export function experimentCard(experiment, registry, manifest, base = '') {
+export function experimentCard(experiment, registry, manifest, base = '', manualTests = []) {
   const status = statusLabel(registry, experiment.status);
   const type = typeLabel(registry, experiment.type);
   const evidence = evidenceLine(experiment, manifest);
+  const preferenceIds = experiment.evaluation?.preferences || [];
+  const preferenceText = preferenceIds.map(id => PREFERENCE_LABELS[id] || id).join(', ') || 'Not declared';
+  const concernIds = experiment.evaluation?.concernTags || [];
+  const concernText = concernIds.map(id => CONCERN_LABELS[id] || id).join(', ') || 'None recorded';
+  const fixtureRoutes = (experiment.components || []).flatMap(slug => [`fixture/${slug}-baseline.html`, `fixture/${slug}-experiment.html`]);
+  const routeEntries = manifest?.pages?.filter(page => fixtureRoutes.includes(page.name)) || [];
+  const collectedRoutes = routeEntries.filter(page => page.result === 'collected-not-reviewed').length;
+  const automatedCoverage = !routeEntries.length ? 'none' : collectedRoutes === routeEntries.length ? 'complete' : collectedRoutes ? 'partial' : 'none';
+  const manualForExperiment = manualTests.filter(test => (experiment.components || []).includes(test.component));
   const components = (experiment.components || []).map(slug => {
     const component = registry.components.find(item => item.slug === slug);
     return component ? `<a href="${base}component/${escapeHtml(slug)}.html">${escapeHtml(component.name)}</a>` : escapeHtml(slug);
   }).join(', ');
-  return `<article class="card" data-experiment="${escapeHtml(experiment.id)}" data-type="${escapeHtml(experiment.type)}" data-status="${escapeHtml(experiment.status)}">
+  const evaluateComponent = (experiment.components || [])[0];
+  const evaluateHref = evaluateComponent
+    ? `${base}compare.html?component=${encodeURIComponent(evaluateComponent)}&experiment=${encodeURIComponent(experiment.id)}`
+    : '';
+  const evaluateButton = evaluateHref ? `<a class="button" href="${evaluateHref}">Evaluate</a> ` : '';
+  return `<article class="card" data-experiment="${escapeHtml(experiment.id)}" data-type="${escapeHtml(experiment.type)}" data-status="${escapeHtml(experiment.status)}" data-preferences="${escapeHtml(preferenceIds.join(' '))}" data-concerns="${escapeHtml(concernIds.join(' '))}" data-automated="${escapeHtml(automatedCoverage)}" data-manual="${manualForExperiment.length ? 'defined' : 'none'}">
   <p class="meta"><span class="pill">${escapeHtml(type)}</span> <span class="pill">${escapeHtml(status)}</span></p>
   <h2><a href="${base}experiment/${escapeHtml(experiment.id)}.html">${escapeHtml(experiment.title)}</a></h2>
   <p>${escapeHtml(experiment.summary)}</p>
   <p class="small">${components ? `Components: ${components}. ` : 'No stable equivalent component. '}Review: ${escapeHtml(experiment.review?.status || 'pending')}.</p>
+  <p class="small">User preferences: ${escapeHtml(preferenceText)}.</p>
+  <p class="small">Accessibility concerns: ${escapeHtml(concernText)}.</p>
+  <p class="small">Automated evidence: ${collectedRoutes} of ${routeEntries.length} fixture routes collected (${escapeHtml(automatedCoverage)}). Manual test definitions: ${manualForExperiment.length}; published evidence records none as completed.</p>
   <p class="small ${evidence.className}">Evidence: ${escapeHtml(evidence.text)}</p>
-  <p><a class="button secondary" href="${base}${escapeHtml(experiment.demo || `experiment/${experiment.id}.html`)}">Open demonstration</a></p>
+  <p>${evaluateButton}<a class="button secondary" href="${base}${escapeHtml(experiment.demo || `experiment/${experiment.id}.html`)}">Registered demonstration</a></p>
 </article>`;
 }
 
@@ -132,7 +150,7 @@ function sourceLockBlock(lock) {
   <p class="small"><a href="data/sources.lock.json">Open the machine-readable source lock</a> · <a href="https://github.com/uswds/uswds/releases/tag/${encodeURIComponent(baseline.release)}">Upstream release</a></p>`;
 }
 
-function evidenceSummary(manifest, buildInfo) {
+function evidenceSummary(manifest, buildInfo, manualTests = []) {
   if (!manifest?.generated) {
     const message = buildInfo?.uswdsRealAssets
       ? 'No automated evidence has been generated for this build.'
@@ -140,6 +158,8 @@ function evidenceSummary(manifest, buildInfo) {
     return `<div class="callout warning"><strong>${escapeHtml(message)}</strong> Run <code>npm run build:strict</code>, <code>npm run test:browser</code>, and <code>npm run evidence</code>, then rebuild. Missing output is a coverage gap, not a pass.</div>`;
   }
   const failed = manifest.pages.filter(page => page.result !== 'collected-not-reviewed');
+  const stateScans = manifest.pages.flatMap(page => page.axeStates || []);
+  const comparisonPairs = manifest.comparison?.pairs?.length || 0;
   const rows = manifest.pages.map(page => {
     const report = page.report ? `<a href="evidence/latest/${escapeHtml(page.report)}">Open evidence</a>` : 'Not generated';
     const axe = Number.isFinite(page.axeViolations) ? String(page.axeViolations) : 'not recorded';
@@ -156,7 +176,8 @@ function evidenceSummary(manifest, buildInfo) {
     <thead><tr><th scope="col">Route</th><th scope="col">Collection</th><th scope="col">Transcript</th><th scope="col">Axe violations</th></tr></thead>
     <tbody>${rows}</tbody>
   </table></div>
-  <p class="small">Axe counts are recorded for investigation. A zero count is not a conformance claim. See the <a href="evidence/latest/COVERAGE.html">coverage matrix</a> for states that were and were not collected.</p>`;
+  <p class="small">Axe counts are recorded for investigation. A zero count is not a conformance claim. See the <a href="evidence/latest/COVERAGE.html">coverage matrix</a> for states that were and were not collected.</p>
+  <div class="callout"><strong>Evaluation workspace:</strong> <a href="compare.html">compare the baseline and experiment under user preferences</a>. Comparison captures: ${comparisonPairs} matched pair(s); state-level axe scans: ${stateScans.length}. Manual test definitions: ${manualTests.length}; this published run records <strong>0</strong> manual tests as completed. Human records stay local until a person exports and attaches them.</div>`;
 }
 
 const BLOCK_LABELS = {
@@ -188,13 +209,13 @@ export function coverageTable(coverage, blocks) {
   return `<div class="table-wrap" role="region" aria-label="OGDS coverage on this page" tabindex="0"><table><caption>OGDS coverage on this page</caption><thead><tr><th scope="col">Area</th><th scope="col">OGDS implementation</th><th scope="col">Status</th><th scope="col">Note</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
-export function buildStaticPages({root, registry, issues, buildInfo, manifest, lock, coverageTables = {}}) {
+export function buildStaticPages({root, registry, issues, buildInfo, manifest, lock, coverageTables = {}, manualTests = []}) {
   const pages = [];
   const issueCards = issues.map(issue => issueCard(issue, registry)).join('');
   const groups = [...new Set(registry.components.map(component => component.group))];
   const typeOptions = Object.entries(registry.experimentTypes).map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join('');
   const statusOptions = Object.entries(registry.experimentStatuses).map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join('');
-  const featured = registry.experiments.slice(0, 4).map(experiment => experimentCard(experiment, registry, manifest)).join('');
+  const featured = registry.experiments.slice(0, 4).map(experiment => experimentCard(experiment, registry, manifest, '', manualTests)).join('');
   const componentCards = registry.components.map(component => componentCard(component, registry)).join('');
   const componentOptions = registry.components.map(component => `<option value="${escapeHtml(component.slug)}">${escapeHtml(component.name)}</option>`).join('');
   const collected = manifest?.pages?.filter(page => page.result === 'collected-not-reviewed').length || 0;
@@ -225,7 +246,9 @@ export function buildStaticPages({root, registry, issues, buildInfo, manifest, l
     'experiments.html': fill(template(root, 'experiments'), {
       typeOptions,
       statusOptions,
-      cards: registry.experiments.map(experiment => experimentCard(experiment, registry, manifest)).join(''),
+      cards: registry.experiments.map(experiment => experimentCard(experiment, registry, manifest, '', manualTests)).join(''),
+      preferenceOptions: [...new Set(registry.experiments.flatMap(experiment => experiment.evaluation?.preferences || []))].map(id => `<option value="${escapeHtml(id)}">${escapeHtml(PREFERENCE_LABELS[id] || id)}</option>`).join(''),
+      concernOptions: [...new Set(registry.experiments.flatMap(experiment => experiment.evaluation?.concernTags || []))].map(id => `<option value="${escapeHtml(id)}">${escapeHtml(CONCERN_LABELS[id] || id)}</option>`).join(''),
       count: `${registry.experiments.length} experiments`
     }),
     'ideas.html': fill(template(root, 'ideas'), {
@@ -233,11 +256,23 @@ export function buildStaticPages({root, registry, issues, buildInfo, manifest, l
       count: `${issues.length} of ${issues.length} curated issues`
     }),
     'evidence.html': fill(template(root, 'evidence'), {
-      evidenceSummary: evidenceSummary(manifest, buildInfo)
+      evidenceSummary: evidenceSummary(manifest, buildInfo, manualTests)
     }),
     'compare.html': fill(template(root, 'compare'), {
+      initialInfo: initialEvaluationInfo(registry),
       componentOptions,
-      assetState
+      viewOptions: optionsHtml(VIEW_MODES, 'split'),
+      themeOptions: optionsHtml(THEMES, 'system'),
+      directionOptions: optionsHtml(DIRECTIONS, 'ltr'),
+      languageOptions: optionsHtml(LANGUAGES, 'en'),
+      motionOptions: optionsHtml(MOTIONS, 'system'),
+      contrastOptions: optionsHtml(CONTRASTS, 'normal'),
+      textSizeOptions: optionsHtml(TEXT_SIZES, 'default'),
+      spacingOptions: optionsHtml(SPACINGS, 'default'),
+      widthOptions: optionsHtml(WIDTHS, '1280'),
+      renderOptions: optionsHtml(RENDERS, 'live'),
+      captureOptions: optionsHtml(CAPTURE_CONDITIONS, 'light'),
+      presetButtons: presetButtons()
     }),
     'guide.html': fill(template(root, 'guide'), {
       sourceLock: sourceLockBlock(lock)
@@ -253,7 +288,7 @@ export function buildStaticPages({root, registry, issues, buildInfo, manifest, l
     'experiments.html': 'experiments',
     'ideas.html': 'ideas',
     'evidence.html': 'evidence',
-    'compare.html': 'components',
+    'compare.html': 'evaluate',
     'guide.html': 'methodology',
     'preferences.html': 'experiments',
     'demo.html': 'demo',
@@ -265,7 +300,7 @@ export function buildStaticPages({root, registry, issues, buildInfo, manifest, l
     'experiments.html': 'Experiments',
     'ideas.html': 'Community ideas',
     'evidence.html': 'Evidence and coverage',
-    'compare.html': 'Compare components',
+    'compare.html': 'Evaluate components',
     'guide.html': 'Methodology and governance',
     'preferences.html': 'User preferences panel',
     'demo.html': 'Landing-page comparison',
@@ -277,7 +312,7 @@ export function buildStaticPages({root, registry, issues, buildInfo, manifest, l
     'experiments.html': 'Working proposals for USWDS improvements, with evidence and review status.',
     'ideas.html': 'A curated, manually verified catalogue of USWDS issue history and community requests.',
     'evidence.html': 'Automated observations, coverage gaps, and links to human-readable evidence.',
-    'compare.html': 'Compare a pinned USWDS baseline with a labelled experimental proposal.',
+    'compare.html': 'Evaluate a pinned USWDS baseline against a labelled experiment across user preferences, states, comparisons, and evidence.',
     'guide.html': 'Methodology, provenance, governance, and limitations for the USWDS Futures Lab.',
     'preferences.html': 'A proposed user preferences panel for appearance, text size, contrast, and motion.',
     'demo.html': 'A full landing-page comparison of USWDS 3.14.0 with a USWDS + OGDS Elements hybrid.',
@@ -285,13 +320,14 @@ export function buildStaticPages({root, registry, issues, buildInfo, manifest, l
   };
   const scripts = {
     'components.html': [{src: 'assets/filters.js', type: 'module'}],
-    'compare.html': [{src: 'assets/compare.js', type: 'module'}],
+    'compare.html': [{src: 'assets/evaluate.js', type: 'module'}],
     'demo.html': [{src: 'assets/demo.js', type: 'module'}],
     'demo/forms.html': [{src: 'assets/demo.js', type: 'module'}],
     'experiments.html': [{src: 'assets/filters.js', type: 'module'}],
     'ideas.html': [{src: 'assets/filters.js', type: 'module'}]
   };
 
+  const styles = {'compare.html': ['assets/evaluation.css']};
   for (const [route, content] of Object.entries(staticContent)) {
     pages.push({
       route,
@@ -302,14 +338,15 @@ export function buildStaticPages({root, registry, issues, buildInfo, manifest, l
         current: current[route],
         content,
         base: route === 'demo/forms.html' ? '../' : '',
-        scripts: scripts[route] || []
+        scripts: scripts[route] || [],
+        styles: styles[route] || []
       })
     });
   }
   return pages;
 }
 
-function componentPage(component, registry, issues, manifest, lock) {
+function componentPage(component, registry, issues, manifest, lock, manualTests = []) {
   const relatedExperiments = registry.experiments.filter(experiment => (experiment.components || []).includes(component.slug));
   const scenarios = registry.scenarios.filter(scenario => scenario.component === component.slug);
   const evidenceRoutes = manifest?.pages?.filter(page => page.name.includes(`fixture/${component.slug}-`)) || [];
@@ -321,7 +358,8 @@ function componentPage(component, registry, issues, manifest, lock) {
   return `<p class="eyebrow">${escapeHtml(component.group)}</p>
 <h1>${escapeHtml(component.name)}</h1>
 <p class="lead">${escapeHtml(component.summary)}</p>
-<div class="callout"><strong>Baseline:</strong> USWDS ${escapeHtml(registry.baseline.version)} with authored fixture markup. <a href="${escapeHtml(component.reference)}">Official component guidance</a> · <a href="${escapeHtml(component.accessibility)}">Official accessibility tests</a></div>
+<div class="callout"><strong>Baseline:</strong> USWDS ${escapeHtml(registry.baseline.version)} with authored fixture markup. <a href="${escapeHtml(component.reference)}">Official component guidance</a> · <a href="${escapeHtml(component.accessibility)}">Official accessibility tests</a>
+<div class="button-row"><a class="button" href="../compare.html?component=${encodeURIComponent(component.slug)}${relatedExperiments[0] ? `&experiment=${encodeURIComponent(relatedExperiments[0].id)}` : ''}">Evaluate this component</a><a class="button secondary" href="../compare.html?component=${encodeURIComponent(component.slug)}${relatedExperiments[0] ? `&experiment=${encodeURIComponent(relatedExperiments[0].id)}` : ''}&render=captured&capture=forced-colors">Open forced-colours capture</a></div></div>
 
 <section aria-labelledby="purpose"><h2 class="section-title" id="purpose">Purpose</h2><p>${escapeHtml(component.purpose)}</p></section>
 <section aria-labelledby="when"><h2 class="section-title" id="when">When to use it</h2>${list(component.whenToUse)}</section>
@@ -333,10 +371,10 @@ function componentPage(component, registry, issues, manifest, lock) {
 <section aria-labelledby="testing"><h2 class="section-title" id="testing">How to test it</h2>${list(component.testing)}</section>
 <section aria-labelledby="limitations"><h2 class="section-title" id="limitations">Known limitations</h2>${list(component.limitations)}</section>
 <section aria-labelledby="experiments"><h2 class="section-title" id="experiments">Experiments involving this component</h2>
-${relatedExperiments.length ? `<div class="cards">${relatedExperiments.map(experiment => experimentCard(experiment, registry, manifest, '../')).join('')}</div>` : '<p>No experiment is registered for this component. The baseline remains available for review.</p>'}</section>
+${relatedExperiments.length ? `<div class="cards">${relatedExperiments.map(experiment => experimentCard(experiment, registry, manifest, '../', manualTests)).join('')}</div>` : '<p>No experiment is registered for this component. The baseline remains available for review.</p>'}</section>
 <section aria-labelledby="fixtures"><h2 class="section-title" id="fixtures">Fixtures and comparison</h2>
 <ul class="clean">
- <li><a href="../compare.html?component=${encodeURIComponent(component.slug)}">Open the comparison viewer</a></li>
+ <li><a href="../compare.html?component=${encodeURIComponent(component.slug)}${relatedExperiments[0] ? `&experiment=${encodeURIComponent(relatedExperiments[0].id)}` : ''}">Open the evaluation workspace</a> (${component.states?.length || 1} registered state${(component.states?.length || 1) === 1 ? '' : 's'})</li>
  <li><a href="../fixture/${escapeHtml(component.slug)}-baseline.html">Open the baseline fixture independently</a></li>
  <li><a href="../fixture/${escapeHtml(component.slug)}-experiment.html">Open the experimental fixture independently</a></li>
 </ul></section>
@@ -348,7 +386,7 @@ ${relatedExperiments.length ? `<div class="cards">${relatedExperiments.map(exper
 <p class="small">Source lock: <a href="../data/sources.lock.json">${escapeHtml(lock?.baseline?.release || 'not recorded')}</a>. This page describes an independent lab fixture, not an official USWDS example.</p></section>`;
 }
 
-export function buildComponentPages({root, registry, issues, manifest, lock}) {
+export function buildComponentPages({root, registry, issues, manifest, lock, manualTests = []}) {
   return registry.components.map(component => ({
     route: `component/${component.slug}.html`,
     html: renderPage({
@@ -356,7 +394,7 @@ export function buildComponentPages({root, registry, issues, manifest, lock}) {
       title: `${component.name} — component guidance`,
       description: component.summary,
       current: 'components',
-      content: componentPage(component, registry, issues, manifest, lock),
+      content: componentPage(component, registry, issues, manifest, lock, manualTests),
       base: '../'
     })
   }));
@@ -413,9 +451,9 @@ ${noBaseline}
 </div>
 
 <section aria-labelledby="demo"><h2 class="section-title" id="demo">Working demonstration</h2>
-<p><a class="button" href="../${escapeHtml(experiment.demo || `experiment/${experiment.id}.html`)}">Open the demonstration</a></p>
+${(experiment.components || []).length ? `<p><a class="button" href="../compare.html?component=${encodeURIComponent(experiment.components[0])}&experiment=${encodeURIComponent(experiment.id)}">Evaluate this experiment</a> <a class="button secondary" href="../${escapeHtml(experiment.demo || `experiment/${experiment.id}.html`)}">Open the registered demonstration</a></p>` : `<p><a class="button" href="../${escapeHtml(experiment.demo || `experiment/${experiment.id}.html`)}">Open the demonstration</a> <span class="small">No stable component is registered, so the evaluation workspace does not invent a baseline.</span></p>`}
 ${components ? `<ul class="clean">${components}</ul>` : '<p>No stable component maps to this proposal. The demonstration page is the proposal.</p>'}
-<p class="small">The comparison viewer does not mirror keyboard input. Open either implementation independently for keyboard and assistive-technology testing.</p></section>
+<p class="small">The evaluation workspace does not mirror keyboard input. Open either implementation independently for keyboard and assistive-technology testing.</p></section>
 
 <section aria-labelledby="proposal"><h2 class="section-title" id="proposal">Proposal and context</h2><div class="prose">${readme}</div></section>
 

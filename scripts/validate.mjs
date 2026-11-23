@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import {classifyFindings} from '../site/assets/evaluation-core.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = new Set(process.argv.slice(2));
@@ -50,6 +51,7 @@ if (ogdsDependency) {
 }
 
 const coverage = readRequired('data/coverage.json', 'coverage map');
+const manualTestsFile = readRequired('data/manual-tests.json', 'manual accessibility tests');
 const sandboxLock = readRequired('content/sandbox.lock.json', 'sandbox content lock');
 const contentPages = ['landing', 'forms'].map(id => readRequired(`content/pages/${id}.json`, `content page ${id}`)).filter(Boolean);
 if (coverage) {
@@ -115,6 +117,43 @@ for (const component of registry?.components || []) {
   for (const url of [component.reference, component.accessibility]) {
     if (!/^https?:\/\//.test(String(url))) add(`component ${component.slug} has a non-HTTP reference: ${url}`);
   }
+  if (!Array.isArray(component.states) || component.states.length === 0) {
+    add(`component ${component.slug} needs at least one declared evaluation state`);
+  } else {
+    const stateIds = new Set();
+    for (const state of component.states) {
+      if (!state.id || !/^[a-z0-9-]+$/.test(state.id)) add(`component ${component.slug} has an invalid state id: ${state.id}`);
+      if (stateIds.has(state.id)) add(`component ${component.slug} has duplicate state id: ${state.id}`);
+      stateIds.add(state.id);
+      if (!state.label) add(`component ${component.slug} state ${state.id} is missing a label`);
+      if (!state.description) add(`component ${component.slug} state ${state.id} is missing a description`);
+      if (state.interaction && state.interaction !== 'activate') add(`component ${component.slug} state ${state.id} has an unsupported interaction`);
+      if (state.id !== 'default') {
+        for (const variant of ['baseline', 'experiment']) {
+          const fixture = path.join(root, 'dist', 'fixture', `${component.slug}-${variant}.html`);
+          if (exists(fixture) && !fs.readFileSync(fixture, 'utf8').includes(`data-state="${state.id}"`)) {
+            add(`fixture ${component.slug}-${variant} does not mark declared state ${state.id}`);
+          }
+        }
+      }
+    }
+  }
+}
+
+if (manualTestsFile && manualTestsFile.schemaVersion !== 1) add(`manual-tests schemaVersion must be 1; found ${manualTestsFile.schemaVersion}`);
+const manualTests = manualTestsFile?.tests || [];
+const manualIds = new Set();
+for (const test of manualTests) {
+  if (!test.id || !/^[a-z0-9-]+$/.test(test.id)) add(`manual test has an invalid id: ${test.id}`);
+  if (manualIds.has(test.id)) add(`duplicate manual test id: ${test.id}`);
+  manualIds.add(test.id);
+  if (!componentSlugs.has(test.component)) add(`manual test ${test.id} references unknown component ${test.component}`);
+  for (const field of ['title', 'requirement', 'purpose', 'preconditions', 'expected', 'source']) {
+    if (!test[field]) add(`manual test ${test.id} is missing ${field}`);
+  }
+  if (!Array.isArray(test.steps) || test.steps.length < 2) add(`manual test ${test.id} needs at least two steps`);
+  if (!/^https?:\/\//.test(String(test.source))) add(`manual test ${test.id} source is not HTTP`);
+  if (Object.hasOwn(test, 'result')) add(`manual test ${test.id} contains a result; definitions must not claim completion`);
 }
 
 const issueMap = new Map((issues || []).map(issue => [issue.number, issue]));
@@ -210,6 +249,61 @@ if (evidence?.generated) {
   for (const page of pages) {
     if (page.result === 'collected-not-reviewed' && !page.report) add(`collected evidence page has no report: ${page.name}`);
     if (page.report && !exists(path.join(root, 'dist', 'evidence', 'latest', page.report))) add(`evidence report is missing from dist: ${page.report}`);
+    const states = page.states || [];
+    const stateNames = new Set(states.map(state => state.name));
+    if (stateNames.has('invalid') && !stateNames.has('valid') && !stateNames.has('valid-failed')) {
+      add(`page ${page.name} records an invalid form submission but no valid submission attempt`);
+    }
+    const claimedValid = states.find(state => state.name === 'valid');
+    if (claimedValid && claimedValid.confirmed !== true) {
+      add(`page ${page.name} claims a valid form state without confirmed success metadata; rerun npm run evidence`);
+    }
+    if (stateNames.has('valid-failed')) {
+      const message = `page ${page.name} did not confirm a valid form submission; coverage records a gap`;
+      if (allowEvidenceFailures) warn(message);
+      else add(message);
+    }
+  }
+  if (evidence.comparison?.pairs?.length) {
+    for (const pair of evidence.comparison.pairs) {
+      for (const side of ['baseline', 'experiment']) {
+        const relative = pair[side];
+        if (!relative) add(`comparison capture ${pair.component}/${pair.state}/${pair.condition} is missing the ${side} image`);
+        else if (!exists(path.join(root, 'dist', 'evidence', 'latest', relative))) add(`comparison capture is missing from dist: ${relative}`);
+      }
+      if (pair.width !== 900 || pair.height !== 900) add(`comparison capture ${pair.component}/${pair.state}/${pair.condition} is not 900x900`);
+    }
+  } else if (evidence.comparison?.error) {
+    warn(`comparison capture failed: ${evidence.comparison.error}`);
+  }
+  for (const baseline of pages.filter(page => page.axeStates?.length && page.name.includes('-baseline'))) {
+    const experimentRoute = baseline.name.replace('-baseline.html', '-experiment.html');
+    const experiment = pages.find(page => page.name === experimentRoute);
+    if (!experiment?.axeStates) continue;
+    const byState = new Map(experiment.axeStates.map(entry => [entry.state, entry]));
+    for (const state of baseline.axeStates) {
+      const counterpart = byState.get(state.state);
+      if (!counterpart) {
+        add(`state ${state.state} is axe-scanned in ${baseline.name} but not in ${experiment.name}`);
+        continue;
+      }
+      const classification = classifyFindings(state.violations || [], counterpart.violations || []);
+      for (const finding of classification.introduced) {
+        const message = `${experiment.name} introduces axe ${finding.id} (${finding.impact}) in state ${state.state}`;
+        if (allowEvidenceFailures) warn(message);
+        else add(message);
+      }
+    }
+    const initial = classifyFindings(baseline.axe || [], experiment.axe || []);
+    for (const finding of initial.introduced) {
+      const message = `${experiment.name} introduces axe ${finding.id} (${finding.impact}) on the initial state`;
+      if (allowEvidenceFailures) warn(message);
+      else add(message);
+    }
+  }
+  const alertStates = registry?.components?.find(component => component.slug === 'alert')?.states?.length || 0;
+  if (alertStates > 1 && !(evidence.comparison?.pairs || []).some(pair => pair.component === 'alert')) {
+    warn('alert declares evaluation states but the evidence run has no matched comparison captures');
   }
   if (evidence.failed > 0) {
     const message = `evidence run ${evidence.runId} reports ${evidence.failed} failed page(s)`;
@@ -225,6 +319,7 @@ for (const relative of [
   'docs/CONTRIBUTING-EXPERIMENTS.md',
   'docs/TESTING.md',
   'docs/EVIDENCE.md',
+  'docs/EVALUATION-GUIDE.md',
   'docs/DESIGN-DECISIONS.md',
   'docs/EXPERIMENT-DECISIONS.md',
   'docs/OGDS-PERMISSION.md',
@@ -235,6 +330,13 @@ for (const relative of [
   'AI_DISCLOSURE.md',
   'THIRD-PARTY.md'
 ]) requireFile(relative, 'required documentation');
+
+for (const relative of ['site/assets/base.css', 'site/assets/experiment.css', 'site/assets/fixture.css', 'site/assets/evaluation.css']) {
+  if (!exists(path.join(root, relative))) continue;
+  if (/forced-color-adjust\s*:\s*none/i.test(fs.readFileSync(path.join(root, relative), 'utf8'))) {
+    add(`${relative} opts out of forced-colour adjustment; review whether that hides meaning`);
+  }
+}
 
 if (warnings.length) console.warn(warnings.map(warning => `WARN: ${warning}`).join('\n'));
 if (problems.length) {

@@ -15,6 +15,12 @@ AI assistance was used for issue research, code generation, test scaffolding, ev
 - did not invent test results, screenshots, or transcript output;
 - recorded browser substitutions and blocked checks rather than hiding them.
 
+## Evaluation-interface pass
+
+On November 23, 2026, the same agent added the evaluation workspace: shared URL/state configuration, evaluator-versus-fixture preference separation, four comparison modes, browser-emulated capture pairs, per-state axe observations, state-level finding classification, the twelve-state Alert pilot, and local-only manual test recording. It also added unit and browser tests, documentation, and the evidence-collection changes.
+
+The agent did not record any manual test result, did not mark a state or experiment reviewed, and did not submit anything upstream. Manual results are intentionally absent from published evidence until a person performs the tests.
+
 ## Human review status
 
 **No human has reviewed or approved most experiments in this pass.** Dark mode was accepted as a lab experiment by Mike Gifford on 2026-11-20 and is recorded in `docs/EXPERIMENT-DECISIONS.md`; the other three experiments are pending. A passing build, a clean axe scan, and a Guidepup transcript are observations, not approval.

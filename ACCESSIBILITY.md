@@ -8,6 +8,11 @@
 - Disclosure controls are tested with real Enter and Space key presses; form and radio validation are tested through native browser behavior.
 - Focus-ring contrast and dark-mode radio/checkbox surface contrast are measured with computed styles, not assumed from token values.
 - The preferences panel is tested for keyboard operation, persistence, reset, text size, dark appearance, and no-JavaScript readability.
+- The evaluation workspace is tested for URL validation and fallbacks, four comparison modes, keyboard reveal/opacity sliders, 320 CSS-pixel layout, forced-colours visibility, focus-inspector output, copy-link reproduction, named presets, no-JavaScript fallback, and local manual-result export.
+- Evaluation tool display is separated from fixture conditions. Fixtures ignore stored lab preferences unless opened with `?prefs=1`, so a reviewer's tool setting cannot silently alter the component under test.
+- Forced colours and increased contrast are only labelled as browser-emulation captures. The live contrast control is explicitly described as fixture CSS, not browser preference emulation.
+- Alert declares twelve reproducible states. Axe runs on each state, and the evidence interface classifies baseline-only, experiment-only, and shared findings.
+- Manual test definitions cite the USWDS alert accessibility checklist and relevant WCAG requirements. A person must record a result; "not applicable" requires a justification; results stay local and are never submitted automatically.
 - RTL fixtures are tested for direction, language, a mixed-direction sample, logical border placement, and keyboard operation.
 - No-JavaScript fixture content stays readable and dead disclosure buttons are removed from the visual and accessibility tree.
 - Forced colors and reduced motion are exercised through browser emulation and recorded as emulation, not real-device testing.
@@ -15,6 +20,14 @@
 - The Evidence page distinguishes generated observations, collection failures, missing states, and human judgments.
 - The landing demo uses identical content on both sides and is tested for OGDS custom-element registration, a visible hybrid difference, keyboard-operable disclosures, and explicit “hybrid, not a full replacement” labelling. Guidepup transcripts do not traverse OGDS shadow DOM, so browser tests, axe, and screenshots are the primary evidence for that page.
 - The forms demo uses identical USWDS controls on both sides, visible required labels, native required attributes, an error summary that receives focus, inline errors associated with `aria-describedby`, `aria-invalid`, and a stable polite status region. The form remains native-validation operable when JavaScript is unavailable. OGDS is not used for form controls in beta.2.
+
+## What the evaluation workspace does not do
+
+- It does not provide a single accessibility score or percentage.
+- It does not treat a missing capture, failed collection, or unrecorded manual test as a pass.
+- It does not mirror keyboard input between panes.
+- It does not reproduce real screen-reader output, speech input, browser zoom, or Windows High Contrast Mode.
+- It does not replace the human decision log.
 
 ## What we do not claim
 

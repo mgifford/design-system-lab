@@ -7,7 +7,11 @@
 <p>The baseline is the pinned npm distribution plus authored fixture markup and a small fixture stylesheet. It is not a byte-for-byte copy of every official example. A newer USWDS release is reported by <code>npm run sources:latest</code> but never promoted automatically; promotion requires a reviewed decision.</p>
 
 <h2>What is compared</h2>
-<p>Baseline panes load the exact released CSS and JavaScript. Experimental panes load the same assets plus a separate MIT-licensed stylesheet and, where needed, extra markup. The comparison viewer does not mirror keyboard or mouse input between panes; independent pages are provided for real keyboard and assistive-technology testing.</p>
+<p>Baseline panes load the exact released CSS and JavaScript. Experimental panes load the same assets plus a separate MIT-licensed stylesheet and, where needed, extra markup. The evaluation workspace does not mirror keyboard or mouse input between panes; independent pages are provided for real keyboard and assistive-technology testing.</p>
+
+<h2>Evaluation workspace</h2>
+<p>The <a href="compare.html">evaluation workspace</a> is the main comparison surface. It supports side-by-side, reveal, onion, and pixel-difference views; declares component states in the registry; separates evaluation-tool display from fixture conditions; captures forced-colours and increased-contrast conditions with Playwright browser emulation; and links per-state axe observations to manual tests. Read <a href="docs/EVALUATION-GUIDE.html">the evaluation guide</a> for the URL schema, captured-condition limits, and manual-test workflow.</p>
+<p>A reviewed configuration can be shared in the URL, but a URL cannot reproduce the browser engine, a real screen reader, browser zoom, or Windows High Contrast Mode. Captured conditions are labelled as captures, not live emulation.</p>
 
 <h2>Experiment categories</h2>
 <ul class="clean">
