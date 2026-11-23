@@ -132,8 +132,11 @@ for (const component of registry?.components || []) {
       if (state.id !== 'default') {
         for (const variant of ['baseline', 'experiment']) {
           const fixture = path.join(root, 'dist', 'fixture', `${component.slug}-${variant}.html`);
-          if (exists(fixture) && !fs.readFileSync(fixture, 'utf8').includes(`data-state="${state.id}"`)) {
-            add(`fixture ${component.slug}-${variant} does not mark declared state ${state.id}`);
+          if (exists(fixture)) {
+            const html = fs.readFileSync(fixture, 'utf8');
+            const marked = html.includes(`data-state="${state.id}"`)
+              || new RegExp(`data-states="[^"]*\\b${state.id}\\b`).test(html);
+            if (!marked) add(`fixture ${component.slug}-${variant} does not mark declared state ${state.id}`);
           }
         }
       }

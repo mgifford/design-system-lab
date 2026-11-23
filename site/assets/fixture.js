@@ -54,6 +54,44 @@ if (requestedState && stateSections.length) {
   for (const section of stateSections) section.hidden = section.dataset.state !== requestedState;
 }
 
+// Accordion and banner state maps keep their fixture markup in one place.
+// Apply after the USWDS deferred script has initialized the component, otherwise
+// USWDS can re-apply the authored accordion state. Without JavaScript the
+// authored default state remains visible.
+const applyStateMaps = () => {
+  const accordionStates = document.querySelector('[data-state-open]');
+  if (requestedState && accordionStates) {
+    try {
+      const openPanels = JSON.parse(accordionStates.dataset.stateOpen)[requestedState];
+      if (Array.isArray(openPanels)) {
+        const buttons = [...accordionStates.querySelectorAll('.usa-accordion__button')];
+        buttons.forEach((button, index) => {
+          const open = openPanels.includes(index);
+          button.setAttribute('aria-expanded', String(open));
+          const panel = document.getElementById(button.getAttribute('aria-controls'));
+          if (panel) panel.hidden = !open;
+        });
+      }
+    } catch {}
+  }
+
+  const bannerStates = document.querySelector('[data-state-expanded]');
+  if (requestedState && bannerStates) {
+    try {
+      const expanded = JSON.parse(bannerStates.dataset.stateExpanded)[requestedState];
+      if (typeof expanded === 'boolean') {
+        const button = bannerStates.querySelector('.usa-banner__button');
+        const panel = document.getElementById('banner-info');
+        if (button) button.setAttribute('aria-expanded', String(expanded));
+        if (panel) panel.hidden = !expanded;
+      }
+    } catch {}
+  }
+};
+
+if (document.readyState === 'complete') applyStateMaps();
+else window.addEventListener('load', applyStateMaps, {once: true});
+
 // Local-only form validation. Nothing is sent anywhere.
 for (const form of document.querySelectorAll('form[data-local-validation]')) {
   const status = document.getElementById(form.dataset.statusTarget);

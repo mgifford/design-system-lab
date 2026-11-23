@@ -4,11 +4,11 @@
 const body = {
   accordion: `<h1 class="fixture-heading">Application eligibility</h1>
 <p>This example tests the disclosure's accessible name, expanded state and keyboard operation.</p>
-<div class="usa-accordion">
+<div class="usa-accordion" data-states="collapsed mixed expanded" data-state-open='{"collapsed":[],"mixed":[1],"expanded":[0,1]}'>
   <h2 class="usa-accordion__heading"><button class="usa-accordion__button" type="button" aria-expanded="false" aria-controls="faq-eligibility">Who can apply?</button></h2>
   <div id="faq-eligibility" class="usa-accordion__content usa-prose" hidden><p>People who meet the published eligibility criteria can apply. Review every requirement before continuing.</p><a href="#details">Read the detailed requirements</a></div>
   <h2 class="usa-accordion__heading"><button class="usa-accordion__button" type="button" aria-expanded="true" aria-controls="faq-documents">Which documents do I need?</button></h2>
-  <div id="faq-documents" class="usa-accordion__content usa-prose"><p>Provide proof of identity and evidence relevant to the service.</p></div>
+  <div id="faq-documents" class="usa-accordion__content usa-prose"><p>Provide proof of identity and evidence relevant to the service.</p><p>If a document is unavailable, save your progress and return when you have it. Do not submit a partial application solely to meet a deadline. The review team will explain which document is missing and how to provide it. If you need an alternative format, contact the service before you submit so the request can be handled without restarting the application.</p></div>
 </div><h2 id="details">Additional requirements</h2><p>Any prototype should preserve a visible focus indicator and reachable content when JavaScript fails.</p>`,
   alert: `<h1 class="fixture-heading">Alert variants and states</h1>
 <p>Each state uses the official USWDS alert markup. The experimental pane changes only the visual tokens; the text and structure are shared. Meaning must not depend on color alone.</p>
@@ -27,7 +27,7 @@ const body = {
   banner: `<h1 class="fixture-heading">Service identity banner</h1>
 <p>This is a neutral demonstration, not a claim that the lab is a government agency.</p>
 <section class="usa-banner" aria-label="Service identity information">
- <div class="usa-accordion"><header class="usa-banner__header"><div class="usa-banner__inner"><div class="grid-col-fill tablet:grid-col-auto"><p class="usa-banner__header-text">Demonstration service identity</p><p class="usa-banner__header-action" aria-hidden="true">About this banner</p></div><button type="button" class="usa-accordion__button usa-banner__button" aria-expanded="false" aria-controls="banner-info"><span class="usa-banner__button-text">How this banner works</span></button></div></header>
+ <div class="usa-accordion" data-states="collapsed expanded" data-state-expanded='{"collapsed":false,"expanded":true}'><header class="usa-banner__header"><div class="usa-banner__inner"><div class="grid-col-fill tablet:grid-col-auto"><p class="usa-banner__header-text">Demonstration service identity</p><p class="usa-banner__header-action" aria-hidden="true">About this banner</p></div><button type="button" class="usa-accordion__button usa-banner__button" aria-expanded="false" aria-controls="banner-info"><span class="usa-banner__button-text">How this banner works</span></button></div></header>
  <div class="usa-banner__content usa-accordion__content" id="banner-info" hidden><div class="grid-row grid-gap-lg"><div class="tablet:grid-col-6"><h2 class="usa-banner__heading">Example only</h2><p>In a production government service, banner content must accurately explain who operates the site.</p></div><div class="tablet:grid-col-6"><h2 class="usa-banner__heading">Verify the service</h2><p>A trustworthy site explains its official identity without using misleading branding.</p></div></div></div></div>
 </section>
 <p>Test logical spacing and expansion in both left-to-right and right-to-left layouts.</p>

@@ -210,6 +210,196 @@
       "requiresAssistiveTechnology": true,
       "conditional": false,
       "notes": "Record the screen reader, browser, operating system, and exact announcement."
+    },
+    {
+      "id": "accordion-keyboard",
+      "component": "accordion",
+      "title": "Accordion buttons toggle with Enter and Space and keep focus",
+      "requirement": "WCAG 2.1.1 Keyboard, 4.1.2 Name, Role, Value",
+      "source": "https://designsystem.digital.gov/components/accordion/accessibility-tests/",
+      "purpose": "Confirm that each disclosure is a native button and that keyboard activation changes state without moving focus.",
+      "preconditions": "Open the accordion fixture in a real browser. Start with both panels closed.",
+      "steps": [
+        "Tab to the first disclosure button.",
+        "Press Enter; check that the panel opens and focus stays on the button.",
+        "Press Space; check that it closes and focus stays.",
+        "Repeat for the second button and record the exact state change."
+      ],
+      "expected": "Enter and Space both toggle the panel, aria-expanded follows, and focus remains on the control.",
+      "requiresAssistiveTechnology": false,
+      "conditional": false,
+      "notes": "The automated keyboard test covers this in Chromium; a person still needs to confirm the experience."
+    },
+    {
+      "id": "accordion-state",
+      "component": "accordion",
+      "title": "Expanded state is exposed and matches the visible panel",
+      "requirement": "WCAG 4.1.2 Name, Role, Value",
+      "source": "https://designsystem.digital.gov/components/accordion/accessibility-tests/",
+      "purpose": "Check that assistive technology receives the same expanded/collapsed state a sighted person sees.",
+      "preconditions": "Use a real screen reader or inspect the accessibility tree while opening and closing each panel.",
+      "steps": [
+        "Open the first panel.",
+        "Read the button state and count how many panels are visible.",
+        "Close it and repeat.",
+        "Repeat with both panels open."
+      ],
+      "expected": "The announced expanded state and the number of visible panels agree in every state.",
+      "requiresAssistiveTechnology": true,
+      "conditional": false,
+      "notes": "Guidepup transcripts support investigation but do not count as this human test."
+    },
+    {
+      "id": "accordion-reading-order",
+      "component": "accordion",
+      "title": "Screen reader reads heading, button, and panel in logical order",
+      "requirement": "WCAG 1.3.2 Meaningful Sequence",
+      "source": "https://designsystem.digital.gov/components/accordion/accessibility-tests/",
+      "purpose": "Check that the heading text and the disclosure control are announced in an order that makes sense.",
+      "preconditions": "Use a real screen reader. Open the fixture and move through it with reading commands.",
+      "steps": [
+        "Read the page heading and the first accordion heading.",
+        "Activate the button and read into the panel.",
+        "Continue to the second heading and panel.",
+        "Record any duplicated or skipped heading."
+      ],
+      "expected": "Each heading precedes its button, panel content follows the button, and no content is announced twice or skipped.",
+      "requiresAssistiveTechnology": true,
+      "conditional": false,
+      "notes": "A DOM snapshot can suggest a problem but not prove the spoken order."
+    },
+    {
+      "id": "accordion-reflow",
+      "component": "accordion",
+      "title": "Accordion content survives large text, text spacing, and a narrow width",
+      "requirement": "WCAG 1.4.10 Reflow, 1.4.12 Text Spacing",
+      "source": "https://designsystem.digital.gov/components/accordion/accessibility-tests/",
+      "purpose": "Check that long panel content and the control label do not clip or overlap when space is constrained.",
+      "preconditions": "Use the 320 CSS-px width, 200% text, and the WCAG text-spacing preset, then optionally real browser zoom.",
+      "steps": [
+        "Open both panels.",
+        "Set 320 px width and 200% text.",
+        "Apply the text-spacing preset.",
+        "Read the long panel and the link to the end."
+      ],
+      "expected": "Text wraps, the link remains reachable, and no control or content is cut off or overlapped.",
+      "requiresAssistiveTechnology": false,
+      "conditional": false,
+      "notes": "CSS scaling is not browser zoom; record which condition was used."
+    },
+    {
+      "id": "accordion-no-js",
+      "component": "accordion",
+      "title": "Accordion content remains readable when JavaScript is unavailable",
+      "requirement": "Progressive enhancement / WCAG 1.3.1 Info and Relationships",
+      "source": "https://designsystem.digital.gov/components/accordion/accessibility-tests/",
+      "purpose": "Confirm that hiding content behind a dead control is not the only no-script experience.",
+      "preconditions": "Disable JavaScript in the browser and open the accordion fixture.",
+      "steps": [
+        "Open the fixture with JavaScript disabled.",
+        "Check that panel content is visible.",
+        "Check that no visible button claims a collapsed state without working.",
+        "Read the long panel."
+      ],
+      "expected": "The content is readable and no dead disclosure control is presented.",
+      "requiresAssistiveTechnology": false,
+      "conditional": false,
+      "notes": "The lab fixture stylesheet expands hidden panels and hides dead buttons without JavaScript."
+    },
+    {
+      "id": "banner-keyboard",
+      "component": "banner",
+      "title": "Banner disclosure is keyboard operable and keeps its name",
+      "requirement": "WCAG 2.1.1 Keyboard, 2.4.4 Link Purpose, 4.1.2 Name, Role, Value",
+      "source": "https://designsystem.digital.gov/components/banner/accessibility-tests/",
+      "purpose": "Check that the banner can be expanded without a mouse and that the control has an understandable name.",
+      "preconditions": "Open the banner fixture in a real browser. Start collapsed.",
+      "steps": [
+        "Tab to the banner disclosure button.",
+        "Press Enter; confirm the panel opens and focus stays.",
+        "Press Space; confirm it closes.",
+        "Read the accessible name of the button."
+      ],
+      "expected": "The control is a native button with a meaningful name, toggles with Enter and Space, and keeps focus.",
+      "requiresAssistiveTechnology": false,
+      "conditional": false,
+      "notes": "The automated test covers Chromium; a person still confirms the experience."
+    },
+    {
+      "id": "banner-meaning",
+      "component": "banner",
+      "title": "Banner communicates service identity without color or icon",
+      "requirement": "WCAG 1.4.1 Use of Color, 2.4.6 Headings and Labels",
+      "source": "https://designsystem.digital.gov/components/banner/accessibility-tests/",
+      "purpose": "Check that the banner text explains the site identity without relying on the flag icon or color.",
+      "preconditions": "View the banner with color ignored and read only the text.",
+      "steps": [
+        "Read the banner prompt and the action label.",
+        "Open the panel and read both headings and bodies.",
+        "Check whether the text alone says what the banner is for.",
+        "Repeat without the icon visible."
+      ],
+      "expected": "The text explains the service identity and the purpose of the disclosure; color and icon are supplementary.",
+      "requiresAssistiveTechnology": false,
+      "conditional": false,
+      "notes": "Banner content is implementation-specific; this lab uses neutral demonstration text."
+    },
+    {
+      "id": "banner-content",
+      "component": "banner",
+      "title": "Expanded banner content is readable in a logical order",
+      "requirement": "WCAG 1.3.2 Meaningful Sequence, 4.1.3 Status Messages",
+      "source": "https://designsystem.digital.gov/components/banner/accessibility-tests/",
+      "purpose": "Check that the two explanatory panels are reachable and ordered as presented.",
+      "preconditions": "Use a real screen reader. Expand the banner.",
+      "steps": [
+        "Expand the banner with the keyboard.",
+        "Read the panel headings and bodies in order.",
+        "Check that no focus is stolen after expansion.",
+        "Record the exact announcement."
+      ],
+      "expected": "Both panels are announced in the visual order, focus stays on the trigger, and the expansion is not announced as an urgent alert.",
+      "requiresAssistiveTechnology": true,
+      "conditional": false,
+      "notes": "A banner disclosure is not a live status message."
+    },
+    {
+      "id": "banner-contrast-focus",
+      "component": "banner",
+      "title": "Banner text and focus indicator meet contrast requirements",
+      "requirement": "WCAG 1.4.3 Contrast, 1.4.11 Non-text Contrast, 2.4.7 Focus Visible",
+      "source": "https://designsystem.digital.gov/components/banner/accessibility-tests/",
+      "purpose": "Measure the banner text, the action label, and the keyboard focus indicator on the rendered surface.",
+      "preconditions": "Use a contrast analyzer and the keyboard. Record the tool and the WCAG metric.",
+      "steps": [
+        "Measure the prompt and action text against the banner background.",
+        "Measure the expanded panel text.",
+        "Focus the disclosure button and measure the indicator against its adjacent colors.",
+        "Repeat in dark and forced-colours emulation where available."
+      ],
+      "expected": "Body text reaches at least 4.5:1, large text at least 3:1, and the focus indicator is clearly distinguishable.",
+      "requiresAssistiveTechnology": false,
+      "conditional": false,
+      "notes": "Forced colours and dark mode are captured by browser emulation, not a real high-contrast device."
+    },
+    {
+      "id": "banner-no-js",
+      "component": "banner",
+      "title": "Banner content is reachable when JavaScript is unavailable",
+      "requirement": "Progressive enhancement / WCAG 1.3.1 Info and Relationships",
+      "source": "https://designsystem.digital.gov/components/banner/accessibility-tests/",
+      "purpose": "Confirm that the banner does not hide its only explanation behind a dead disclosure control.",
+      "preconditions": "Disable JavaScript in the browser and open the banner fixture.",
+      "steps": [
+        "Open the fixture with JavaScript disabled.",
+        "Check that the banner panels are visible.",
+        "Check that no dead banner button is presented.",
+        "Read both panel headings."
+      ],
+      "expected": "The banner content is readable without JavaScript and no non-working disclosure control is shown.",
+      "requiresAssistiveTechnology": false,
+      "conditional": false,
+      "notes": "The fixture stylesheet handles this fallback; production implementations must do the same."
     }
   ]
 }

@@ -72,14 +72,14 @@ The experiments index records each experiment's declared user preferences, acces
 
 ## Component states
 
-States are declared in `data/registry.json` on each component. Alert is the first complete state model: informational, success, warning, error, emergency, no heading, link, long content, Arabic, dynamically inserted, dynamically updated, and multiple.
+States are declared in `data/registry.json` on each component. Alert has twelve states (informational, success, warning, error, emergency, no heading, link, long content, Arabic, dynamically inserted, dynamically updated, and multiple). Accordion has collapsed, one-open/one-closed, and both-expanded states. Banner has collapsed and expanded states.
 
 Each state is:
 
 - declared once in the registry;
-- marked in the fixture with `data-state="<id>"`;
+- marked in the fixture with `data-state="<id>"` wrappers, or a `data-states`/state-map attribute for accordion and banner;
 - selectable in the workspace and reproducible with `?state=<id>`;
-- scanned by axe during evidence collection after any required activation, under the default light fixture condition;
+- scanned by axe during evidence collection after any required activation or state-map application, under the default light fixture condition;
 - captured for baseline and experiment where the capture matrix applies.
 
 A state without fixture markup is a validation error. Screenshots of one state are never evidence for another state.
@@ -144,7 +144,7 @@ Important interpretation rules:
 
 ## Manual tests
 
-Manual tests live in `data/manual-tests.json`. The alert pilot uses the USWDS alert accessibility checklist plus a dynamic status-message test. Each definition contains the requirement, source, purpose, preconditions, steps, expected result, assistive-technology flag, and conditional status.
+Manual tests live in `data/manual-tests.json`. Alert, Accordion, and Banner use the official USWDS component accessibility checklists; Alert also has dynamic status-message tests. Each definition contains the requirement, source, purpose, preconditions, steps, expected result, assistive-technology flag, and conditional status.
 
 Record a result only after performing the test:
 
@@ -158,7 +158,7 @@ Guidepup transcripts are a virtual screen reader over a DOM snapshot. They suppo
 ## Adding evaluation support for a component
 
 1. Add or extend `states` in the component's registry entry. Use stable slugs and describe the action needed to reach the state.
-2. Add matching `data-state` wrappers in `scripts/components.mjs`. Interactive states also need a local-only action.
+2. Add matching `data-state` wrappers in `scripts/components.mjs`. For a component whose state is an open/closed configuration, use a `data-states` map applied after the USWDS script initializes. Interactive states also need a local-only action.
 3. Add component-specific human tests to `data/manual-tests.json`, citing the official USWDS accessibility tests and the relevant WCAG requirement.
 4. Add deterministic Playwright checks for the new state and interactions.
 5. Run `npm run check`, `npm run test:browser:chromium`, then `npm run evidence`. Captures for every registered component and state are generated automatically under all four browser conditions. Performance evidence is collected for every baseline/experiment fixture pair with three cold-context runs and 4× CPU throttling; hard byte/request/DOM budgets are in `data/performance-budgets.json`.
