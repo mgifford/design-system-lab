@@ -68,7 +68,7 @@ test.describe('Guidepup automated VoiceOver (not human testing)', () => {
     await page.goto('/fixture/alert-experiment.html?state=error');
     await page.getByRole('heading', {name: 'Some information is missing'}).waitFor();
     await voiceOver.navigateToWebContent();
-    for (let index = 0; index < 25; index += 1) await voiceOver.next();
+    for (let index = 0; index < 10; index += 1) await voiceOver.next();
     const phrases = await transcript(testInfo, voiceOver, 'alert-static-error');
     expect(phrases.join(' ')).toMatch(/Some information is missing/i);
     expect(phrases.join(' ')).toMatch(/Enter a required response/i);
