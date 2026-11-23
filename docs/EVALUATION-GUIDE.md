@@ -72,7 +72,7 @@ The experiments index records each experiment's declared user preferences, acces
 
 ## Component states
 
-States are declared in `data/registry.json` on each component. Alert has twelve states (informational, success, warning, error, emergency, no heading, link, long content, Arabic, dynamically inserted, dynamically updated, and multiple). Accordion has collapsed, one-open/one-closed, and both-expanded states. Banner has collapsed and expanded states.
+States are declared in `data/registry.json` on each component. Alert has twelve states (informational, success, warning, error, emergency, no heading, link, long content, Arabic, dynamically inserted, dynamically updated, and multiple). Accordion has collapsed, one-open/one-closed, and both-expanded states. Banner has collapsed and expanded states. Form has empty, invalid, filled, and valid states. Radio validation has empty, invalid, selected, and valid states.
 
 Each state is:
 
@@ -144,7 +144,7 @@ Important interpretation rules:
 
 ## Manual tests
 
-Manual tests live in `data/manual-tests.json`. Alert, Accordion, and Banner use the official USWDS component accessibility checklists; Alert also has dynamic status-message tests. Each definition contains the requirement, source, purpose, preconditions, steps, expected result, assistive-technology flag, and conditional status.
+Manual tests live in `data/manual-tests.json`. Alert, Accordion, Banner, Form, and Radio validation use the official USWDS component accessibility checklists; Alert also has dynamic status-message tests. Each definition contains the requirement, source, purpose, preconditions, steps, expected result, assistive-technology flag, and conditional status.
 
 Record a result only after performing the test:
 

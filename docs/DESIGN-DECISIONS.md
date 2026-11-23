@@ -40,7 +40,7 @@ Live fixture appearance, motion, text size, spacing, and contrast are authored C
 
 ## Component states live in the registry
 
-Each component declares its evaluation states in `data/registry.json`. Fixtures mark the same ids with `data-state` wrappers or, for components whose state is an open/closed configuration, a `data-states` map applied after the USWDS script initializes. Validation fails if a declared state is not reproducible. Alert, Accordion, and Banner have complete state models; Form and Radio validation still expose an initial state. A state can declare `interaction: "activate"` so evidence collection and capture know how to reach it. This avoids a second state registry in test code.
+Each component declares its evaluation states in `data/registry.json`. Fixtures mark the same ids with `data-state` wrappers or, for components whose state is an open/closed configuration, a `data-states` map applied after the USWDS script initializes. Validation fails if a declared state is not reproducible. Alert, Accordion, Banner, Form, and Radio validation have complete state models. A state can declare `interaction: "activate"` so evidence collection and capture know how to reach it. This avoids a second state registry in test code.
 
 ## Side-by-side shares the available width
 

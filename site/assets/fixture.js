@@ -87,6 +87,56 @@ const applyStateMaps = () => {
       }
     } catch {}
   }
+
+  const actionRoot = document.querySelector('[data-state-actions]');
+  if (requestedState && actionRoot) {
+    try {
+      const action = JSON.parse(actionRoot.dataset.stateActions)[requestedState];
+      if (action && action !== 'none') {
+        const form = actionRoot.matches('form') ? actionRoot : actionRoot.querySelector('form');
+        if (form) {
+          const setValue = (control, value) => {
+            control.value = value;
+            control.dispatchEvent(new Event('input', {bubbles: true}));
+            control.dispatchEvent(new Event('change', {bubbles: true}));
+          };
+          const controls = [...form.querySelectorAll('input, select, textarea')];
+          const checkRequiredRadios = () => {
+            const groups = new Map();
+            for (const control of controls.filter(item => item.type === 'radio' && item.required)) {
+              if (!groups.has(control.name)) groups.set(control.name, controls.filter(item => item.type === 'radio' && item.name === control.name));
+            }
+            for (const group of groups.values()) {
+              if (!group.some(control => control.checked)) group[0].click();
+            }
+          };
+          const fillRequired = () => {
+            checkRequiredRadios();
+            for (const control of controls) {
+              if (control.disabled || control.type === 'hidden' || control.type === 'radio') continue;
+              if (control.type === 'checkbox') {
+                if (control.required && !control.checked) control.click();
+                continue;
+              }
+              if (!control.required) continue;
+              if (control.tagName === 'SELECT') {
+                const option = [...control.options].find(item => item.value !== '' && !item.disabled);
+                if (option) setValue(control, option.value);
+              } else if (control.type === 'email') setValue(control, 'sample@example.gov');
+              else if (control.type === 'tel') setValue(control, '555-555-5555');
+              else setValue(control, 'Sample reference');
+            }
+          };
+          if (action === 'check') checkRequiredRadios();
+          if (action === 'fill' || action === 'fill-submit') fillRequired();
+          if (action === 'submit' || action === 'fill-submit') {
+            if (form.requestSubmit) form.requestSubmit();
+            else form.dispatchEvent(new Event('submit', {bubbles: true, cancelable: true}));
+          }
+        }
+      }
+    } catch {}
+  }
 };
 
 if (document.readyState === 'complete') applyStateMaps();
