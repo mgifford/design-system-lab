@@ -19,3 +19,13 @@ html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-moti
 .offline .usa-alert{padding:1rem;border-left:8px solid #1a4480;background:#e7f6f8;margin:1rem 0}.offline .usa-alert--warning{background:#faf3d1;border-color:#936f38}.offline .usa-alert--error{background:#f8e1de;border-color:#b50909}
 .offline .usa-banner{background:#eee;padding:.6rem}.offline .usa-banner__header{padding:.5rem}.offline .usa-button{background:#005ea2;color:#fff;border:0;padding:.75rem 1rem;font:inherit;cursor:pointer}.offline .usa-input{padding:.6rem;width:100%;max-width:28rem}.offline .usa-label{display:block;margin:.7rem 0 .2rem;font-weight:700}
 html:not(.js) .js-only{display:none}
+
+/* Evaluation fixture conditions. These are authored test conditions, not
+ * upstream USWDS behaviour. Captured PNGs are produced by the evidence run. */
+html[data-text-size="200"]{font-size:200%}
+html[data-spacing="wcag"] *{line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important}
+html[data-spacing="wcag"] p{margin-bottom:2em!important}
+html[data-spacing="wcag"] .usa-alert__text{margin-bottom:2em!important}
+[data-state]{margin:0 0 1.5rem}
+html[data-capture="true"] .fixture-label,html[data-capture="true"] .fixture-note{display:none!important}
+html[data-capture="true"] body{padding:1rem}

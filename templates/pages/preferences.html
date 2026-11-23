@@ -58,9 +58,9 @@
 
 <section aria-labelledby="preview-title">
   <h2 class="section-title" id="preview-title">Preview</h2>
-  <p>The preview is a separate experimental accordion fixture. It reads the saved preference when it loads; changing a setting reloads the frame. Open it independently for keyboard testing.</p>
-  <p><a href="fixture/accordion-experiment.html" target="_blank" rel="noopener">Open the preview fixture in a new tab</a></p>
-  <iframe id="prefs-preview-frame" class="prefs-preview" title="Experimental accordion preview using saved preferences" src="fixture/accordion-experiment.html"></iframe>
+  <p>The preview is a separate experimental accordion fixture opened with <code>?prefs=1</code>. Only that explicit opt-in reads the saved preference; evaluation fixtures ignore it so tool settings cannot leak into the component under test. Open it independently for keyboard testing.</p>
+  <p><a href="fixture/accordion-experiment.html?prefs=1" target="_blank" rel="noopener">Open the preview fixture in a new tab</a></p>
+  <iframe id="prefs-preview-frame" class="prefs-preview" title="Experimental accordion preview using saved preferences" src="fixture/accordion-experiment.html?prefs=1"></iframe>
 </section>
 
 <section aria-labelledby="settings-title">

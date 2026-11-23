@@ -1,26 +1,60 @@
-// No framework. Markup remains in the HTML and survives when JavaScript is disabled.
+/*
+ * Fixture runtime.
+ *
+ * URL parameters are the authoritative fixture conditions. Stored evaluator
+ * preferences are applied only when `?prefs=1` is present (used by the
+ * preferences-panel preview), so the evaluation workspace can keep the tool's
+ * display settings separate from the component under test.
+ */
 const params = new URLSearchParams(location.search);
-const validTheme = ['light', 'dark', 'system'];
-let prefs = {};
-try {
-  prefs = JSON.parse(localStorage.getItem('uswds-lab-prefs') || '{}');
-} catch {
-  prefs = {};
+const root = document.documentElement;
+
+const read = (key, allowed, fallback) => {
+  const value = params.get(key);
+  return allowed.includes(value) ? value : fallback;
+};
+
+const theme = read('theme', ['system', 'light', 'dark'], 'system');
+const direction = read('dir', ['ltr', 'rtl'], 'ltr');
+const language = read('lang', ['en', 'ar'], 'en');
+const textSize = read('textSize', ['default', 'large', 'x-large', '200'], 'default');
+const contrast = read('contrast', ['normal', 'more'], 'normal');
+const motion = read('motion', ['system', 'reduce'], 'system');
+const spacing = read('spacing', ['default', 'wcag'], 'default');
+const requestedState = params.get('state');
+
+root.dataset.mode = theme;
+root.dir = direction;
+if (language === 'ar') root.lang = 'ar';
+if (textSize !== 'default') root.dataset.textSize = textSize;
+if (contrast === 'more') root.dataset.contrast = 'more';
+if (motion === 'reduce') root.dataset.motion = 'reduce';
+if (spacing === 'wcag') root.dataset.spacing = 'wcag';
+if (params.get('capture') === '1') root.dataset.capture = 'true';
+
+// Explicit opt-in only: the preferences-panel experiment preview wants the
+// saved lab preference; evaluation fixtures must not inherit it.
+if (params.get('prefs') === '1') {
+  let prefs = {};
+  try {
+    prefs = JSON.parse(localStorage.getItem('uswds-lab-prefs') || '{}');
+  } catch {
+    prefs = {};
+  }
+  if (!params.has('theme') && ['light', 'dark'].includes(prefs.theme)) root.dataset.mode = prefs.theme;
+  if (!params.has('textSize') && ['large', 'x-large'].includes(prefs.textSize)) root.dataset.textSize = prefs.textSize;
+  if (!params.has('contrast') && prefs.contrast === 'more') root.dataset.contrast = 'more';
+  if (!params.has('motion') && prefs.motion === 'reduce') root.dataset.motion = 'reduce';
 }
-const requestedTheme = params.get('theme');
-const storedTheme = ['light', 'dark'].includes(prefs.theme) ? prefs.theme : 'system';
-const theme = validTheme.includes(requestedTheme) ? requestedTheme : storedTheme;
-const direction = params.get('dir') === 'rtl' ? 'rtl' : 'ltr';
-const language = params.get('lang');
 
-document.documentElement.dataset.mode = theme;
-document.documentElement.dir = direction;
-if (language === 'ar') document.documentElement.lang = 'ar';
-if (prefs.textSize === 'large' || prefs.textSize === 'x-large') document.documentElement.dataset.textSize = prefs.textSize;
-if (prefs.contrast === 'more') document.documentElement.dataset.contrast = 'more';
-if (prefs.motion === 'reduce') document.documentElement.dataset.motion = 'reduce';
+// Component-state model: every declared state is a wrapper with data-state.
+// Without JavaScript all states remain visible, which is a readable fallback.
+const stateSections = [...document.querySelectorAll('[data-state]')];
+if (requestedState && stateSections.length) {
+  for (const section of stateSections) section.hidden = section.dataset.state !== requestedState;
+}
 
-// Form submission is intentionally local: never send test input to a government endpoint.
+// Local-only form validation. Nothing is sent anywhere.
 for (const form of document.querySelectorAll('form[data-local-validation]')) {
   const status = document.getElementById(form.dataset.statusTarget);
   form.addEventListener('submit', event => {
@@ -36,7 +70,30 @@ for (const form of document.querySelectorAll('form[data-local-validation]')) {
   });
 }
 
-// An offline simulation is not USWDS and therefore uses an explicit fallback handler.
+// Local-only demonstrations for dynamic alert states. Nothing is sent anywhere.
+for (const button of document.querySelectorAll('[data-alert-action]')) {
+  button.addEventListener('click', () => {
+    const action = button.dataset.alertAction;
+    const region = document.getElementById(button.getAttribute('aria-controls'));
+    if (!region) return;
+    if (action === 'insert') {
+      const alert = document.createElement('div');
+      alert.className = 'usa-alert usa-alert--success';
+      alert.innerHTML = '<div class="usa-alert__body"><h3 class="usa-alert__heading">Application saved</h3><p class="usa-alert__text">Your reference number is <strong>LAB-2026-0147</strong>. Keep it for your records.</p></div>';
+      region.replaceChildren(alert);
+    } else if (action === 'update') {
+      const alert = region.querySelector('.usa-alert');
+      if (alert) {
+        const text = alert.querySelector('.usa-alert__text');
+        if (text) text.textContent = `Review complete. One document is missing as of ${new Date().toLocaleTimeString('en', {hour: '2-digit', minute: '2-digit'})}.`;
+        const heading = alert.querySelector('.usa-alert__heading');
+        if (heading) heading.textContent = 'Review updated';
+      }
+    }
+  });
+}
+
+// The offline simulation is not USWDS, so it needs an explicit fallback handler.
 if (document.body.classList.contains('offline')) {
   for (const button of document.querySelectorAll('.usa-accordion__button[aria-controls]')) {
     button.addEventListener('click', () => {

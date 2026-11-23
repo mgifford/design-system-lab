@@ -36,6 +36,19 @@ npm run validate
 
 The registry entry must include the id, title, category, status, summary, components, related issues, scenarios, demo route, document paths, review status, and AI-assistance disclosure.
 
+## Evaluation support
+
+An experiment that changes a component should be evaluable, not only viewable.
+
+1. Declare the component's evaluation states in `data/registry.json` (`states`) and mark the same ids with `data-state` in `scripts/components.mjs`. Validation fails when a declared state has no fixture marker.
+2. If a state needs an action to reach it, set `"interaction": "activate"` and make the action local-only. Evidence collection and screenshot capture will perform it.
+3. Add component-specific human tests to `data/manual-tests.json`. Cite the official USWDS accessibility tests and the WCAG requirement. Never add a result to the definition file.
+4. Add deterministic Playwright coverage for the state, the keyboard path, and any visible state change. Do not treat a Guidepup transcript as real assistive-technology testing.
+5. Run `npm run evidence` so state-level axe and matched captures are generated, then inspect `compare.html` for the component and state.
+6. Update the evaluation guide only if the shared model changes; link to it instead of duplicating the instructions.
+
+A component with only an initial state is explicitly marked as not yet modelled. Do not invent states that the fixture cannot reproduce.
+
 ## Lifecycle
 
 `proposed` → `investigating` → `prototype` → `evidence-collected` → `ready-for-review` → `changes-requested` or `accepted` → `submitted-upstream` → `adopted-upstream`, or `deferred` / `archived`.

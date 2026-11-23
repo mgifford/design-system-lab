@@ -8,7 +8,7 @@ A USWDS release is evidence, not a moving target. `data/sources.lock.json` pins 
 
 ## The registry is canonical
 
-Components, experiments, types, statuses, scenarios, and documentation paths live in `data/registry.json`. Generated pages, fixtures, the comparison viewer, MCP scenarios, and validation derive from it. Per-experiment `experiment.json` files were rejected because they would duplicate registry metadata.
+Components, experiments, types, statuses, scenarios, and documentation paths live in `data/registry.json`. Generated pages, fixtures, the evaluation workspace, MCP scenarios, and validation derive from it. Per-experiment `experiment.json` files were rejected because they would duplicate registry metadata.
 
 ## Baseline and experiment are separate
 
@@ -30,9 +30,29 @@ The lab uses semantic custom properties, not a claim that a short `--fx-*` list 
 
 The preferences panel uses radios, selects, a fieldset, and a status region. The radio-validation experiment does not add `aria-required` or `role="radiogroup"` to native controls. No third-party overlay is used.
 
-## Onion mode is visual only
+## Evaluator preferences are separate from fixture conditions
 
-The onion overlay sets both iframes `inert` and `aria-hidden` so focus cannot enter a covered pane. Users are directed to the independent pages for keyboard and assistive-technology testing. The viewer does not mirror input.
+The evaluation tool is itself an interface that must meet accessibility needs. Its appearance controls write only to `uswds-lab-prefs` and affect the shell. Fixture conditions travel as validated URL parameters to the components under test. Fixtures read stored lab preferences only with an explicit `?prefs=1` (the preferences-panel preview), so a reviewer's tool settings cannot become an accidental test condition. Applying the same conditions to both panes is the controlled comparison.
+
+## CSS approximations are not browser emulation
+
+Live fixture appearance, motion, text size, spacing, and contrast are authored CSS conditions. Forced colours and increased contrast are generated as Playwright browser-emulation captures at a fixed 900 × 900 viewport. The interface labels the distinction and locks fixture controls in captured modes. It never calls a CSS class operating-system emulation.
+
+## Component states live in the registry
+
+Each component declares its evaluation states in `data/registry.json`. Fixtures mark the same ids with `data-state`, and validation fails if a declared state is not reproducible. Alert is the first complete state model. A state can declare `interaction: "activate"` so evidence collection and capture know how to reach it. This avoids a second state registry in test code.
+
+## Reveal and onion are visual only
+
+The reveal divider and onion overlay set both iframes `inert` and `aria-hidden` so focus cannot enter a covered or clipped pane. Users are directed to side-by-side mode or the independent pages for keyboard and assistive-technology testing. The viewer does not mirror input.
+
+## Pixel difference is a visual measurement
+
+Difference mode compares matched Playwright captures in the browser and reports changed pixels, a percentage, and a bounding box. It explicitly does not report an accessibility score. Antialiasing, font rendering, and encoding affect the count. A missing capture pair is a coverage gap.
+
+## Manual results are local and human-owned
+
+Manual test definitions live in `data/manual-tests.json` without results. The evaluation workspace stores a reviewer's records in their browser and exports JSON or Markdown. Published evidence records zero completed manual tests. No result is auto-submitted, auto-committed, or inferred from Guidepup simulation.
 
 ## Evidence is honest, not flattering
 

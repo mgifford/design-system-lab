@@ -9,9 +9,12 @@
 - git revision, baseline release, and run id;
 - uncaught page errors;
 - Guidepup virtual transcripts for initial and state-specific conditions;
+- invalid and valid form attempts; a `valid` state is recorded only when the status region confirms the submission. An unconfirmed attempt is recorded as `valid-failed`, shown as a gap in coverage, and fails validation unless `--allow-evidence-failures` is used;
 - an ARIA inventory;
 - screenshots for light, dark, and selected states;
-- axe results for the initial route state (state-specific axe is not collected);
+- axe results for the initial route state and for every declared component state, after any required activation, under the default light fixture condition;
+- matched baseline/experiment screenshots at 900 × 900 for light, dark, forced-colours, and increased-contrast browser conditions;
+- per-state violation lists so the build can classify baseline-only, experiment-only, and shared findings;
 - a pass/fail collection result for each route.
 
 ## Files
@@ -29,6 +32,16 @@ reports/runs/<run-id>/
 ```
 
 The build publishes `reports/latest` under `dist/evidence/latest` and renders each Markdown file as semantic HTML. The Evidence page links to the summary, coverage matrix, per-route reports, and screenshots.
+
+## Captures and conditions
+
+Captured images live under `pairs/<component>/<state>--<condition>--<side>.png` in the current run. They are produced in one browser engine with a fixed 900 × 900 viewport, device scale factor 1, default text, LTR, default spacing, and no reduced motion. Only the listed browser condition varies. Forced colours and increased contrast are Playwright browser emulation, not real Windows High Contrast Mode.
+
+The build copies captures into `dist/evidence/latest` and the evaluation workspace decodes them in the browser for pixel comparison. A missing pair is displayed as a coverage gap. Pixel counts are visual measurements, never accessibility scores.
+
+## Manual results
+
+`data/manual-tests.json` contains definitions only. The evaluation workspace stores results in the reviewer's browser and exports JSON or Markdown. Published evidence records zero completed manual tests; a human must perform the test and attach the export to the review record. The decision log remains the approval surface.
 
 ## Immutability and stale evidence
 

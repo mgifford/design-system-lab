@@ -112,6 +112,13 @@
         4577,
         5817,
         5861
+      ],
+      "states": [
+        {
+          "id": "default",
+          "label": "Initial rendering",
+          "description": "The fixture default. Component-specific states are not modelled yet; use the keyboard and manual-test guidance."
+        }
       ]
     },
     {
@@ -154,8 +161,9 @@
         "Test forced colors and zoom."
       ],
       "limitations": [
-        "The alert variants are static examples; no live-region announcement is claimed.",
-        "The experimental theme does not yet recolor the upstream alert icon."
+        "Dynamic and updated alerts are local demonstrations; announcement behaviour has not been verified with a real screen reader.",
+        "The experimental theme does not yet recolour the upstream alert icon.",
+        "The Arabic state is one direction and language sample; native-language review is outstanding."
       ],
       "guide": "docs/IMPLEMENTATION-GUIDE.md#alert",
       "reference": "https://designsystem.digital.gov/components/alert/",
@@ -164,6 +172,70 @@
       "issues": [
         5069,
         4407
+      ],
+      "states": [
+        {
+          "id": "info",
+          "label": "Informational",
+          "description": "Standard informational alert with a heading and body text."
+        },
+        {
+          "id": "success",
+          "label": "Success",
+          "description": "Confirmation alert. Meaning must come from the text and heading, not only the color."
+        },
+        {
+          "id": "warning",
+          "label": "Warning",
+          "description": "Warning alert with a clear heading and next step."
+        },
+        {
+          "id": "error",
+          "label": "Error",
+          "description": "Error alert for a problem that needs action."
+        },
+        {
+          "id": "emergency",
+          "label": "Emergency",
+          "description": "Emergency alert variant."
+        },
+        {
+          "id": "no-heading",
+          "label": "Without heading",
+          "description": "Text-only alert. The sentence alone must carry the meaning."
+        },
+        {
+          "id": "link",
+          "label": "With link",
+          "description": "Alert containing an inline link that is reachable in normal keyboard order."
+        },
+        {
+          "id": "long",
+          "label": "Long content",
+          "description": "Several sentences that must wrap without clipping at narrow widths and large text."
+        },
+        {
+          "id": "arabic",
+          "label": "Arabic content",
+          "description": "Right-to-left language content marked lang=\"ar\" and dir=\"rtl\". Direction-only simulation is not a substitute for native-language review."
+        },
+        {
+          "id": "dynamic",
+          "label": "Dynamically inserted",
+          "description": "A status alert inserted after activating the button. Announcement must be checked with a real screen reader.",
+          "interaction": "activate"
+        },
+        {
+          "id": "updated",
+          "label": "Dynamically updated",
+          "description": "An existing status message whose text changes after activation. Announcement must be checked with a real screen reader.",
+          "interaction": "activate"
+        },
+        {
+          "id": "multiple",
+          "label": "Multiple alerts",
+          "description": "Informational and error alerts shown together."
+        }
       ]
     },
     {
@@ -214,6 +286,13 @@
       "issues": [
         5336,
         6030
+      ],
+      "states": [
+        {
+          "id": "default",
+          "label": "Initial rendering",
+          "description": "The fixture default. Component-specific states are not modelled yet; use the keyboard and manual-test guidance."
+        }
       ]
     },
     {
@@ -267,6 +346,13 @@
       "issues": [
         6068,
         6080
+      ],
+      "states": [
+        {
+          "id": "default",
+          "label": "Initial rendering",
+          "description": "The fixture default. Component-specific states are not modelled yet; use the keyboard and manual-test guidance."
+        }
       ]
     },
     {
@@ -319,6 +405,13 @@
       "issues": [
         6068,
         6080
+      ],
+      "states": [
+        {
+          "id": "default",
+          "label": "Initial rendering",
+          "description": "The fixture default. Component-specific states are not modelled yet; use the keyboard and manual-test guidance."
+        }
       ]
     }
   ],
@@ -384,7 +477,25 @@
         "initial implementation",
         "test scaffolding",
         "documentation drafting"
-      ]
+      ],
+      "evaluation": {
+        "preferences": [
+          "appearance",
+          "forced-colors",
+          "contrast",
+          "motion",
+          "text-size",
+          "viewport",
+          "rtl",
+          "no-javascript"
+        ],
+        "concerns": [
+          "Header, footer, navigation, cards, tables, and the upstream alert icon are not themed yet."
+        ],
+        "concernTags": [
+          "theme-coverage"
+        ]
+      }
     },
     {
       "id": "preferences-panel",
@@ -433,7 +544,22 @@
         "initial implementation",
         "test scaffolding",
         "documentation drafting"
-      ]
+      ],
+      "evaluation": {
+        "preferences": [
+          "appearance",
+          "contrast",
+          "motion",
+          "text-size",
+          "storage"
+        ],
+        "concerns": [
+          "Stored-preference failure handling and cross-tab behaviour remain unreviewed."
+        ],
+        "concernTags": [
+          "storage"
+        ]
+      }
     },
     {
       "id": "rtl-logical-properties",
@@ -483,7 +609,21 @@
         "initial CSS",
         "test scaffolding",
         "documentation drafting"
-      ]
+      ],
+      "evaluation": {
+        "preferences": [
+          "rtl",
+          "forced-colors",
+          "text-size",
+          "viewport"
+        ],
+        "concerns": [
+          "Native-language review of the RTL sample is outstanding."
+        ],
+        "concernTags": [
+          "native-language"
+        ]
+      }
     },
     {
       "id": "radio-validation",
@@ -533,7 +673,23 @@
         "initial implementation",
         "test scaffolding",
         "documentation drafting"
-      ]
+      ],
+      "evaluation": {
+        "preferences": [
+          "forced-colors",
+          "motion",
+          "text-size",
+          "viewport",
+          "no-javascript"
+        ],
+        "concerns": [
+          "Voice Control and real screen-reader testing are outstanding."
+        ],
+        "concernTags": [
+          "voice-control",
+          "screen-reader"
+        ]
+      }
     }
   ],
   "scenarios": [

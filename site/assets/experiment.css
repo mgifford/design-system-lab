@@ -2,9 +2,9 @@
  * Semantic theme layer, intentionally small; incomplete coverage is an evidence gap.
  * Focus token: #005ea2 on light surfaces (6.2:1+), #ffbe2e on dark (10.7:1).
  */
-:root{--fx-canvas:#fff;--fx-surface:#f1f3f5;--fx-text:#1b1b1b;--fx-muted:#4f5965;--fx-border:#77808b;--fx-link:#005ea2;--fx-focus:#005ea2;--fx-info-bg:#e7f6f8;--fx-info-edge:#005ea2;--fx-warn-bg:#faf3d1;--fx-warn-edge:#936f38;--fx-error-bg:#f8e1de;--fx-error-edge:#b50909;--fx-btn-bg:#005ea2;--fx-btn-text:#fff;color-scheme:light}
-:root[data-mode=dark]{--fx-canvas:#151c28;--fx-surface:#273448;--fx-text:#f5f6f9;--fx-muted:#dae1eb;--fx-border:#aab7c8;--fx-link:#86c9fa;--fx-focus:#ffbe2e;--fx-info-bg:#1d3a48;--fx-info-edge:#73d7ee;--fx-warn-bg:#44391d;--fx-warn-edge:#f4cb58;--fx-error-bg:#4d292e;--fx-error-edge:#fd9997;--fx-btn-bg:#a5d5ff;--fx-btn-text:#0b2741;color-scheme:dark}
-@media(prefers-color-scheme:dark){:root[data-mode=system]{--fx-canvas:#151c28;--fx-surface:#273448;--fx-text:#f5f6f9;--fx-muted:#dae1eb;--fx-border:#aab7c8;--fx-link:#86c9fa;--fx-focus:#ffbe2e;--fx-info-bg:#1d3a48;--fx-info-edge:#73d7ee;--fx-warn-bg:#44391d;--fx-warn-edge:#f4cb58;--fx-error-bg:#4d292e;--fx-error-edge:#fd9997;--fx-btn-bg:#a5d5ff;--fx-btn-text:#0b2741;color-scheme:dark}}
+:root{--fx-canvas:#fff;--fx-surface:#f1f3f5;--fx-text:#1b1b1b;--fx-muted:#4f5965;--fx-border:#77808b;--fx-link:#005ea2;--fx-focus:#005ea2;--fx-info-bg:#e7f6f8;--fx-info-edge:#005ea2;--fx-warn-bg:#faf3d1;--fx-warn-edge:#936f38;--fx-error-bg:#f8e1de;--fx-error-edge:#b50909;--fx-success-bg:#ecf3ec;--fx-success-edge:#216e1f;--fx-emergency-bg:#f4e3db;--fx-emergency-edge:#9c3d10;--fx-btn-bg:#005ea2;--fx-btn-text:#fff;color-scheme:light}
+:root[data-mode=dark]{--fx-canvas:#151c28;--fx-surface:#273448;--fx-text:#f5f6f9;--fx-muted:#dae1eb;--fx-border:#aab7c8;--fx-link:#86c9fa;--fx-focus:#ffbe2e;--fx-info-bg:#1d3a48;--fx-info-edge:#73d7ee;--fx-warn-bg:#44391d;--fx-warn-edge:#f4cb58;--fx-error-bg:#4d292e;--fx-error-edge:#fd9997;--fx-success-bg:#1e3a24;--fx-success-edge:#7ee787;--fx-emergency-bg:#43231f;--fx-emergency-edge:#ffb3a1;--fx-btn-bg:#a5d5ff;--fx-btn-text:#0b2741;color-scheme:dark}
+@media(prefers-color-scheme:dark){:root[data-mode=system]{--fx-canvas:#151c28;--fx-surface:#273448;--fx-text:#f5f6f9;--fx-muted:#dae1eb;--fx-border:#aab7c8;--fx-link:#86c9fa;--fx-focus:#ffbe2e;--fx-info-bg:#1d3a48;--fx-info-edge:#73d7ee;--fx-warn-bg:#44391d;--fx-warn-edge:#f4cb58;--fx-error-bg:#4d292e;--fx-error-edge:#fd9997;--fx-success-bg:#1e3a24;--fx-success-edge:#7ee787;--fx-emergency-bg:#43231f;--fx-emergency-edge:#ffb3a1;--fx-btn-bg:#a5d5ff;--fx-btn-text:#0b2741;color-scheme:dark}}
 
 :root[data-mode=dark] body,:root[data-mode=system] body{background:var(--fx-canvas);color:var(--fx-text)}
 :root[data-mode=dark] a,:root[data-mode=system] a{color:var(--fx-link)}
@@ -16,6 +16,8 @@
 .usa-alert{background:var(--fx-info-bg)!important;border-left:0!important;border-right:0!important;border-inline-start:8px solid var(--fx-info-edge)!important;color:var(--fx-text)!important;text-align:start}
 .usa-alert--warning{background:var(--fx-warn-bg)!important;border-inline-start-color:var(--fx-warn-edge)!important}
 .usa-alert--error{background:var(--fx-error-bg)!important;border-inline-start-color:var(--fx-error-edge)!important}
+.usa-alert--success{background:var(--fx-success-bg)!important;border-inline-start-color:var(--fx-success-edge)!important}
+.usa-alert--emergency{background:var(--fx-emergency-bg)!important;border-inline-start-color:var(--fx-emergency-edge)!important}
 .usa-alert__heading,.usa-alert__text,.usa-legend,.usa-label{color:var(--fx-text)!important}
 .usa-button{background:var(--fx-btn-bg)!important;color:var(--fx-btn-text)!important;border-color:var(--fx-btn-bg)!important}
 .usa-input,.usa-textarea{background:var(--fx-canvas);color:var(--fx-text);border-color:var(--fx-border)}
@@ -38,3 +40,9 @@
   .usa-alert{border-inline-start:8px solid CanvasText!important}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* USWDS paints the emergency alert body dark red and sets white text. The
+ * experiment's semantic emergency tokens would otherwise put dark text on the
+ * upstream dark body. Theme the body and its text together. */
+.usa-alert--emergency .usa-alert__body{background:var(--fx-emergency-bg)!important;color:var(--fx-text)!important}
+.usa-alert--emergency .usa-alert__heading,.usa-alert--emergency .usa-alert__text{color:var(--fx-text)!important}

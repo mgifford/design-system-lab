@@ -12,6 +12,7 @@ Read:
 - [AI_DISCLOSURE.md](AI_DISCLOSURE.md)
 - [docs/CONTRIBUTING-EXPERIMENTS.md](docs/CONTRIBUTING-EXPERIMENTS.md)
 - [docs/TESTING.md](docs/TESTING.md)
+- [docs/EVALUATION-GUIDE.md](docs/EVALUATION-GUIDE.md)
 - [docs/EVIDENCE.md](docs/EVIDENCE.md)
 
 ## Setup
@@ -35,6 +36,8 @@ npm run validate
 - Deterministic tests with real key presses and native browser behavior.
 - Human-readable evidence, including failures and missing coverage.
 - A recorded human decision before any claim of acceptance.
+- Evaluation states that are reproducible and declared once in the registry.
+- Manual test results recorded by a person, with the tool, browser, and conditions stated.
 
 ## What we will not accept
 
@@ -44,6 +47,8 @@ npm run validate
 - A claim that automated scans establish WCAG conformance.
 - Automatic upstream comments, issues, or pull requests.
 - A change that weakens the baseline or hides an experiment’s limitations.
+- Manual results presented as published evidence without human verification.
+- A CSS approximation described as operating-system or browser emulation.
 
 ## Pull request checks
 

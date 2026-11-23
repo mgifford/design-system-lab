@@ -40,6 +40,7 @@ const registry = readJson(path.join(root, 'data', 'registry.json'));
 const coverage = readJson(path.join(root, 'data', 'coverage.json'));
 const issues = readJson(path.join(root, 'data', 'issues.json'));
 const review = readJson(path.join(root, 'data', 'review.json'));
+const manualTests = readJson(path.join(root, 'data', 'manual-tests.json')).tests;
 if (!exists(lockFile)) throw new Error('data/sources.lock.json is missing. Run npm run sources:write after installing the pinned USWDS package.');
 const lock = readJson(lockFile);
 const installedVersion = exists(installedFile) ? readJson(installedFile).version : null;
@@ -78,7 +79,7 @@ fs.mkdirSync(dist, {recursive: true});
 fs.cpSync(path.join(root, 'site', 'assets'), path.join(dist, 'assets'), {recursive: true});
 
 fs.mkdirSync(path.join(dist, 'data'), {recursive: true});
-for (const file of ['registry.json', 'issues.json', 'review.json', 'sources.lock.json', 'coverage.json']) {
+for (const file of ['registry.json', 'issues.json', 'review.json', 'sources.lock.json', 'coverage.json', 'manual-tests.json']) {
   fs.copyFileSync(path.join(root, 'data', file), path.join(dist, 'data', file));
 }
 
@@ -172,7 +173,8 @@ if (realAssets && exists(manifestPath) && Array.isArray(manifest.pages) && manif
     succeeded: manifest.succeeded,
     failed: manifest.failed,
     pages: manifest.pages,
-    coverage: manifest.coverage || null
+    coverage: manifest.coverage || null,
+    comparison: manifest.comparison || null
   };
   const evidenceDir = path.join(dist, 'evidence', 'latest');
   fs.mkdirSync(evidenceDir, {recursive: true});
@@ -219,8 +221,8 @@ const coverageTables = {
   forms: coverageTable(coverage, ['banner', 'header', 'page-heading', 'form', 'footer'])
 };
 const pages = [
-  ...buildStaticPages({root, registry, issues, buildInfo, manifest: pageManifest, lock, coverageTables}),
-  ...buildComponentPages({root, registry, issues, manifest: pageManifest, lock}),
+  ...buildStaticPages({root, registry, issues, buildInfo, manifest: pageManifest, lock, coverageTables, manualTests}),
+  ...buildComponentPages({root, registry, issues, manifest: pageManifest, lock, manualTests}),
   ...buildExperimentPages({root, registry, issues, manifest: pageManifest}),
   ...buildDocPages({root})
 ];

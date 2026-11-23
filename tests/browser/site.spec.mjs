@@ -344,6 +344,9 @@ test('forms demo: same content hash, OGDS shell, USWDS form controls', async ({p
   await expect(right.locator('h1')).toHaveText('Contact us');
   expect(await right.locator('body').getAttribute('data-content-hash')).toBe(await left.locator('body').getAttribute('data-content-hash'));
 
+  const content = async frame => (await frame.locator('main').textContent()).replace(/\s+/g, '');
+  expect(await content(right)).toBe(await content(left));
+
   await expect(left.locator('ogds-banner')).toHaveCount(0);
   await expect(left.locator('ogds-header')).toHaveCount(0);
   await expect(right.locator('ogds-banner')).toHaveCount(1);

@@ -2,7 +2,8 @@
 
 ## Sources of truth
 
-- `data/registry.json` is the canonical registry for components, experiments, scenarios, categories, and statuses. The site, fixtures, comparison options, route expectations, and validation read it.
+- `data/registry.json` is the canonical registry for components, experiments, scenarios, categories, statuses, and each component's evaluation states. The site, fixtures, evaluation options, route expectations, and validation read it.
+- `data/manual-tests.json` holds human test definitions only. It never contains results; results live in the reviewer's browser and are exported manually.
 - `data/sources.lock.json` records the immutable baseline: release tag, commit, package version, package-lock SHA-256, and USWDS CSS/JS SHA-256.
 - `data/issues.json` is the curated issue history. It is hand-verified and records a `lastVerified` date. It is not an automatic issue export.
 - `experiments/<id>/` contains proposal, implementation, test-plan, and decision documents. There is no separate `experiment.json`; duplicating registry metadata in each folder would create two sources of truth.
@@ -13,8 +14,9 @@
 1. `scripts/build.mjs` verifies the pinned USWDS version, package-lock hash, and USWDS CSS/JS hashes.
 2. It recreates `dist/` and copies only `site/assets`, `data/*.json`, and the official USWDS distribution.
 3. It generates ten fixtures (five components × baseline/experiment), ten static pages, five component pages, four experiment pages, six landing/forms-demo pages, and documentation pages. Shared landing and forms content comes from `content/pages/*.json`; `renderers/uswds.mjs` and `renderers/ogds.mjs` render the same blocks, and `data/coverage.json` decides where OGDS is used. The OGDS hybrid bundles `@ogds/elements@1.0.0-beta.2` and its token CSS into `dist/vendor/ogds`; the left pane never loads them.
-4. It publishes evidence only from the current `reports/latest` run. `dist/evidence` is deleted first, so a previous run cannot leak in.
-5. It writes `dist/data/routes.json` for 33 lab routes. Each generated comparison page records a content hash so the left and right renderers can be checked for content parity. Documentation (`docs/**`) and evidence artifacts (`evidence/**`) are published but are not lab routes; they do not receive their own Guidepup transcript.
+4. It publishes evidence only from the current `reports/latest` run. `dist/evidence` is deleted first, so a previous run cannot leak in. Evidence includes matched baseline/experiment captures under `dist/evidence/latest/pairs/` and per-state axe observations in `data/evidence.json`.
+5. It copies `data/manual-tests.json` for the workspace and builds `dist/data/evidence.json` with run provenance, per-route and per-state axe observations, and capture metadata.
+6. It writes `dist/data/routes.json` for 33 lab routes. Each generated comparison page records a content hash so the left and right renderers can be checked for content parity. Documentation (`docs/**`) and evidence artifacts (`evidence/**`) are published but are not lab routes; they do not receive their own Guidepup transcript.
 
 ## Page generation
 
@@ -22,9 +24,23 @@
 
 Markdown is rendered at build time. Raw `<` in source is escaped before parsing; this prevents inline HTML or script injection from evidence text. Link destinations are restricted to non-script schemes.
 
+## Evaluation workspace
+
+`compare.html` is one static route. Server-rendered content gives a meaningful header, controls, and direct fixture links without JavaScript. `site/assets/evaluate.js` progressively enhances it:
+
+- `site/assets/evaluation-core.js` is DOM-free shared logic: allowed values, URL normalization, fixture URLs, capture lookup keys, finding classification, manual-result summaries, and the pixel-difference function. Node tests import the same module.
+- Fixture conditions are appended to each iframe URL. Fixtures apply only query parameters; stored lab preferences require an explicit `?prefs=1` opt-in used by the preferences-panel preview.
+- The evaluation tool display reuses `site/assets/prefs.js` and `uswds-lab-prefs`, so it is independent of fixture conditions.
+- Side-by-side, reveal, and onion use live iframes. Reveal and onion remove both frames from keyboard order and are labelled visual-only.
+- Difference mode loads matched captures from the evidence run and draws a highlighted diff on a canvas. If a pair is missing, the interface states that it is a coverage gap.
+- Manual tests render from `data/manual-tests.json`, store results in `localStorage`, and export JSON or Markdown. Nothing is submitted.
+- The evidence section reads `data/evidence.json`, which contains the current run only. It classifies per-state axe findings but does not compute a score.
+
+Captures are produced by `scripts/collect-evidence.mjs` in one browser engine at a fixed 900 × 900 viewport. Forced-colours and increased-contrast conditions use Playwright browser emulation. The UI labels them as captures, not live emulation.
+
 ## Theme and preferences
 
-The lab shell uses semantic CSS custom properties in `site/assets/base.css`. The experiment fixtures use `--fx-*` tokens in `site/assets/experiment.css`. `site/assets/prefs.js` applies `data-theme`, `data-text-size`, `data-contrast`, and `data-motion`; an inline head script applies the saved values before paint to reduce a theme flash. The stable baseline does not load `experiment.css`.
+The lab shell uses semantic CSS custom properties in `site/assets/base.css`. The experiment fixtures use `--fx-*` tokens in `site/assets/experiment.css`. `site/assets/prefs.js` applies `data-theme`, `data-text-size`, `data-contrast`, and `data-motion`; an inline head script applies the saved values before paint to reduce a theme flash. The stable baseline does not load `experiment.css`. Fixture runtime conditions use separate URL parameters (`theme`, `textSize`, `contrast`, `motion`, `spacing`, `dir`, `lang`, `state`) and do not read stored tool preferences unless `prefs=1` is explicit.
 
 ## Boundaries
 

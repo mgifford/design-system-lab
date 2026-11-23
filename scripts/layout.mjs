@@ -2,6 +2,7 @@ import {escapeHtml} from './markdown.mjs';
 
 export const NAV = [
   {key: 'overview', href: 'index.html', label: 'Overview'},
+  {key: 'evaluate', href: 'compare.html', label: 'Evaluate'},
   {key: 'components', href: 'components.html', label: 'Components'},
   {key: 'experiments', href: 'experiments.html', label: 'Experiments'},
   {key: 'demo', href: 'demo.html', label: 'Landing demo'},
@@ -25,6 +26,7 @@ export function renderPage({
   content,
   base = '',
   scripts = [],
+  styles = [],
   bodyClass = ''
 }) {
   const nav = NAV.map(item => {
@@ -34,6 +36,9 @@ export function renderPage({
   const scriptTags = scripts
     .map(script => `<script${script.type ? ` type="${script.type}"` : ''} src="${base}${script.src}"${script.defer ? ' defer' : ''}></script>`)
     .join('');
+  const styleTags = styles
+    .map(style => `<link rel="stylesheet" href="${base}${style}">`)
+    .join('\n');
   const descriptionTag = description
     ? `<meta name="description" content="${escapeHtml(description)}">`
     : '';
@@ -49,6 +54,7 @@ ${descriptionTag}
 <script>${PREF_BOOTSTRAP}</script>
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="${base}assets/base.css">
+${styleTags}
 <script type="module" src="${base}assets/prefs.js"></script>
 ${scriptTags}
 </head>

@@ -73,7 +73,7 @@ OGDS Elements `1.0.0-beta.2` (tag `v1.0.0-beta.2`, commit `59b05f1`) is pinned f
 
 ## Pages
 
-- **Overview** — what the lab contains, featured experiments, and current evidence counts.
+- **Evaluate** — the evaluation workspace: four comparison modes, fixture conditions, evaluator display, state selection, focus inspector, evidence classification, manual tests, and shareable URLs.
 - **Components** — stable components, official USWDS guidance, implementation notes, keyboard behavior, limitations, experiments, and fixtures.
 - **Experiments** — proposals with category, status, related issue history, demonstration, implementation guidance, evidence, and review status.
 - **Community ideas** — a curated issue catalogue that distinguishes open, closed-not-planned, completed, and consolidated work.
@@ -124,6 +124,21 @@ A block without an OGDS implementation cannot silently disappear: the renderer f
 
 Human decisions are recorded in one table, [`docs/EXPERIMENT-DECISIONS.md`](docs/EXPERIMENT-DECISIONS.md), not in a form per experiment. Dark mode is recorded as accepted as a lab experiment; the other three are undecided. Acceptance does not mean upstream adoption or assistive-technology validation.
 
+## Evaluation workspace
+
+[`compare.html`](https://mgifford.github.io/design-system-lab/compare.html) is the lab's main evaluation surface. It is reachable from the primary navigation, component pages, experiment pages, and the evidence page. The full guide is [`docs/EVALUATION-GUIDE.md`](docs/EVALUATION-GUIDE.md).
+
+- **Four comparison modes** — side by side (live iframes with synchronized scrolling), reveal slider, onion skin, and pixel difference from matched Playwright captures. Reveal and onion are marked visual-only; side-by-side and the independent links carry keyboard interaction.
+- **Fixture conditions** — appearance, motion, contrast, text size, WCAG text spacing, direction, language, viewport width, and preview source, applied identically to both panes.
+- **Evaluator display** — separate controls for the tool itself, stored under `uswds-lab-prefs`. Fixtures ignore stored preferences unless opened with `?prefs=1`, so tool settings do not leak into the component under test.
+- **Honest browser conditions** — forced colours and increased contrast are captured with Playwright browser emulation and labelled as such. No CSS filter or class is presented as operating-system emulation.
+- **Alert state model** — twelve declared states, including success, emergency, no heading, link, long content, Arabic, dynamically inserted, dynamically updated, and multiple. Each state is reproducible, axe-scanned, and captured.
+- **Evidence classification** — per-state axe counts and a fixed/introduced/common comparison. A disappearing violation is a candidate fix, not proof; removed content is not a fix.
+- **Manual tests** — eleven alert tests based on the USWDS checklist plus dynamic status-message guidance, with local pass/fail/blocked records, required justification for "not applicable", and JSON/Markdown export. Nothing is submitted automatically.
+- **Reproducible URLs** — a versioned, validated parameter schema, invalid-value reporting, copy-link, and named presets stored in the browser.
+
+The workspace is not a conformance tool. It never shows an aggregate accessibility score, and a missing run or capture is displayed as a gap.
+
 ## Evidence pipeline
 
 `npm run evidence`:
@@ -132,14 +147,16 @@ Human decisions are recorded in one table, [`docs/EXPERIMENT-DECISIONS.md`](docs
 2. Clears `reports/latest` and writes a `running` manifest before collection.
 3. Loads every route in `dist/data/routes.json` with the pinned USWDS assets.
 4. Records page/console errors, axe violations, screenshots, and Guidepup virtual transcripts.
-5. Captures state-specific transcripts for disclosures, forms, dark appearance, and RTL where applicable.
-6. Writes `SUMMARY.md`, `COVERAGE.md`, and a final `MANIFEST.json`.
-7. Copies the run to `reports/runs/<run-id>`.
-8. Fails when any route cannot be collected; missing output is never a pass.
+5. Captures state-specific transcripts for disclosures, forms, dark appearance, RTL, and declared component states where applicable.
+6. Runs axe on every declared state of a component, after any required activation, and records the violations by state.
+7. Captures matched baseline/experiment screenshots at 900 × 900 for light, dark, forced-colours, and increased-contrast conditions (all four for every registered component).
+8. Writes `SUMMARY.md`, `COVERAGE.md`, and a final `MANIFEST.json`.
+9. Copies the run to `reports/runs/<run-id>`.
+10. Fails when any route cannot be collected; missing output is never a pass.
 
 The build publishes evidence only from the current `reports/latest` run. `dist/evidence` is deleted first, so a previous run cannot leak in.
 
-**Guidepup is a virtual screen reader over a DOM snapshot. It is not NVDA, JAWS, or VoiceOver.** Axe runs on the initial route state only and is not a WCAG conformance determination. Screenshots are evidence for human inspection, not a design verdict.
+**Guidepup is a virtual screen reader over a DOM snapshot. It is not NVDA, JAWS, or VoiceOver.** Axe runs on the initial route and on declared component states; it is not a WCAG conformance determination. Screenshots and captures are evidence for human inspection, not a design verdict. Published evidence records zero completed manual tests unless a person exports and attaches their records.
 
 ## GitHub Pages and CI
 
@@ -152,10 +169,10 @@ CI uses `npm ci` with the committed lockfile. The workflow has not been executed
 
 ### Local verification
 
-- `npm run test:unit` — 14 passing.
-- `npm run build:strict` — 33 lab routes, 28 documentation pages, 10 fixtures.
-- `LAB_BROWSER_CHANNEL=chrome npx playwright test --project=chromium` — **70 passing**.
-- `npm run evidence` (Chrome channel) — **33/33 routes, 96 state transcripts, 0 failed**.
+- `npm run test:unit` — 27 passing, including evaluation URL validation, state/fixture consistency, pixel-diff math, and finding classification.
+- `npm run build:strict` — 33 lab routes, 29 documentation pages, 10 fixtures.
+- `LAB_BROWSER_CHANNEL=chrome npx playwright test --project=chromium` — **91 passing**.
+- `npm run evidence` (Chrome channel) — **33/33 routes, 96 Guidepup state transcripts, 24 state-level axe scans, 64 matched capture pairs, 0 failed**.
 - `npm run validate` — 5 components, 4 experiments, 14 issues, 5 scenarios, 33 routes, 33 MCP scenarios, evidence run complete.
 
 WebKit ran locally: **69 passing, 1 skipped** (the axe scan is Chromium-only by design). Firefox could not launch in the authoring sandbox because it could not create its profile folder; that is recorded as a blocked check, not a pass. CI currently runs Chromium only.
@@ -163,11 +180,12 @@ WebKit ran locally: **69 passing, 1 skipped** (the axe scan is Chromium-only by 
 ## Repository layout
 
 ```text
-data/                 registry, issue catalogue, review metadata, source lock, coverage map
+data/                 registry (including states and evaluation metadata), manual tests,
+                       issue catalogue, review metadata, source lock, coverage map
 content/              shared page content and the pinned sandbox content lock
 renderers/            USWDS and OGDS block renderers
 experiments/          experiment docs (README, IMPLEMENTATION, TEST-PLAN)
-docs/                 architecture, testing, evidence, design decisions, guides
+docs/                 architecture, testing, evidence, evaluation guide, design decisions, guides
 scripts/              build, evidence, validation, sources, scaffold, MCP sync
 site/assets/          shell CSS, experiment CSS, fixture CSS/JS, preferences
 templates/pages/      shared page fragments rendered by the build
@@ -177,7 +195,7 @@ reports/templates/    human evidence and decision templates
 reports/latest/       generated current evidence (gitignored)
 ```
 
-`data/registry.json` is the canonical registry. Component pages, experiment pages, fixture routes, the comparison viewer, MCP scenarios, and validation derive from it. `experiments/<id>/experiment.json` is intentionally not duplicated; the registry is the single source of truth.
+`data/registry.json` is the canonical registry. Component pages, experiment pages, fixture routes, the evaluation workspace, MCP scenarios, and validation derive from it. `experiments/<id>/experiment.json` is intentionally not duplicated; the registry is the single source of truth.
 
 ## Contributing
 
