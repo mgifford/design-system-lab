@@ -341,6 +341,7 @@ for (const relative of [
   'docs/EVIDENCE.md',
   'docs/EVALUATION-GUIDE.md',
   'docs/PERFORMANCE.md',
+  'docs/AT-EVIDENCE.md',
   'docs/DESIGN-DECISIONS.md',
   'docs/EXPERIMENT-DECISIONS.md',
   'docs/OGDS-PERMISSION.md',

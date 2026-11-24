@@ -153,7 +153,7 @@ Record a result only after performing the test:
 3. **Not applicable** requires a written justification; otherwise the status is not saved.
 4. Export JSON or Markdown and attach it to the review record you choose. Nothing is committed or sent automatically.
 
-Guidepup transcripts are a virtual screen reader over a DOM snapshot. They support investigation and do not count as NVDA, JAWS, VoiceOver, or Voice Control testing.
+The main evidence run uses the Guidepup Virtual Screen Reader over a DOM snapshot. It supports investigation and does not count as NVDA, JAWS, VoiceOver, or Voice Control testing. A separate macOS workflow automates real VoiceOver through Guidepup and uploads spoken-phrase logs; that is automated AT evidence, still not a human session. See [`docs/AT-EVIDENCE.md`](AT-EVIDENCE.md).
 
 ## Adding evaluation support for a component
 
